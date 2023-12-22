@@ -1,0 +1,185 @@
+---
+title: "Bioconductor's Computational Ecosystem for Genomic Data Science in Cancer"
+author: Multiple
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+abstract: >
+  The Bioconductor project enters its third decade 
+  with over two thousand packages for genomic data 
+  science, over 100,000 annotation and experiment resources, 
+  and a global system for convenient distribution 
+  to researchers. The impact of the project on genome 
+  biology is attested to by over 60,000 PubMed Central 
+  citations and terabytes of content shipped per month. This report 
+  provides an overview of cancer genomics resources in Bioconductor. 
+  Approaches to cancer data reuse and integration, copy number 
+  variation analysis, and methodology for single-cell and spatial 
+  transcriptomics are reviewed. Bioconductor’s strategies for 
+  supporting methods developers and researchers in cancer 
+  genomics are evolving along with experimental and computational 
+  technologies. All the tools described in this report 
+  are backed by regularly maintained learning resources 
+  that can be used locally or in cloud computing environments.
+output:
+  BiocStyle::pdf_document:
+    toc: yes
+    number_sections: yes
+---
+
+# Introduction
+
+Computation is a central component of cancer genomics
+research.  Tumor sequencing is the basis of computational
+investigation of mutational, epigenetic and immunologic
+processes associated with cancer initiation and progression.
+Numerous computational workflows have been produced to
+profile tumor cell transcriptomes and proteomes.
+New technologies promise to unite sequence-based
+characterizations with digital histopathology,
+ultimately driving efforts in molecule design
+and evaluation to produce patient-centered treatments.
+
+Bioconductor is an open source software project with
+a 20 year history of uniting biostatisticians, bioinformaticians,
+and genome researchers in the creation of an ecosystem
+of data, annotation, and analysis resources for research
+in genome-scale biology.  This paper will review current
+approaches of the project to advancing cancer genomics.
+After a brief discussion of basic principles of the Bioconductor
+project, we will present a "top down" survey of resources
+useful for cancer bioinformatics.  Primary sections address
+
+- how to explore institutionally curated cancer genomics data
+- genomic annotation resources relevant to cancer genomics
+- analytical workflows
+- components for introducing new data or analyses
+- pedagogics and workforce development.
+
+# Bioconductor principles
+
+## R packages and vignettes
+
+Software tools and data resources in Bioconductor are organized
+into "R packages".  These are collections of folders with data,
+code (principally R functions), and documentation 
+following a protocol specified in
+[Writing R Extensions](https://cran.r-project.org/doc/manuals/R-exts.html).  R packages have a DESCRIPTION file with metadata about
+package contents and provenance.  Package structure can be
+checked for validity using the `R CMD check` facility.
+Documentation of code and data can be programmatically
+checked for existence and validity.  The DESCRIPTION file
+for a package specifies its version and
+also gives precise definition of how an R package may
+depend upon versions of other packages.
+
+At its inception, 
+Bioconductor introduced a new approach to holistic package
+documentation called "vignette".
+Vignettes narrate package operations
+and include executable code.
+While R function manual pages describe
+the operation of individual functions,
+vignettes illustrate the interoperation
+of package components.
+
+## R package repositories; repository evolution
+
+Bioconductor software forms a coherent ecosystem that
+can be checked for consistency of versions of all
+packages available in a given installation of R.
+Bioconductor packages may specify dependency on
+other Bioconductor packages, or packages that are
+available in the CRAN repository.  Bioconductor does
+not include packages with dependencies on "github-only"
+packages.  
+Later in this paper we will provide details
+on package quality assurance that provide a rationale
+for this restriction.
+
+Major updates to the R language occur annually, and
+updates are preceded by careful assessment of effects of
+language change on package operations.  These effects
+can be identified through changes in the output of R CMD check.
+The Bioconductor ecosystem is updated twice a year, once
+to coincide with update to R, and once about six months
+later.  The semianual updates reflect the need to track
+developments in the fast-moving field of genomic data science.
+
+## Package quality assessment; installation consistency
+
+The BiocCheck function is used to provide more
+stringent assessment of package compliance with basic
+principles of the Bioconductor ecosystem.
+
+The BiocManager package includes code for
+checking the consistency and
+currency of the current
+collection of installed packages, and for
+installing or updating packages.  This is important
+in the context of a language and package ecosystem
+that changes every six months, while analyses may
+take years to complete.  Tools for recreating past
+package collections are available to assist in
+reproducing outputs of prior analyses.
+
+# Exploring institutionally curated cancer genomics data
+
+## The Cancer Genome Atlas
+
+## cBioPortal
+
+## Resources from NCBI and EMBL
+
+# Genomic annotation resources relevant to cancer
+
+# Analytical workflows
+# Components for introducing new data or analyses
+
+
+How Bioconductor enhances cancer data reuse and value - Levi, Sean, Sehyun
+1. Data structures
+Inheritance is a key feature of object-oriented programming (OOP) that allows us to define a new class out of existing classes and add new features, which provides reusability of code. Inheritance carries over attributes and methods defined for base classes; ‘Attributes’ are variables that are bound in a class. They are used to define behavior and methods for objects of that class. ‘Methods’ are functions defined within a class that receive an instance of the class, conventionally called self, as the first argument. The attributes defined for a base class will automatically be present in the derived class, and the methods for the base class will work for the derived class. The R programming language has three different class systems: S3, S4, and Reference. Inheritance in S3 classes does not have any fixed definition, and hence attributes of S3 objects can be arbitrary. Derived classes, however, inherit the methods defined for the base class. Inheritance in S4 classes is more structured, and derived classes inherit both attributes and methods of the parent class. Reference classes are similar to S4 classes, but they are mutable and have reference semantics.
+
+S4 classes are used extensively in Bioconductor to create data structures that store complex information, such as biological assay data and metadata, in one or more slots. The entire structure can then be assigned to an R object, and the types of information in each slot of the object are tightly controlled. S4 generics and methods define functions that can be applied to these objects, providing a rich software development infrastructure while ensuring interoperability, reusability, and efficiency. 
+
+Bioconductor have established Bioconductor classes to represent different types of biological data. Data and tools distributed through Bioconductor adopt Bioconductor classes, providing convenient methods and improving usability and interoperability within the Bioconductor ecosystem. 
+
+```{r mktab,echo=FALSE,messages=FALSE}
+ltab = "Data Types:Bioconductor Classes
+Genomic coordinates (1-based, closed interval):GRanges
+Groups of genomic coordinates:GRangesList
+Ragged genomic coordinates:RaggedExperiment
+Gene sets:GeneSet
+Rectangular Features x samples:SummarizedExperiment
+Multi-omics data:MultiAssayExperiment
+Single-cell data:SingleCellExperiment
+Mass spectrometry data:Spectra"
+x = read.delim(textConnection(ltab),sep=":",check.names=FALSE)
+suppressMessages({library(kableExtra)})
+kbl(x, booktabs=TRUE) 
+```
+
+The GRanges class represents a collection of genomic ranges and associated annotations. Each element in the vector represents a set genomic ranges in terms of the sequence name (seqnames, typically the chromosome), start and end coordinates (ranges, as an IRanges object), strand (strand, either positive, negative, or unstranded), and optional metadata columns (e.g., exon_id and exon_name in the below). 
+
+```
+GRanges object with 4 ranges and 2 metadata columns:
+      seqnames            ranges strand |   exon_id       exon_name
+         <Rle>         <IRanges>  <Rle> | <integer>     <character>
+  [1]        X 99883667-99884983      - |    667145 ENSE00001459322
+  [2]        X 99885756-99885863      - |    667146 ENSE00000868868
+  [3]        X 99887482-99887565      - |    667147 ENSE00000401072
+  [4]        X 99887538-99887565      - |    667148 ENSE00001849132
+  -------
+  seqinfo: 722 sequences (1 circular) from an unspecified genome
+```
+
+The GRangesList object serves as a container for genomic features consisting of multiplie ranges that are grouped by a parent features, such as spliced transcripts that are comprised of exons. A GRangesList object behaves like a list and many of the same methods for GRanges objects are available for GRangesList object as well. 
+
+The SummarizedExperiment class is a matrix-like container, where rows represent features of interest (e.g., genes, transcripts, exons, etc.) and columns represent samples. The attributes of this object include experimental results (in assays), information on observations (in rowData) and samples (in colData), and additional metadata (in metadata). SummarizedExperiment objects can simultaneouly manage several experimental results as long as they are of the same dimensions. The best benefit of using SummarizedExperiment class is the coordination of the metadata and assays when subsetting. SummarizedExperiment is similar to the historical ExpressionSet class, but more flexible in its row information, allowing both GRanges and DataFrames. ExpressionSet object can be easily converted to SummarizedExperiment.
+
+RangedSummarizedExperiment inherits the SummarizedExperiment class, with the extended capability of storing genomic ranges (as a GRanges or GRangesList object) of interest instead of a DataFrame (S4-class objectcs similar to data.frame) of features in rows.
+
+The MultiAssayExperiment class is modeled after the SummarizedExperiment class.
+
+The SingleCellExperiment classes inherit RangedSummarizedExperiment class.
+
+# Pedagogics and workforce development
