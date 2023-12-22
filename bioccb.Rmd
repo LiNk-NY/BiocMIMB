@@ -25,6 +25,30 @@ output:
     number_sections: yes
 ---
 
+```{r helpercode,echo=FALSE,message=FALSE,results="hide"}
+getcur = function (tiss) 
+{
+    curatedTCGAData(tiss, "*", version = "2.1.1", dry.run = FALSE)
+}
+getass = function(mae) gsub(".*_(.*)-.*", "\\1", gsub("TIC_", "TIC.", grep("mRNAA|CNAC", names(experiments(mae)), invert=TRUE, value=TRUE)))
+load("tcgatab.rda")
+library(dplyr)
+library(kableExtra)
+tenco = "Code,Type
+ACC,Adrenocortical Carcinoma
+BLCA,Bladder Urothelial Carcinoma
+BRCA,Breast Invasive Carcinoma
+CESC,Cervical Squamous Cell Carcinoma And Endocervical Adenocarcinoma
+CHOL,Cholangiocarcinoma
+COAD,Colon Adenocarcinoma
+DLBC,Lymphoid Neoplasm Diffuse Large B-cell Lymphoma
+ESCA,Esophageal Carcinoma
+GBM,Glioblastoma Multiforme
+HNSC,Head And Neck Squamous Cell Carcinoma"
+cotab = read.csv(textConnection(tenco))
+```
+
+
 # Introduction
 
 Computation is a central component of cancer genomics
@@ -124,6 +148,33 @@ reproducing outputs of prior analyses.
 # Exploring institutionally curated cancer genomics data
 
 ## The Cancer Genome Atlas
+
+An overview of Bioconductor's resource for the Cancer
+Genome Atlas (TCGA) is easy to obtain, with the
+curatedTCGAData package.
+```{r lktcga1,message=FALSE,eval=FALSE}
+library(curatedTCGAData)
+tcgatab = curatedTCGAData()
+```
+The first 10 records have:
+```{r lktab,echo=FALSE}
+kbl(head(tcgatab[,1:4],10), booktabs=TRUE)
+```
+
+Various conventions are in play in this table.  The "title" field is
+of primary concern.  The title string can be decomposed into
+substrings with interpretation
+`[tumorcode]_[assay]-[date]_[optional codes]`.
+
+### Tumor code resolution
+
+There are 33 different tumor types available in TCGA.  The
+decoding of tumor codes for the first ten in alphabetical order is:
+```{r docodes,echo=FALSE}
+kbl(cotab, booktabs=TRUE)
+```
+
+### Assay codes and counts
 
 ## cBioPortal
 
