@@ -26,6 +26,8 @@ output:
 ---
 
 ```{r helpercode,echo=FALSE,message=FALSE,results="hide"}
+library(curatedTCGAData)
+library(TCGAutils)
 getcur = function (tiss) 
 {
     curatedTCGAData(tiss, "*", version = "2.1.1", dry.run = FALSE)
@@ -68,14 +70,22 @@ common_assays = function(mael) {
 }
 if (!exists("br")) br = getcur("BRCA")
 if (!exists("gb")) gb = getcur("GBM")
-if (!exists("lu")) lu = getcur("LUAD")
+if (!exists("luad")) luad = getcur("LUAD")
+lu = luad
 cass = common_assays(list(br, gb, lu))
 kpass = lapply(c("BRCA", "GBM", "LUAD"), function(x) paste0(x, "_", cass))
 bas = list(br, gb, lu)
+suppressWarnings({
 lim = lapply(1:3, function(x) bas[[x]][,,kpass[[x]]])
 nc = sapply(lim, function(x) sapply(experiments(x), ncol))
+})
 library(TCGAutils)
+ow = options()$warn
+options(warn=-1)
+suppressWarnings({
 nc2 = sapply(lim, function(x) sapply(experiments(TCGAprimaryTumors(x[,,-9])), ncol))
+})
+options(warn=ow)
 
 ans = cbind(nc2, nc[-9,]- nc2)
 rownames(ans) = gsub("BRCA_", "", rownames(ans))
@@ -182,6 +192,30 @@ take years to complete.  Tools for recreating past
 package collections are available to assist in
 reproducing outputs of prior analyses.
 
+## Unifying assay and sample data: SummarizedExperiment and MultiAssayExperiment
+
+Most of the data from genome-scale experiments to be discussed
+in this chapter are organized in special data containers
+rooted in the concepts of the SummarizedExperiment class.
+Briefly, assay data are thought of as occupying a $G \times N$
+array, and sample level data occupy an $N \times K$ table.  The array
+and the table are linked together in the SummarizedExperiment; see Figure \@ref(fig:sesc).
+
+
+```{r sesc, echo=FALSE, fig.cap="SummarizedExperiment schematic.", out.width="80%"}
+knitr::include_graphics("SEschema.png")
+```
+Multiple representations of assay results may be managed in this
+structure, but all assay arrays must have dimensions $G \times N$.
+
+For experiment collections in which the same samples are subjected
+to multiple genome-scale assays, MultiAssayExperiment containers are used.
+
+```{r masc, echo=FALSE, fig.cap="MultiAssayExperiment schematic.", out.width="80%"}
+knitr::include_graphics("MAEschema.png")
+```
+Further details on these data structures will be provided in section \@ref(class).
+
 # Exploring institutionally curated cancer genomics data
 
 ## The Cancer Genome Atlas
@@ -191,46 +225,101 @@ Genome Atlas (TCGA) is easy to obtain, with the
 curatedTCGAData package.
 ```{r lktcga1,message=FALSE,eval=FALSE}
 library(curatedTCGAData)
-tcgatab = curatedTCGAData()
+tcgatab = curatedTCGAData(version="2.1.1")
 ```
 The first 10 records have:
 ```{r lktab,echo=FALSE}
-kbl(head(tcgatab[,1:4],10), booktabs=TRUE)
+kbl(head(tcgatab[,1:4],10), booktabs=TRUE, caption="First ten records
+returned by curatedTCGAData::curatedTCGAData().")
 ```
 
 Various conventions are in play in this table.  The "title" field is
 of primary concern.  The title string can be decomposed into
 substrings with interpretation
-`[tumorcode]_[assay]-[date]_[optional codes]`.
+`[tumorcode]_[assay]-[date]_[optional codes]`.  The column `ah_id` will be
+explained in section \@ref(hubs), and column
+`rdataclass` will be discussed in section \@ref(class) below.
 
 ### Tumor code resolution
 
 There are 33 different tumor types available in TCGA.  The
-decoding of tumor codes for the first ten in alphabetical order is:
-```{r docodes,echo=FALSE}
-kbl(cotab, booktabs=TRUE)
+decoding of tumor codes for the first ten in alphabetical order is
+provided in Table \@ref(tab-deco).
+
+```{r tab-deco,echo=FALSE}
+kbl(cotab, booktabs=TRUE, caption="Decoding TCGA tumor code abbreviations.")
 ```
 
 ### Assay codes and counts
 
+Assays performed on tumors vary across tumor types.  For assay
+types shared between
+breast cancer, glioblastoma, and lung adenocarcinoma (code LUAD),
+the numbers of tumor and normal samples available in curatedTCGAData
+are provided in Table \@ref(doassc).
+
 ```{r doassc,echo=FALSE}
-kbl(assaycounts, booktabs=TRUE)
+kbl(assaycounts, booktabs=TRUE,caption="Numbers of assays available in TCGA on tumor and normal samples,
+for breast cancer, glioblastoma, and lung adenocarcinoma.")
 ```
 
+### An example dataset for RNA-seq from glioblastoma multiforme
+
+We obtain normalized RNA-seq data on primary tumor samples for GBM with
+```{r getgb, cache=FALSE,message=FALSE}
+gbrna = TCGAprimaryTumors(curatedTCGAData("GBM", 
+    "RNASeq2GeneNorm", dry.run=FALSE, version="2.1.1"))
+gbrna
+```
+
+R functions defined in Bioconductor packages can operate on the variable `gb` to
+retrieve information of interest.  Details on the underlying data structure
+are given in section XX below.  For most assay types, we think of the quantitative
+assay
+information as tabular in nature, with table rows corresponding to genomic
+features such as genes, and table columns corresponding to samples.
+
+Information on GBM samples employs the `colData` function.
+```{r lkcd}
+dim(colData(gbrna))
+```
+For sample level information obtained `colData`, we think of rows
+as samples, and columns as sample attributes.
+
 ### Clinical and phenotypic data
+
+TCGA datasets are generally provided as combinations of
+results for tumor tissue and normal tissue.  The determination
+of a record's sample type is encoded in the sample "barcode".
+Decoding of sample barcodes is described at the [Genomic Data Commons Encyclopedia](https://docs.gdc.cancer.gov/Encyclopedia/pages/TCGA_Barcode/) with specific interpretation of sample types listed [separately](https://gdc.cancer.gov/resources-tcga-users/tcga-code-tables/sample-type-codes).  The TCGAutils package provides utilities for extracting
+data on primary tumor samples, excluding samples that may have been taken on
+normal tissue or metastases.
+
+
+Clinical and phenotypic data on all TCGA samples are voluminous.  For example,
+there are `r ncol(colData(br))` fields of sample level data for BRCA 
+samples, and `r ncol(colData(gb))` fields for GBM samples.  Many of these
+fields are meaningfully populated for only a very small minority of samples.
+To see this for GBM:
+```{r lkspar}
+mean(sapply(colData(gb), function(x) mean(is.na(x))>.90))
+```
 
 ## cBioPortal
 
 ## Resources from NCBI and EMBL
 
-# Genomic annotation resources relevant to cancer
+# Genomic annotation resources relevant to cancer {#hubs}
 
 # Analytical workflows
-# Components for introducing new data or analyses
+
+# Components for introducing new data or analyses {#class}
 
 
-How Bioconductor enhances cancer data reuse and value - Levi, Sean, Sehyun
-1. Data structures
+<!-- How Bioconductor enhances cancer data reuse and value - Levi, Sean, Sehyun -->
+
+## Data structures
+
 Inheritance is a key feature of object-oriented programming (OOP) that allows us to define a new class out of existing classes and add new features, which provides reusability of code. Inheritance carries over attributes and methods defined for base classes; ‘Attributes’ are variables that are bound in a class. They are used to define behavior and methods for objects of that class. ‘Methods’ are functions defined within a class that receive an instance of the class, conventionally called self, as the first argument. The attributes defined for a base class will automatically be present in the derived class, and the methods for the base class will work for the derived class. The R programming language has three different class systems: S3, S4, and Reference. Inheritance in S3 classes does not have any fixed definition, and hence attributes of S3 objects can be arbitrary. Derived classes, however, inherit the methods defined for the base class. Inheritance in S4 classes is more structured, and derived classes inherit both attributes and methods of the parent class. Reference classes are similar to S4 classes, but they are mutable and have reference semantics.
 
 S4 classes are used extensively in Bioconductor to create data structures that store complex information, such as biological assay data and metadata, in one or more slots. The entire structure can then be assigned to an R object, and the types of information in each slot of the object are tightly controlled. S4 generics and methods define functions that can be applied to these objects, providing a rich software development infrastructure while ensuring interoperability, reusability, and efficiency. 
@@ -274,6 +363,6 @@ RangedSummarizedExperiment inherits the SummarizedExperiment class, with the ext
 
 The MultiAssayExperiment class is modeled after the SummarizedExperiment class.
 
-The SingleCellExperiment classes inherit RangedSummarizedExperiment class.
+The SingleCellExperiment classes inherit from the RangedSummarizedExperiment class.
 
 # Pedagogics and workforce development
