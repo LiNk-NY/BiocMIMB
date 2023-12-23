@@ -26,6 +26,15 @@ output:
 ---
 
 ```{r helpercode,echo=FALSE,message=FALSE,results="hide"}
+needed = c("curatedTCGAData", "TCGAutils", "dplyr", "kableExtra", "TCGAutils",
+"survival", "GGally")
+ii = rownames(installed.packages())
+need = setdiff(needed, ii)
+if (length(need)>0) {
+  print(need)
+  stop("these packages are missing from your installation, please install")
+}
+
 library(curatedTCGAData)
 library(TCGAutils)
 getcur = function (tiss) 
@@ -313,7 +322,7 @@ The following code chunk illustrates a very crude
 approach to comparing survival profiles for BRCA, GBM, and LUAD
 donors.
 
-```{r dothesurv,fig.cap="Survival profile extraction from three MultiAssayExperiments produced with curatedTCGAData calls.", fig.width="80%"}
+```{r dothesurv,fig.cap="Survival profile extraction from three MultiAssayExperiments produced with curatedTCGAData calls.", out.width="80%"}
 library(survival)
 getSurv = function(mae) {
  days_on = with(colData(mae), ifelse(is.na(days_to_last_followup), 
