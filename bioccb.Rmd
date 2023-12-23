@@ -227,8 +227,8 @@ curatedTCGAData package.
 library(curatedTCGAData)
 tcgatab = curatedTCGAData(version="2.1.1")
 ```
-The first 10 records have:
-```{r lktab,echo=FALSE}
+The first 10 records are in Table \@ref{tab:tab-lktab}.
+```{r tab-lktab,echo=FALSE}
 kbl(head(tcgatab[,1:4],10), booktabs=TRUE, caption="First ten records
 returned by curatedTCGAData::curatedTCGAData().")
 ```
@@ -244,7 +244,7 @@ explained in section \@ref(hubs), and column
 
 There are 33 different tumor types available in TCGA.  The
 decoding of tumor codes for the first ten in alphabetical order is
-provided in Table \@ref(tab-deco).
+provided in Table \@ref(tab:tab-deco).
 
 ```{r tab-deco,echo=FALSE}
 kbl(cotab, booktabs=TRUE, caption="Decoding TCGA tumor code abbreviations.")
@@ -256,9 +256,9 @@ Assays performed on tumors vary across tumor types.  For assay
 types shared between
 breast cancer, glioblastoma, and lung adenocarcinoma (code LUAD),
 the numbers of tumor and normal samples available in curatedTCGAData
-are provided in Table \@ref(doassc).
+are provided in Table \@ref(tab:tab-doassc).
 
-```{r doassc,echo=FALSE}
+```{r tab-doassc,echo=FALSE}
 kbl(assaycounts, booktabs=TRUE,caption="Numbers of assays available in TCGA on tumor and normal samples,
 for breast cancer, glioblastoma, and lung adenocarcinoma.")
 ```
@@ -304,6 +304,30 @@ To see this for GBM:
 ```{r lkspar}
 mean(sapply(colData(gb), function(x) mean(is.na(x))>.90))
 ```
+
+Nevertheless, with careful inspection of fields and contents,
+clinical data can be extracted and combined with molecular
+and genetic assay data with modest effort.
+
+The following code chunk illustrates a very crude
+approach to comparing survival profiles for BRCA, GBM, and LUAD
+donors.
+
+```{r dothesurv,fig.cap="Survival profile extraction from three MultiAssayExperiments produced with curatedTCGAData calls.", fig.width="80%"}
+library(survival)
+getSurv = function(mae) {
+ days_on = with(colData(mae), ifelse(is.na(days_to_last_followup), 
+    days_to_death, days_to_last_followup))
+ Surv(days_on, colData(mae)$vital_status)
+}
+ss = lapply(list(br, gb, lu), getSurv)
+codes = c("BRCA", "GBM", "LUAD")
+type = factor(rep(codes, sapply(ss,length)))
+allsurv = do.call(c, ss)
+library(GGally)
+ggsurv(survfit(allsurv~type))
+```
+
 
 ## cBioPortal
 
@@ -366,3 +390,8 @@ The MultiAssayExperiment class is modeled after the SummarizedExperiment class.
 The SingleCellExperiment classes inherit from the RangedSummarizedExperiment class.
 
 # Pedagogics and workforce development
+
+
+```{r wssc, echo=FALSE, fig.cap="Workshop.bioconductor.org schematic.", out.width="80%"}
+knitr::include_graphics("WorkshopSCHEMA.png")
+```
