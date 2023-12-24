@@ -19,6 +19,19 @@ abstract: >
   technologies. All the tools described in this report 
   are backed by regularly maintained learning resources 
   that can be used locally or in cloud computing environments.
+header-includes:
+- \usepackage{booktabs}
+- \usepackage{longtable}
+- \usepackage{array}
+- \usepackage{multirow}
+- \usepackage[table]{xcolor}
+- \usepackage{wrapfig}
+- \usepackage{float}
+- \usepackage{colortbl}
+- \usepackage{pdflscape}
+- \usepackage{tabu}
+- \usepackage{threeparttable}
+- \usepackage[normalem]{ulem}
 output:
   BiocStyle::pdf_document:
     toc: yes
@@ -26,8 +39,9 @@ output:
 ---
 
 ```{r helpercode,echo=FALSE,message=FALSE,results="hide"}
+load("candesc.rda")
 needed = c("curatedTCGAData", "TCGAutils", "dplyr", "kableExtra", "TCGAutils",
-"survival", "GGally")
+"survival", "GGally", "cBioPortalData", "GenomicRanges", "ggplot2")
 ii = rownames(installed.packages())
 need = setdiff(needed, ii)
 if (length(need)>0) {
@@ -37,6 +51,7 @@ if (length(need)>0) {
 
 library(curatedTCGAData)
 library(TCGAutils)
+library(GenomicRanges)
 getcur = function (tiss) 
 {
     curatedTCGAData(tiss, "*", version = "2.1.1", dry.run = FALSE)
@@ -134,6 +149,9 @@ useful for cancer bioinformatics.  Primary sections address
 - components for introducing new data or analyses
 - pedagogics and workforce development.
 
+The appendix (section \@ref(app1)) of this paper includes descriptions of `r nrow(candesc)`
+Bioconductor software packages that use the term "cancer" in their package metadata.
+
 # Bioconductor principles
 
 ## R packages and vignettes
@@ -170,8 +188,7 @@ Bioconductor packages may specify dependency on
 other Bioconductor packages, or packages that are
 available in the CRAN repository.  Bioconductor does
 not include packages with dependencies on "github-only"
-packages.  
-Later in this paper we will provide details
+packages.  Later in this paper we will provide details
 on package quality assurance that provide a rationale
 for this restriction.
 
@@ -236,7 +253,7 @@ curatedTCGAData package.
 library(curatedTCGAData)
 tcgatab = curatedTCGAData(version="2.1.1")
 ```
-The first 10 records are in Table \@ref{tab:tab-lktab}.
+The first 10 records are in Table \@ref(tab:tab-lktab).
 ```{r tab-lktab,echo=FALSE}
 kbl(head(tcgatab[,1:4],10), booktabs=TRUE, caption="First ten records
 returned by curatedTCGAData::curatedTCGAData().")
@@ -283,7 +300,7 @@ gbrna
 
 R functions defined in Bioconductor packages can operate on the variable `gb` to
 retrieve information of interest.  Details on the underlying data structure
-are given in section XX below.  For most assay types, we think of the quantitative
+are given in section \@ref(class) below.  For most assay types, we think of the quantitative
 assay
 information as tabular in nature, with table rows corresponding to genomic
 features such as genes, and table columns corresponding to samples.
@@ -339,6 +356,76 @@ ggsurv(survfit(allsurv~type))
 
 
 ## cBioPortal
+
+The [cBioPortal](https://www.cbioportal.org/) user guide 
+defines the goal of the portal to be reducing "the barriers between complex 
+genomic data and cancer researchers by providing rapid, intuitive, and high-quality 
+access to molecular profiles and clinical attributes from large-scale cancer genomics projects, and 
+therefore to empower researchers to translate these rich data sets into biologic insights and clinical applications."
+
+Bioconductor's cBioPortalData package simplifies access to over 300 genomic studies of
+diverse cancers in cBioPortal.  The main unit of data access is the publication.  The
+`cBioPortal` function mediates a connection between an R session and the
+cBioPortal API.  `getStudies` returns a tibble with metadata on
+all studies.
+
+```{r getcb,message=FALSE}
+library(cBioPortalData)
+cbio = cBioPortal()
+allst = getStudies(cbio)
+dim(allst)
+```
+
+A pruned selection of records from the cBioPortal
+studies table is given in Table \@ref(tab:tab-cball).
+
+```{r tab-cball,echo=FALSE}
+filt = allst |> filter(!grepl("TCGA", name)) |> 
+  mutate(name=gsub(" \\(.*", "", name), description = substr(description,1,20)) |> 
+  dplyr::select(name, description, studyId, pmid) |> as.data.frame() |> head(10) 
+kbl(filt,booktabs=TRUE,caption="Excerpts from four fields on selected records in the cBioPortal getStudies output.")
+```
+
+To explore copy number alteration data from a study on angiosarcoma,
+we find the associated studyId field in `allst` and use the `cBioDataPack` function
+to retrieve a MultiAssayExperiment:
+```{r lkang,message=FALSE}
+ann = "angs_project_painter_2018"
+ang = cBioDataPack(ann)
+ang
+```
+
+The copy number alteration outcomes are in the
+`assay` component of the experiment.
+```{r lkcna}
+seg = experiments(ang)[[1]]
+colnames(seg) = sapply(strsplit(colnames(seg), "-"), "[", 5)
+assay(seg)[1:4,1:4]
+```
+
+The rownames component of this matrix can be transformed to
+a GenomicRanges instance for concise manipulation.
+
+```{r dodensity}
+library(GenomicRanges)
+library(ggplot2)
+allalt = GRanges(rownames(assay(seg)))
+allalt
+```
+
+We'll focus on chromosome 17, where TP53 is found.  Regions
+of genomic alteration are summarized to their midpoints.
+
+```{r mkden, fig.cap="Density of recurrent genomic alterations on chromosome 17 for 48 angiosarcoma patients."}
+g17 = allalt[seqnames(allalt)=="17"]
+df17 = as(g17, "data.frame")        # for ggplot2
+df17$mid = .5*(df17$start+df17$end) # midpoint only
+ggplot(df17, aes(x=mid)) + geom_density(bw=.2) + xlab("chr 17 bp")
+```
+
+This display shows a strong peak in the vicinity of 7.5 Mb on chromosome 17, near TP53.
+The display lacks information on the direction of copy number alteration, and on annotation
+of the genome.  These issues will be addressed in later sections.
 
 ## Resources from NCBI and EMBL
 
@@ -404,3 +491,33 @@ The SingleCellExperiment classes inherit from the RangedSummarizedExperiment cla
 ```{r wssc, echo=FALSE, fig.cap="Workshop.bioconductor.org schematic.", out.width="80%"}
 knitr::include_graphics("WorkshopSCHEMA.png")
 ```
+
+# Appendix - Bioconductor software packages with 'cancer' in package description {#app1}
+
+```{r tab-fintab, caption="Bioconductor packages mentioning cancer in package description.", echo=FALSE}
+kbl(as.data.frame(candesc), booktabs=TRUE, longtable=TRUE) %>% column_spec(2, width="40em") %>%
+ kable_styling("repeat_header")
+#longtable = TRUE, caption = "Test") %>%
+#  kable_styling(latex_options = c("hold_position", "repeat_header")) ```
+```
+
+<!--
+```{r tab-fintab7, caption="Bioconductor packages mentioning cancer in package description.", echo=FALSE, eval=FALSE}
+kbl(as.data.frame(candesc[1:10,]), booktabs=TRUE) %>% column_spec(2, width="40em")
+```
+```{r tab-fintab2, caption="Bioconductor packages mentioning cancer in package description.", echo=FALSE, eval=FALSE}
+kbl(as.data.frame(candesc[11:17,]), booktabs=TRUE) %>% column_spec(2, width="40em")
+```
+```{r tab-fintab3, caption="Bioconductor packages mentioning cancer in package description.", echo=FALSE, eval=FALSE}
+kbl(as.data.frame(candesc[18:23,]), booktabs=TRUE) %>% column_spec(2, width="40em")
+```
+```{r tab-fintab4, caption="Bioconductor packages mentioning cancer in package description.", echo=FALSE, eval=FALSE}
+kbl(as.data.frame(candesc[24:30,]), booktabs=TRUE) %>% column_spec(2, width="40em")
+```
+```{r tab-fintab5, caption="Bioconductor packages mentioning cancer in package description.", echo=FALSE, eval=FALSE}
+kbl(as.data.frame(candesc[31:36,]), booktabs=TRUE) %>% column_spec(2, width="40em")
+```
+```{r tab-fintab6, caption="Bioconductor packages mentioning cancer in package description.", echo=FALSE, eval=FALSE}
+kbl(as.data.frame(candesc[36:42,]), booktabs=TRUE) %>% column_spec(2, width="40em")
+```
+-->
