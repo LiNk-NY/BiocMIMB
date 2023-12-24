@@ -45,8 +45,8 @@ needed = c("curatedTCGAData", "TCGAutils", "dplyr", "kableExtra", "TCGAutils",
 ii = rownames(installed.packages())
 need = setdiff(needed, ii)
 if (length(need)>0) {
-  print(need)
-  stop("these packages are missing from your installation, please install")
+  zz = paste(need, collapse=", ")
+  stop(sprintf("these packages (%s)\n are missing from your installation, please install", zz))
 }
 
 library(curatedTCGAData)
