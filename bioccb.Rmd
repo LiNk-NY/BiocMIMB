@@ -427,7 +427,9 @@ This display shows a strong peak in the vicinity of 7.5 Mb on chromosome 17, nea
 The display lacks information on the direction of copy number alteration, and on annotation
 of the genome.  These issues will be addressed in later sections.
 
-## Resources from NCBI and EMBL
+## Resources from UCSC, NCBI, and EMBL
+
+### 
 
 # Genomic annotation resources relevant to cancer {#hubs}
 
