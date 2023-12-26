@@ -435,6 +435,25 @@ of the genome.  These issues will be addressed in later sections.
 
 # Analytical workflows
 
+## Differential splicing
+ 
+- psichomics - detailed workflow spec, instructions
+on importing and processing data from SRA
+
+- OutSplice
+
+## Ancestry inference
+
+- RAIDS
+
+## Clonal evolution of tumors
+
+- CIMICE
+- LACE GUI
+- OncoSimulR, models of fitness landscapes for asexual evolution
+- TRONCO oncoprint, logic of multiple mutation
+
+
 # Components for introducing new data or analyses {#class}
 
 
