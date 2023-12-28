@@ -36,12 +36,18 @@ output:
   BiocStyle::pdf_document:
     toc: yes
     number_sections: yes
+bibliography: library.bib
 ---
 
 ```{r helpercode,echo=FALSE,message=FALSE,results="hide"}
 load("candesc.rda")
+load("datadesc.rda")
+load("easvig.rda")
 needed = c("curatedTCGAData", "TCGAutils", "dplyr", "kableExtra", "TCGAutils",
-"survival", "GGally", "cBioPortalData", "GenomicRanges", "ggplot2")
+"survival", "GGally", "cBioPortalData", "GenomicRanges", "ggplot2",
+"BiocFileCache", "ExperimentHub", "AnnotationHub", "TumourMethData",
+"BiocStyle", "ensembldb", 
+"SpatialFeatureExperiment", "SFEData")
 ii = rownames(installed.packages())
 need = setdiff(needed, ii)
 if (length(need)>0) {
@@ -149,8 +155,11 @@ useful for cancer bioinformatics.  Primary sections address
 - components for introducing new data or analyses
 - pedagogics and workforce development.
 
-The appendix (section \@ref(app1)) of this paper includes descriptions of `r nrow(candesc)`
+Appendix 1 (section \@ref(app1)) of this paper includes descriptions of `r nrow(candesc)`
 Bioconductor software packages that use the term "cancer" in their package metadata.
+
+Appendix 2 (section \@ref(app2)) of this paper includes descriptions of `r nrow(datadesc)`
+Bioconductor experimental data packages that use the term "cancer" in their package metadata.
 
 # Bioconductor principles
 
@@ -242,6 +251,66 @@ knitr::include_graphics("MAEschema.png")
 ```
 Further details on these data structures will be provided in section \@ref(class).
 
+## Downloading and caching
+
+Downloading and managing data from various online resources
+can be extremely time consuming.  Bioconductor encourages data caching for
+increased efficiency and reproducibility.  The caching data methods
+employed in Bioconductor
+allow analysis code to
+concisely refer to data resources as needed, with minimal attention to how
+data are stored, retrieved or transformed.
+It allows for easy management and reuse of data that are on remote
+servers or in cloud, storing source
+location and providing information for data updates. The BiocFileCache
+Bioconductor package handles data management from within R.
+
+BiocFileCache is a general-use caching system but Bioconductor also provides
+"Hubs", AnnotationHub and ExperimentHub, to help distributed annotation or
+experimental data hosted externally. Both AnnotationHub and ExperimentHub use
+BiocFileCache to handle download and caching of data.
+
+AnnotationHub provides a centralized repository of diverse genomic annotations,
+facilitating easy access and integration into analyses. Researchers can
+seamlessly retrieve information such as genomic features, functional
+annotations, and variant data, streamlining the annotation process for their
+analyses.
+
+ExperimentHub extends this concept to experimental data. It serves as a
+centralized hub for storing and sharing curated experiment-level datasets,
+allowing researchers to access a wide range of experimental designs and
+conditions. This cloud-based infrastructure enhances collaboration and promotes
+the reproducibility of analyses across different laboratories.
+
+The curatedTCGAData package provides some resources through
+ExperimentHub, as do many other self-identified "CancerData" resources. Once the
+ExperimentHub is loaded, it can be queried for terms of interest.
+
+```{r useeh}
+library(ExperimentHub)
+eh <- ExperimentHub()
+query(eh, "curatedTCGAData")
+query(eh, "CancerData")
+```
+Multiple terms can be used to narrow results before choosing a download.
+
+```{r doeso}
+query(eh, c("cancerData", "esophageal"))
+eh['EH8527']
+wgbs_rse <- eh[['EH8527']]
+```
+
+Similarly AnnotationHub files can be downloaded for annotating data. For example
+the ensembl 110 release of gene and protein annotations are obtained with the
+following:
+
+
+```{r annochk}
+library(AnnotationHub)
+ah <- AnnotationHub()
+query(ah, c("Ensembl","110", "Homo sapien"))
+ens <- ah[["AH113665"]]
+```
 # Exploring institutionally curated cancer genomics data
 
 ## The Cancer Genome Atlas
@@ -380,7 +449,7 @@ A pruned selection of records from the cBioPortal
 studies table is given in Table \@ref(tab:tab-cball).
 
 ```{r tab-cball,echo=FALSE}
-filt = allst |> filter(!grepl("TCGA", name)) |> 
+filt = allst |> dplyr::filter(!grepl("TCGA", name)) |> 
   mutate(name=gsub(" \\(.*", "", name), description = substr(description,1,20)) |> 
   dplyr::select(name, description, studyId, pmid) |> as.data.frame() |> head(10) 
 kbl(filt,booktabs=TRUE,caption="Excerpts from four fields on selected records in the cBioPortal getStudies output.")
@@ -435,6 +504,7 @@ of the genome.  These issues will be addressed in later sections.
 
 # Analytical workflows
 
+
 ## Differential splicing
  
 - psichomics - detailed workflow spec, instructions
@@ -453,6 +523,82 @@ on importing and processing data from SRA
 - OncoSimulR, models of fitness landscapes for asexual evolution
 - TRONCO oncoprint, logic of multiple mutation
 
+## Packages supporting epigenomic analysis
+
+Bioconductor also provides a diverse array of packages for analysis of epigenome 
+data. Cancer is often studied under a developmental lens, so increasingly, studies 
+are measuring cell states using epigenomic methods. Epigenomics is the study of 
+chemical modifications and chromosomal conformations of DNA in a nucleus; in cancer 
+epigenomics, we study how the cancer epigenome differs among cancers and how 
+these relate to healthy epigenomes. As of 2023, Bioconductor includes 89 packages 
+under *Epigenetics* and 93 packages tagged under *FunctionalGenomics*, including dozens of tools 
+for analyzing a variety of epigenome assays, such as ATAC-seq, ChIP-seq, or 
+bisulfite-seq. Among these are also tools that handle more general analysis, such 
+as genomic region set enrichment.
+
+First, for ATAC-seq data, bioconductor packages include general-purpose pipelines, including scPipe(Tian et 
+al. 2018) (Tian et al. 2018) and esATAC(Wei et al. 2018) (Wei 
+et al. 2018), which start from fastq files and produce feature count 
+matrices. Alternatively, many practitioners elect to do general-purpose pipeline processing outside of 
+R, and then bring the processed data into R for statistical analysis, 
+visualization, and quality control. In this approach, ATACseqQC (Ou et al. 2018)provides 
+a variety of QC plots specific to ATAC-seq data (Ou et al. 2018).
+
+For DNA methylation, many popular packages have been developed to help with 
+all stages of a DNA methylation analysis. These include minfi (Aryee et 
+al. 2014), which specializes in methylation array analysis, biseq and bsseq (Hansen 
+et al. 2012) which provide fundamental infrastructure for sequencing-based assays, and RnBeads 
+(Mueller et al. 2019), which provides a comprehensive general-purpose analysis of DNA 
+methylation cohorts from arrays or sequencing-based assays. Other packages provide more specialized 
+analysis approaches, such as MIRA (Lawson et al. 2018), which  infers regulatory 
+activity of transcription factors using DNA methylation signals, (Sheffield et al. 2018), 
+or ELMER, which uses DNA methylation and gene expression in large cancer 
+cohorts to infer transcription factor networks (Silva et al. 2018). EpiDISH infer 
+the proportions of cell-types present in a bulk sample on the basis 
+of DNA methylation data (Zheng et al. 2018).
+
+Another popular epigenome experiment is ChIP-seq, and Bioconductor delivers many packages in 
+this area. DiffBind (Stark and Brown 2011) is a popular approach for 
+differential binding analysis of ChIP-seq peak data. [ More on ChIP seq to come ]
+
+A variety of packages are also geared toward visualization of this type 
+of data. GenomicDistributions (Kupkova 2022) provides a variety of plots for visualization 
+distributions of any type of genomic range data. The chromPlot package specializes 
+in plots across chromosomes. Then, there are several packages that deal with 
+unsupervised exploration of variation in data. PathwayPCA, MOFA2 (Argelaguet et al. 2020) 
+and COCOA (Lawson et al. 2020) can process any epigenomic signal data. 
+A variety of alternative approaches for enrichment analysis, which include LOLA (Sheffield 
+and Bock 2016), chipenrich, regionR (Gel et al. 2016), and FGNet (Aibar 
+et al. 2015). Annotation packages are popular as well. ChIPpeakAnno (Zhu 2010) 
+and annotatr (Cavalcante and Sartor 2017) are popular packages for annotating genomic 
+ranges. Bioconductor also provides data fetching mechanisms for epigenome data…
+
+
+## Some details on prediction of responsiveness to immune checkpoint blockade
+
+We consider the prediction of responsiveness to
+immune checkpoint blockade (@easierPap)
+
+```{r easfin, echo=FALSE, fig.cap="Comparison of genomic features distinguishing patients non-responsive and responsive to immune checkpoint blockade.", out.width="95%"}
+knitr::include_graphics("easierFinal.png")
+```
+
+## Representing and visualizing a spatial transcriptomics experiment
+
+
+```{r dospat}
+library(SpatialFeatureExperiment)
+library(SFEData)
+jbr = JanesickBreastData("rep1")
+lfasn=log(as.numeric(assay(jbr["FASN",]))+1)
+lpostn=(log(as.numeric(assay(jbr["POSTN",]))+1))
+strom = ggplot(colGeometries(jbr)$centroids, aes(colour=lpostn)) + 
+  geom_sf(size=.01) + scale_color_viridis_c() +ggtitle("POSTN, stromal")
+fasn = ggplot(colGeometries(jbr)$centroids, aes(colour=lfasn)) + 
+  geom_sf(size=.01) + scale_color_viridis_c() + ggtitle("FASN, invasive")
+library(gridExtra)
+grid.arrange(strom, fasn, ncol=2)
+```
 
 # Components for introducing new data or analyses {#class}
 
@@ -513,7 +659,7 @@ The SingleCellExperiment classes inherit from the RangedSummarizedExperiment cla
 knitr::include_graphics("WorkshopSCHEMA.png")
 ```
 
-# Appendix - Bioconductor software packages with 'cancer' in package description {#app1}
+# Appendix 1 - Bioconductor software packages with 'cancer' in package description {#app1}
 
 ```{r tab-fintab, caption="Bioconductor packages mentioning cancer in package description.", echo=FALSE}
 kbl(as.data.frame(candesc), booktabs=TRUE, longtable=TRUE) %>% column_spec(2, width="40em") %>%
@@ -522,23 +668,22 @@ kbl(as.data.frame(candesc), booktabs=TRUE, longtable=TRUE) %>% column_spec(2, wi
 #  kable_styling(latex_options = c("hold_position", "repeat_header")) ```
 ```
 
-<!--
-```{r tab-fintab7, caption="Bioconductor packages mentioning cancer in package description.", echo=FALSE, eval=FALSE}
-kbl(as.data.frame(candesc[1:10,]), booktabs=TRUE) %>% column_spec(2, width="40em")
+# Appendix 2 - Bioconductor data packages with 'cancer' in package description {#app2}
+
+```{r tab-fintab2, caption="Bioconductor 'experimental data packages' mentioning cancer in package description.", echo=FALSE}
+kbl(as.data.frame(datadesc), booktabs=TRUE, longtable=TRUE) %>% column_spec(2, width="35em") %>%
+ kable_styling("repeat_header")
 ```
-```{r tab-fintab2, caption="Bioconductor packages mentioning cancer in package description.", echo=FALSE, eval=FALSE}
-kbl(as.data.frame(candesc[11:17,]), booktabs=TRUE) %>% column_spec(2, width="40em")
+
+\newpage
+
+# Appendix 3 - Software packages used in the construction of Figure \@ref(fig:easfin)  {#app3}
+
+```{r tab-fintab3, caption="Software packages used in the construction of the 'easier' vignette.", echo=FALSE}
+kbl(as.data.frame(easvig), booktabs=TRUE, longtable=TRUE) %>% 
+ kable_styling("repeat_header")
 ```
-```{r tab-fintab3, caption="Bioconductor packages mentioning cancer in package description.", echo=FALSE, eval=FALSE}
-kbl(as.data.frame(candesc[18:23,]), booktabs=TRUE) %>% column_spec(2, width="40em")
-```
-```{r tab-fintab4, caption="Bioconductor packages mentioning cancer in package description.", echo=FALSE, eval=FALSE}
-kbl(as.data.frame(candesc[24:30,]), booktabs=TRUE) %>% column_spec(2, width="40em")
-```
-```{r tab-fintab5, caption="Bioconductor packages mentioning cancer in package description.", echo=FALSE, eval=FALSE}
-kbl(as.data.frame(candesc[31:36,]), booktabs=TRUE) %>% column_spec(2, width="40em")
-```
-```{r tab-fintab6, caption="Bioconductor packages mentioning cancer in package description.", echo=FALSE, eval=FALSE}
-kbl(as.data.frame(candesc[36:42,]), booktabs=TRUE) %>% column_spec(2, width="40em")
-```
--->
+
+\newpage
+
+# References {#refs}
