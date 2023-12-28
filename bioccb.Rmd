@@ -45,7 +45,9 @@ load("datadesc.rda")
 load("easvig.rda")
 needed = c("curatedTCGAData", "TCGAutils", "dplyr", "kableExtra", "TCGAutils",
 "survival", "GGally", "cBioPortalData", "GenomicRanges", "ggplot2",
-"BiocFileCache", "ExperimentHub", "AnnotationHub", "TumourMethData")
+"BiocFileCache", "ExperimentHub", "AnnotationHub", "TumourMethData",
+"BiocStyle", "ensembldb", 
+"SpatialFeatureExperiment", "SpatialFeatureData")
 ii = rownames(installed.packages())
 need = setdiff(needed, ii)
 if (length(need)>0) {
