@@ -583,6 +583,22 @@ immune checkpoint blockade (@easierPap)
 knitr::include_graphics("easierFinal.png")
 ```
 
+## Representing and visualizing a spatial transcriptomics experiment
+
+
+```{r dospat}
+library(SpatialFeatureExperiment)
+library(SFEData)
+jbr = JanesickBreastData("rep1")
+lfasn=log(as.numeric(assay(jbr["FASN",]))+1)
+lpostn=(log(as.numeric(assay(jbr["POSTN",]))+1))
+strom = ggplot(colGeometries(jbr)$centroids, aes(colour=lpostn)) + 
+  geom_sf(size=.01) + scale_color_viridis_c() +ggtitle("POSTN, stromal")
+fasn = ggplot(colGeometries(jbr)$centroids, aes(colour=lfasn)) + 
+  geom_sf(size=.01) + scale_color_viridis_c() + ggtitle("FASN, invasive")
+library(gridExtra)
+grid.arrange(strom, fasn, ncol=2)
+```
 
 # Components for introducing new data or analyses {#class}
 
