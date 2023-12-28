@@ -43,6 +43,7 @@ bibliography: library.bib
 load("candesc.rda")
 load("datadesc.rda")
 load("easvig.rda")
+load("wflowtab.rda")
 needed = c("curatedTCGAData", "TCGAutils", "dplyr", "kableExtra", "TCGAutils",
 "survival", "GGally", "cBioPortalData", "GenomicRanges", "ggplot2",
 "BiocFileCache", "ExperimentHub", "AnnotationHub", "TumourMethData",
@@ -505,6 +506,17 @@ of the genome.  These issues will be addressed in later sections.
 # Analytical workflows
 
 
+```{r tab-wflow, caption="Topical organization of packages with cancer applications.", echo=FALSE}
+wflowtab[7,1] = "Epigenetics"
+wflowtab[19,1] = "Subtyping"
+wflowtab[12,1] = "Literature mining"
+wflowtab = wflowtab[-10,]
+rownames(wflowtab) = NULL
+kbl(as.data.frame(wflowtab), booktabs=TRUE, longtable=TRUE) %>% 
+ column_spec(2, width="30em") %>%
+ kable_styling("repeat_header")
+```
+
 ## Differential splicing
  
 - psichomics - detailed workflow spec, instructions
@@ -586,14 +598,16 @@ knitr::include_graphics("easierFinal.png")
 ## Representing and visualizing a spatial transcriptomics experiment
 
 
-```{r dospat}
+```{r spatchunk, message=FALSE}
 library(SpatialFeatureExperiment)
 library(SFEData)
 jbr = JanesickBreastData("rep1")
 lfasn=log(as.numeric(assay(jbr["FASN",]))+1)
-lpostn=(log(as.numeric(assay(jbr["POSTN",]))+1))
+lpostn=log(as.numeric(assay(jbr["POSTN",]))+1)
+```
+```{r dospat, fig.cap="Informal rendering of data from Visium studies of breast cancer described in Janesick et al. 2023.", out.width="95%", message=FALSE}
 strom = ggplot(colGeometries(jbr)$centroids, aes(colour=lpostn)) + 
-  geom_sf(size=.01) + scale_color_viridis_c() +ggtitle("POSTN, stromal")
+  geom_sf(size=.01) + scale_color_viridis_c() + ggtitle("POSTN, stromal")
 fasn = ggplot(colGeometries(jbr)$centroids, aes(colour=lfasn)) + 
   geom_sf(size=.01) + scale_color_viridis_c() + ggtitle("FASN, invasive")
 library(gridExtra)
