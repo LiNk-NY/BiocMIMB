@@ -41,6 +41,7 @@ bibliography: library.bib
 
 ```{r helpercode,echo=FALSE,message=FALSE,results="hide"}
 load("candesc.rda")
+load("candesc2.rda")
 load("datadesc.rda")
 load("easvig.rda")
 load("wflowtab.rda")
@@ -156,7 +157,7 @@ useful for cancer bioinformatics.  Primary sections address
 - components for introducing new data or analyses
 - pedagogics and workforce development.
 
-Appendix 1 (section \@ref(app1)) of this paper includes descriptions of `r nrow(candesc)`
+Appendix 1 (section \@ref(app1)) of this paper includes descriptions of `r nrow(candesc2)`
 Bioconductor software packages that use the term "cancer" in their package metadata.
 
 Appendix 2 (section \@ref(app2)) of this paper includes descriptions of `r nrow(datadesc)`
@@ -368,7 +369,7 @@ gbrna = TCGAprimaryTumors(curatedTCGAData("GBM",
 gbrna
 ```
 
-R functions defined in Bioconductor packages can operate on the variable `gb` to
+R functions defined in Bioconductor packages can operate on the variable `gbrna` to
 retrieve information of interest.  Details on the underlying data structure
 are given in section \@ref(class) below.  For most assay types, we think of the quantitative
 assay
@@ -398,7 +399,7 @@ samples, and `r ncol(colData(gb))` fields for GBM samples.  Many of these
 fields are meaningfully populated for only a very small minority of samples.
 To see this for GBM:
 ```{r lkspar}
-mean(sapply(colData(gb), function(x) mean(is.na(x))>.90))
+mean(sapply(colData(gbrna), function(x) mean(is.na(x))>.90))
 ```
 
 Nevertheless, with careful inspection of fields and contents,
@@ -407,16 +408,21 @@ and genetic assay data with modest effort.
 
 The following code chunk illustrates a very crude
 approach to comparing survival profiles for BRCA, GBM, and LUAD
-donors.
+donors.  
 
-```{r dothesurv,fig.cap="Survival profile extraction from three MultiAssayExperiments produced with curatedTCGAData calls.", out.width="80%"}
+```{r dothesurv,fig.cap="Survival profile extraction from three MultiAssayExperiments produced with curatedTCGAData calls.", out.width="80%", message=FALSE}
+# obtain mutation data for BRCA, GBM, LUAD; could use any or all assay types
+brmut = curatedTCGAData("BRCA", "Mutation", version = "2.1.1", dry.run = FALSE)
+gbmut = curatedTCGAData("GBM", "Mutation", version = "2.1.1", dry.run = FALSE)
+lumut = curatedTCGAData("LUAD", "Mutation", version = "2.1.1", dry.run = FALSE)
+# extract survival times
 library(survival)
 getSurv = function(mae) {
  days_on = with(colData(mae), ifelse(is.na(days_to_last_followup), 
     days_to_death, days_to_last_followup))
  Surv(days_on, colData(mae)$vital_status)
 }
-ss = lapply(list(br, gb, lu), getSurv)
+ss = lapply(list(brmut, gbmut, lumut), getSurv)
 codes = c("BRCA", "GBM", "LUAD")
 type = factor(rep(codes, sapply(ss,length)))
 allsurv = do.call(c, ss)
@@ -424,6 +430,27 @@ library(GGally)
 ggsurv(survfit(allsurv~type))
 ```
 
+At this point, survival times within tumor type can be stratified by any
+features of the mutation profiles of individual samples.
+"RaggedExperiment" class is employed to test each BRCA sample for
+presence of any mutation in the gene TTN.
+
+```{r lkttn}
+bprim = TCGAprimaryTumors(brmut)
+mutsyms = assay(experiments(bprim)[[1]], "Hugo_Symbol")
+cn = rownames(colData(bprim)) # short
+cna = colnames(mutsyms) # long
+cnas = substr(cna, 1, 12)
+hasTTNmut = apply(assay(experiments(TCGAprimaryTumors(brmut))[[1]], "Hugo_Symbol"),
+  2, function(x) length(which(x=="TTN"))>0)
+names(hasTTNmut) = cnas
+bsurv = getSurv(TCGAprimaryTumors(brmut))
+hasTTNmut = hasTTNmut[cn] # match mutation records to surv times
+ggsurv(survfit(bsurv~hasTTNmut))
+```
+
+Similar manipulations permit exploration of relationships between
+any molecular assay outcomes and any clinical data collected in TCGA.
 
 ## cBioPortal
 
@@ -452,7 +479,7 @@ studies table is given in Table \@ref(tab:tab-cball).
 ```{r tab-cball,echo=FALSE}
 filt = allst |> dplyr::filter(!grepl("TCGA", name)) |> 
   mutate(name=gsub(" \\(.*", "", name), description = substr(description,1,20)) |> 
-  dplyr::select(name, description, studyId, pmid) |> as.data.frame() |> head(10) 
+  dplyr::select(name, description, studyId) |> as.data.frame() |> head(10) 
 kbl(filt,booktabs=TRUE,caption="Excerpts from four fields on selected records in the cBioPortal getStudies output.")
 ```
 
@@ -602,10 +629,17 @@ knitr::include_graphics("easierFinal.png")
 library(SpatialFeatureExperiment)
 library(SFEData)
 jbr = JanesickBreastData("rep1")
+jbr
+```
+The expression values have strongly skewed distributions.
+For exploratory visualization we log-transform.
+```{r dotx}
 lfasn=log(as.numeric(assay(jbr["FASN",]))+1)
 lpostn=log(as.numeric(assay(jbr["POSTN",]))+1)
 ```
-```{r dospat, fig.cap="Informal rendering of data from Visium studies of breast cancer described in Janesick et al. 2023.", out.width="95%", message=FALSE}
+Figure \@ref(fig:dospat)
+
+```{r dospat, fig.cap="Informal rendering of data from Visium studies of breast cancer described in Janesick et al. 2023.", out.width="100%", message=FALSE}
 strom = ggplot(colGeometries(jbr)$centroids, aes(colour=lpostn)) + 
   geom_sf(size=.01) + scale_color_viridis_c() + ggtitle("POSTN, stromal")
 fasn = ggplot(colGeometries(jbr)$centroids, aes(colour=lfasn)) + 
@@ -676,7 +710,7 @@ knitr::include_graphics("WorkshopSCHEMA.png")
 # Appendix 1 - Bioconductor software packages with 'cancer' in package description {#app1}
 
 ```{r tab-fintab, caption="Bioconductor packages mentioning cancer in package description.", echo=FALSE}
-kbl(as.data.frame(candesc), booktabs=TRUE, longtable=TRUE) %>% column_spec(2, width="40em") %>%
+kbl(as.data.frame(candesc2), booktabs=TRUE, longtable=TRUE) %>% column_spec(2, width="40em") %>%
  kable_styling("repeat_header")
 #longtable = TRUE, caption = "Test") %>%
 #  kable_styling(latex_options = c("hold_position", "repeat_header")) ```
