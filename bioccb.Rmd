@@ -600,14 +600,14 @@ details(wangmet)
 ## Ontologies
 
 Informal reasoning about cancer genomics employs conventional
-but frequently ambiguous terminology.  
-In modern information science, ontologies are structured vocabularies
+but frequently ambiguous terminology.  In modern 
+information science, ontologies are structured vocabularies
 (sets of "terms", which may be single words or natural language
 phrases) accompanied by
 explicit statements of semantic relationships among terms.
 
 Bioconductor provides several approaches for using ontologies
-in cancer genomics data science.  The most familiar ontology
+in cancer data science.  The most familiar ontology
 in this domain is Gene Ontology (GO), which organizes vocabulary
 about genes and gene products in 
 the areas of molecular function, cellular components, and
@@ -625,7 +625,7 @@ select(GO.db, keytype="TERM",
    keys="Golgi membrane", columns=c("GOID", "DEFINITION", "ONTOLOGY"))
 ```
 
-Once the formal identifier is found, the org.Hs.eg.db package
+Once the formal identifier is obtained, the org.Hs.eg.db package
 can be used to find mappings from the GO term to gene and protein
 identifiers.  This generates a fairly large table:
 ```{r useGO2, message=FALSE}
@@ -671,6 +671,40 @@ kbl(lk3[,4:6], booktabs=TRUE) |> column_spec(2, width="25em") |> column_spec(3,
 ```
 The detailed descriptions of the NCI Thesaurus entries show
 the exact nature of the search outcome.
+
+### Cross-ontology relationships
+
+Philosophically, ontology is the study of what there is.  For
+applications in information
+science,
+boundaries need to be established so that ontological
+resources can be managed with well-defined scopes.  In Gene
+Ontology, three sub-ontologies are explicitly identified for
+cellular components, biological processes, and molecular functions.
+
+As knowledge of cell biology increases, the typology of
+cells becomes more and more intricate.  Differentiation
+and definition
+of "cell types" involves concepts from immunology,
+protein science, anatomy, and other conceptual domains
+for which ontologies have been developed.  Figure \@ref(fig:ontopair)
+presents, on the left, the hierarchy of cell type concepts starting at "lymphocyte",
+leading to "Type II Natural Killer T cell secreting interferon gamma".
+On the right, some of the GO and Protein Ontology (PR) cross-references
+in the Cell Ontology (CL) entry for the Type II NK cell are shown.
+The "cond" column of the table contains abbreviated tokens
+representing formal relationships linking the cell type
+to the protein or cellular component elements of PR and GO.
+The token "hasPMP" refers to the element of the Relation Ontology
+(RO) "has plasma membrane part" (RO:0002104).
+
+
+```{r ontopair, echo=FALSE, fig.cap="Ontology visualization and tabulation with ontoProc::ctmarks.", out.width="100%"}
+knitr::include_graphics("ontoPair.png")
+```
+
+
+
 
 
 # Analytical workflows
