@@ -43,13 +43,14 @@ bibliography: library.bib
 load("candesc.rda")
 load("candesc2.rda")
 load("datadesc.rda")
+load("datadesc2.rda")
 load("easvig.rda")
 load("wflowtab.rda")
 needed = c("curatedTCGAData", "TCGAutils", "dplyr", "kableExtra", "TCGAutils",
 "survival", "GGally", "cBioPortalData", "GenomicRanges", "ggplot2",
 "BiocFileCache", "ExperimentHub", "AnnotationHub", "TumourMethData",
-"BiocStyle", "ensembldb", 
-"SpatialFeatureExperiment", "SFEData")
+"BiocStyle", "ensembldb", "rols", "GO.db",
+"SpatialFeatureExperiment", "SFEData", "EnsDb.Hsapiens.v86")
 ii = rownames(installed.packages())
 need = setdiff(needed, ii)
 if (length(need)>0) {
@@ -160,7 +161,7 @@ useful for cancer bioinformatics.  Primary sections address
 Appendix 1 (section \@ref(app1)) of this paper includes descriptions of `r nrow(candesc2)`
 Bioconductor software packages that use the term "cancer" in their package metadata.
 
-Appendix 2 (section \@ref(app2)) of this paper includes descriptions of `r nrow(datadesc)`
+Appendix 2 (section \@ref(app2)) of this paper includes descriptions of `r nrow(datadesc2)`
 Bioconductor experimental data packages that use the term "cancer" in their package metadata.
 
 # Bioconductor principles
@@ -253,7 +254,7 @@ knitr::include_graphics("MAEschema.png")
 ```
 Further details on these data structures will be provided in section \@ref(class).
 
-## Downloading and caching
+## Downloading and caching {#cache}
 
 Downloading and managing data from various online resources
 can be extremely time consuming.  Bioconductor encourages data caching for
@@ -310,9 +311,12 @@ following:
 ```{r annochk}
 library(AnnotationHub)
 ah <- AnnotationHub()
-query(ah, c("Ensembl","110", "Homo sapien"))
-ens <- ah[["AH113665"]]
+tag = names(query(ah, c("Ensembl","110", "Homo sapiens")))
+tag
+ens110 <- ah[[tag]]
+ens110
 ```
+
 # Exploring institutionally curated cancer genomics data
 
 ## The Cancer Genome Atlas
@@ -524,11 +528,150 @@ This display shows a strong peak in the vicinity of 7.5 Mb on chromosome 17, nea
 The display lacks information on the direction of copy number alteration, and on annotation
 of the genome.  These issues will be addressed in later sections.
 
+# Genomic annotation resources relevant to cancer {#hubs}
+
 ## Resources from UCSC, NCBI, and EMBL
 
-### 
+Sequences for reference genome builds for human and
+other model organisms are supplied in BSgenome packages.
+BSgenome.Hsapiens.UCSC.hg19 provides all chromosomes and
+contigs for the 2009 build; the hg38 suffix may be used
+for the 2013 build.  The recent "telomere to telomere"
+build is available as BSgenome.Hsapiens.NCBI.T2T.CHMv13v2.0.
 
-# Genomic annotation resources relevant to cancer {#hubs}
+NCBI's dbSNP catalog of genetic variants is provided
+in packages SNPlocs.Hsapiens.dbSNP[version].[reference].
+For example, SNPlocs.Hsapiens.dbSNP155.GRCh38 includes
+position and nucleotide content information for over
+1 billion rs numbers.
+
+Tracks defined for the UCSC genome browser are also
+packaged.  TxDb.Hsapiens.UCSC.knownGene.hg38 can be
+used to get gene, transcript, and exon location information
+for the hg38 build.  The EnsDb packages provide similar
+information for annotations curated at EMBL.
+
+```{r lkensdb, message=FALSE}
+library(EnsDb.Hsapiens.v86)
+EnsDb.Hsapiens.v86
+```
+
+The "genes" method provides addresses and additional
+annotations.
+```{r lkgens}
+names(mcols(genes(EnsDb.Hsapiens.v86)))
+table(genes(EnsDb.Hsapiens.v86)$gene_biotype)
+```
+
+More recent versions of Ensembl gene annotation are available
+from AnnotationHub, as illustrated above in \@ref(cache) with
+the creation of `ens110`.
+
+## Gene sets
+
+Many methods have been developed to employ collections
+of genes for inference on hypotheses about cancer
+initiation or progression.  The Molecular Signatures Database (MSigDB)
+is curated at Broad Institute, and can be harvested
+using the msigdb package.
+
+Collect all gene sets for humans:
+```{r trymsig,message=FALSE,cache=TRUE}
+library(msigdb)
+hsall = getMsigdb(
+       org = "hs",
+       id = c("SYM", "EZID"),
+       version = "2023.1"
+     )
+hsall
+```
+Find those with CANCER in their name:
+```{r lknms}
+nms = grep("ANCER", names(hsall), value=TRUE)
+head(nms)
+wangmet = hsall[["WANG_METASTASIS_OF_BREAST_CANCER_ESR1_UP"]]
+wangmet
+```
+Information on provenance is bound together with the gene list:
+```{r lkprov}
+details(wangmet)
+```
+
+## Ontologies
+
+Informal reasoning about cancer genomics employs conventional
+but frequently ambiguous terminology.  
+In modern information science, ontologies are structured vocabularies
+(sets of "terms", which may be single words or natural language
+phrases) accompanied by
+explicit statements of semantic relationships among terms.
+
+Bioconductor provides several approaches for using ontologies
+in cancer genomics data science.  The most familiar ontology
+in this domain is Gene Ontology (GO), which organizes vocabulary
+about genes and gene products in 
+the areas of molecular function, cellular components, and
+biological processes.
+
+### Ontology usage with AnnotationDbi
+
+A common use case is to find genes or proteins associated
+with some biological process, component, or function.
+A phrase like 'Golgi membrane' can be found in Gene Ontology
+using the select method with GO.db:
+```{r useGO1, message=FALSE}
+library(GO.db)
+select(GO.db, keytype="TERM",
+   keys="Golgi membrane", columns=c("GOID", "DEFINITION", "ONTOLOGY"))
+```
+
+Once the formal identifier is found, the org.Hs.eg.db package
+can be used to find mappings from the GO term to gene and protein
+identifiers.  This generates a fairly large table:
+```{r useGO2, message=FALSE}
+library(org.Hs.eg.db)
+go139 = select(org.Hs.eg.db, keys="GO:0000139", keytype="GO", 
+   columns=c("ENTREZID", "SYMBOL", "PFAM"))
+dim(go139)
+head(go139)
+```
+
+The evidence code TAS means that there is a "traceable author statement"
+associating the term of interest with the gene identified.  The
+number of genes in traceable Golgi membrane:gene associations
+is found with
+```{r useGO3, message=FALSE}
+go139 |> dplyr::filter(EVIDENCE=="TAS") |> distinct(ENTREZID) |> count()
+```
+
+### Ontology usage with rols
+
+Access to a vast collection of ontologies is afforded by the EBI's
+Ontology Lookup Service (OLS).  The rols package uses the OLS API
+to discover ontologic mapping of terms of interest.  Here we'll
+consider the term "golgi membrane dynamics", which is not found in GO.
+Again a multistep process is used.
+
+```{r dorols,message=FALSE}
+library(rols)
+lk1 = OlsSearch(q="golgi membrane dynamics", exact=TRUE)
+lk1
+```
+In this first step, we find how extensive is the response
+to the query.  Certain searches yield tens of thousands of hits.
+With the exact parameter setting, the yield is modest.
+Now we extract a data.frame after requesting all
+records with `olsSearch`:
+```{r tab-dorols2, caption="NCI Thesaurus entries matching 'Golgi membrane dynamics'."}
+lk2 = olsSearch(lk1)
+lk3 = as(lk2, "data.frame")
+lk3$description = unlist(lk3$description)
+kbl(lk3[,4:6], booktabs=TRUE) |> column_spec(2, width="25em") |> column_spec(3,
+  width="15em")
+```
+The detailed descriptions of the NCI Thesaurus entries show
+the exact nature of the search outcome.
+
 
 # Analytical workflows
 
@@ -625,7 +768,7 @@ knitr::include_graphics("easierFinal.png")
 ## Representing and visualizing a spatial transcriptomics experiment
 
 
-```{r spatchunk, message=FALSE}
+```{r spatchunk, message=FALSE,cache=TRUE}
 library(SpatialFeatureExperiment)
 library(SFEData)
 jbr = JanesickBreastData("rep1")
@@ -707,7 +850,12 @@ The SingleCellExperiment classes inherit from the RangedSummarizedExperiment cla
 knitr::include_graphics("WorkshopSCHEMA.png")
 ```
 
+\newpage
+
 # Appendix 1 - Bioconductor software packages with 'cancer' in package description {#app1}
+
+Quoted text is the content of the Description element of the package DESCRIPTION.  Names following the 
+text are as reported in the Authors field.
 
 ```{r tab-fintab, caption="Bioconductor packages mentioning cancer in package description.", echo=FALSE}
 kbl(as.data.frame(candesc2), booktabs=TRUE, longtable=TRUE) %>% column_spec(2, width="40em") %>%
@@ -716,10 +864,15 @@ kbl(as.data.frame(candesc2), booktabs=TRUE, longtable=TRUE) %>% column_spec(2, w
 #  kable_styling(latex_options = c("hold_position", "repeat_header")) ```
 ```
 
+\newpage
+
 # Appendix 2 - Bioconductor data packages with 'cancer' in package description {#app2}
 
+Quoted text is the content of the Description element of the package DESCRIPTION.  Names following the 
+text are as reported in the Authors field.
+
 ```{r tab-fintab2, caption="Bioconductor 'experimental data packages' mentioning cancer in package description.", echo=FALSE}
-kbl(as.data.frame(datadesc), booktabs=TRUE, longtable=TRUE) %>% column_spec(2, width="35em") %>%
+kbl(as.data.frame(datadesc2), booktabs=TRUE, longtable=TRUE) %>% column_spec(2, width="35em") %>%
  kable_styling("repeat_header")
 ```
 
