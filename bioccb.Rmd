@@ -484,9 +484,11 @@ studies table is given in Table \@ref(tab:tab-cball).
 
 ```{r tab-cball,echo=FALSE}
 filt = allst |> dplyr::filter(!grepl("TCGA", name)) |> 
-  mutate(name=gsub(" \\(.*", "", name), description = substr(description,1,20)) |> 
-  dplyr::select(name, description, studyId) |> as.data.frame() |> head(10) 
-kbl(filt,booktabs=TRUE,caption="Excerpts from four fields on selected records in the cBioPortal getStudies output.")
+  mutate(name=gsub(" \\(.*", "", name)) |> 
+  dplyr::select(name, description, studyId) |> as.data.frame() |> head(9) 
+kbl(filt, booktabs=TRUE,
+    caption="Excerpts from four fields on selected records in the cBioPortal getStudies output.",
+    longtable=TRUE) |> column_spec(1, width="12em") |> column_spec(2, width="15em")
 ```
 
 To explore copy number alteration data from a study on angiosarcoma,
@@ -562,7 +564,7 @@ The "genes" method provides addresses and additional
 annotations.
 ```{r lkgens}
 names(mcols(genes(EnsDb.Hsapiens.v86)))
-table(genes(EnsDb.Hsapiens.v86)$gene_biotype)
+head(table(genes(EnsDb.Hsapiens.v86)$gene_biotype))
 ```
 
 More recent versions of Ensembl gene annotation are available
@@ -873,7 +875,7 @@ library(gridExtra)
 grid.arrange(strom, fasn, ncol=2)
 ```
 
-# Components for introducing new data or analyses {#class}
+# Components and processes for introducing new data or analyses {#class}
 
 
 <!-- How Bioconductor enhances cancer data reuse and value - Levi, Sean, Sehyun -->
@@ -915,7 +917,10 @@ GRanges object with 4 ranges and 2 metadata columns:
   seqinfo: 722 sequences (1 circular) from an unspecified genome
 ```
 
-The GRangesList object serves as a container for genomic features consisting of multiplie ranges that are grouped by a parent features, such as spliced transcripts that are comprised of exons. A GRangesList object behaves like a list and many of the same methods for GRanges objects are available for GRangesList object as well. 
+The GRangesList object serves as a container for genomic features consisting of multiple
+ranges that are grouped by a parent features, such as spliced transcripts that are
+comprised of exons. A GRangesList object behaves like a list and many of the same
+methods for GRanges objects are available for GRangesList object as well. 
 
 The SummarizedExperiment class is a matrix-like container, where rows represent features of interest (e.g., genes, transcripts, exons, etc.) and columns represent samples. The attributes of this object include experimental results (in assays), information on observations (in rowData) and samples (in colData), and additional metadata (in metadata). SummarizedExperiment objects can simultaneouly manage several experimental results as long as they are of the same dimensions. The best benefit of using SummarizedExperiment class is the coordination of the metadata and assays when subsetting. SummarizedExperiment is similar to the historical ExpressionSet class, but more flexible in its row information, allowing both GRanges and DataFrames. ExpressionSet object can be easily converted to SummarizedExperiment.
 
