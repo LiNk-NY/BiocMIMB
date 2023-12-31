@@ -870,7 +870,29 @@ library(gridExtra)
 grid.arrange(strom, fasn, ncol=2)
 ```
 
-# Components and processes for introducing new data or analyses {#class}
+# Components and processes for introducing new data, analytic tools, documents {#class}
+
+## Contributions and review
+
+Proposed contributions to Bioconductor's ecosystem of software packages,
+data resources, and documentation are registered at
+\url{https://contributions.bioconductor.org/issues}.  Contributors
+identify a public github.com repository that houses
+their software, or some durable open data repository
+for a data contribution.  The contributor
+provides schematized information on format, licensing, and commitment
+to maintenance of the contributed resource.  After a series of
+automated and manual verification steps, the contributed
+resource enters the review process.
+
+An example under review in December 2023 is the "methodical"
+package, submitted 27 September 2023.  The issue number
+at the contributions site is 3169.  This contribution is of
+particular interest as it addresses new data resources from
+whole genome and reduced representation bisulfite sequencing
+experiments.  Specifics on these high-resolution studies 
+of DNA methylation
+in a variety of clinical situtions are given below.
 
 
 <!-- How Bioconductor enhances cancer data reuse and value - Levi, Sean, Sehyun -->
@@ -925,6 +947,55 @@ The MultiAssayExperiment class (presented above in
 Figure \@ref(fig:masc)) is modeled after the SummarizedExperiment class.
 
 The SingleCellExperiment classes inherit from the RangedSummarizedExperiment class.
+
+## Out-of-memory data representation strategies
+
+We return to the "methodical" package
+submission mentioned above.
+A number of whole-genome bisulfite sequencing experiments on
+tumors from various anatomic sites are available
+in ExperimentHub.
+Metadata in that package shows that the datasets
+are large, ranging from 2-40 gigabytes.  One smaller
+dataset is provided for illustration.
+
+```{r dotumm, message=FALSE}
+library(TumourMethData)
+demm = download_meth_dataset("mcrpc_wgbs_hg38_chr11")
+demm
+rowRanges(demm)
+```
+
+References to `demm` involve an 800MB excerpt of a 
+prostate cancer atlas with a
+storage footprint of 40GB.  
+Ideally,
+queries about particular genomic
+regions on particular samples, whole-sample statistical summaries,
+and searches for patterns can be carried out without
+specific accommodation of the data size or representation.
+The DelayedArray package helps pursue this aim.  We'll illustrate
+by interrogating the prostate cancer WGBS data for "beta"
+(fraction of locus that is methylated) values in the vicinity of
+gene ATM.
+
+```{r getatm, message=FALSE}
+library(EnsDb.Hsapiens.v86)
+gg = genes(EnsDb.Hsapiens.v86)      # get gene addresses
+atmpos = gg[gg$gene_name == "ATM" & 
+    gg$gene_biotype == "protein_coding"] # filter to ATM
+seqlevelsStyle(atmpos) = "UCSC"     # translate chr names
+assay(subsetByOverlaps(demm, atmpos+1e6))  # get betas
+```
+
+The numeric values presented above are just the
+"corners" of the associated array, presented as a "check"
+on the content requested.  Transfer of array content to
+the CPU for numerical analysis only occurs on demand,
+which can be tailored to the quantity of RAM available
+at analysis time.
+
+
 
 # Pedagogics and workforce development
 
