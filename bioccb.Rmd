@@ -3,21 +3,28 @@ title: "Bioconductor's Computational Ecosystem for Genomic Data Science in Cance
 author: Multiple
 date: "`r format(Sys.time(), '%B %d, %Y')`"
 abstract: >
-  The Bioconductor project enters its third decade 
-  with over two thousand packages for genomic data 
-  science, over 100,000 annotation and experiment resources, 
-  and a global system for convenient distribution 
-  to researchers. The impact of the project on genome 
-  biology is attested to by over 60,000 PubMed Central 
-  citations and terabytes of content shipped per month. This report 
-  provides an overview of cancer genomics resources in Bioconductor. 
-  Approaches to cancer data reuse and integration, copy number 
-  variation analysis, and methodology for single-cell and spatial 
-  transcriptomics are reviewed. Bioconductor’s strategies for 
-  supporting methods developers and researchers in cancer 
-  genomics are evolving along with experimental and computational 
-  technologies. All the tools described in this report 
-  are backed by regularly maintained learning resources 
+  The Bioconductor project enters its third decade
+  with over two thousand packages for genomic data
+  science, over 100,000 annotation and experiment resources,
+  and a global system for convenient distribution
+  to researchers. The impact of the project on genome
+  biology is attested to by over 60,000 PubMed Central
+  citations and terabytes of content shipped per month. This report
+  provides an overview of cancer genomics resources in Bioconductor.
+  After an overview of Bioconductor project principles,
+  we address exploration of institutionally curated cancer
+  genomics data such as TCGA.  Genomic annotation and ontology
+  resources relevant to cancer are reviewed.
+  Analytical workflows addressing specific topics in cancer
+  genomics are briefly surveyed.  Concluding sections cover
+  how new software and data resources are brought into the
+  ecosystem, and how the project is tackling needs for
+  training of the research workforce.
+  Bioconductor’s strategies for
+  supporting methods developers and researchers in cancer
+  genomics are evolving along with experimental and computational
+  technologies. All the tools described in this report
+  are backed by regularly maintained learning resources
   that can be used locally or in cloud computing environments.
 header-includes:
 - \usepackage{booktabs}
@@ -945,8 +952,19 @@ RangedSummarizedExperiment inherits the SummarizedExperiment class, with the ext
 
 The MultiAssayExperiment class (presented above in
 Figure \@ref(fig:masc)) is modeled after the SummarizedExperiment class.
+A MultiAssayExperiment instance `M` can be
+filtered as a three-dimensional array.
+When `G` is a vector of feature identifiers,
+`C` a vector of sample identifiers, and `E` a
+vector of experiment names, then `M[G, C, E]` is
+a MultiAssayExperiment with content restricted to the
+requested features, samples, and experiments.  The MultiAssayExperiment
+package includes tooling to convert data content to "long" or
+"wide" formats.  In long format, each element of the assay array occupies
+a row, accompanied by metadata associated with the element.
+In wide format, each sample occupies a row, accompanied by all
+assocated assay and metadata elements.
 
-The SingleCellExperiment classes inherit from the RangedSummarizedExperiment class.
 
 ## Out-of-memory data representation strategies
 
@@ -964,6 +982,8 @@ library(TumourMethData)
 demm = download_meth_dataset("mcrpc_wgbs_hg38_chr11")
 demm
 rowRanges(demm)
+names(colData(demm))
+table(demm$metastatis_site)
 ```
 
 References to `demm` involve an 800MB excerpt of a 
@@ -995,14 +1015,153 @@ the CPU for numerical analysis only occurs on demand,
 which can be tailored to the quantity of RAM available
 at analysis time.
 
+## Quality assessment of Bioconductor resources
+
+Figure \@ref(fig:wssc) is an overview of the periodic ecosystem
+testing process for Bioconductor software packages in the
+release branch.  All Bioconductor
+and CRAN packages on which they depend are present and are updated
+on change to sources.  
+
+```{r qapic, echo=FALSE, fig.cap="Build report for Bioc 3.18, 12-29-2023.", out.width="121%"}
+knitr::include_graphics("QApage.jpg")
+```
+
+The project distributes source tarballs for Linux-like systems, and
+compiled binaries for MacOS and Windows.  Numbers in red boxes indicate
+failures to install, build, or check.  Failure events are
+frequently platform-specific; full logs are provided
+on the build report pages to help developers isolate and fix
+build and check errors.  When failures are persistent, developers
+are contacted by core.  If contact cannot be made and failures
+continue, packages are deprecated for at least one release, and
+then removed.
+
+
 
 
 # Pedagogics and workforce development
 
+The Bioconductor project has undertaken a number
+of initiatives to support growth of the
+scientific workforce's capacity to efficiently 
+integrate and interpret
+genome-scale experiments.
+
+- **Partnering with The Carpentries.**  The Carpentries \url{https://carpentries.org} is a non-profit organization focused on teaching programming
+and data science to researchers.  The organization defines "good
+practices in lesson design and development, and open source
+collaboration skills".  Bioconductor community members have
+created bioc-intro, bioc-project, and bioc-rnaseq repositories
+using The Carpentries Incubator template.  This arrangement helps
+Bioconductor create and manage a "train the trainer" process 
+according to tested pedagogical principles.
+
+- **Curating monographs for topics in genomic data science.**  The
+breadth of Bioconductor resources for genomics, combined with the
+energetic approach to software and annotation upkeep in the project,
+empowers Bioconductor developers to produce unified, wide-ranging,
+computable documents on topics of interest to the broader
+cancer genomics community.  Books currently available
+at bioconductor.org include OSCA (Orchestrating Single Cell Analysis
+with Bioconductor), SingleRBook (Assigning cell types with SingleR),
+csawBook (Analysis of ChIP-seq data), OHCA (Orchestrating Hi-C
+Analysis with Bioconductor) and R for Mass Spectrometry.  Very
+recently, Jacques Serizay of Institut Pasteur has contributed
+a book authoring framework called BiocBook.  This transforms documents
+marked up in Posit's quarto format into web-based books backed up by Docker
+containers and maintained with templated GitHub actions.  The
+OHCA book is produced and managed with BiocBook.
+
+
+- **A system for authoring and deploying interactive workshops.**
+Figure \@ref(fig:wssc) gives an overview of the resources and
+objectives of the system underlying \url{workshop.bioconductor.org}.
+Given a kubernetes-enabled cluster
+the workshop system assembles
+
+- compute and storage elements,
+- static components (training texts and shareable data), 
+- development environments (containers with all runtime elements
+required to compiled code, conduct analyses, communicate with GPUs).
 
 ```{r wssc, echo=FALSE, fig.cap="Workshop.bioconductor.org schematic.", out.width="80%"}
 knitr::include_graphics("WorkshopSCHEMA.png")
 ```
+
+A lightly customized deployment of the Galaxy system (usegalaxy.org) 
+is used to deal with authentication
+and process initiation and termination.
+
+This system has been used to serve interactive workshops in a number
+of international conferences.  Content in R markdown or quarto
+can be produced by anyone interested in offering a workshop, and
+the "BiocWorkshopSubmit" app at workshop.bioconductor.org
+can be used to identify new content to the system.  Markdown
+documents will be analyzed to determine what resources are needed
+for the containerization of workshop software and data components,
+and the container will be created and registered at the GitHub
+Container Registry.  Arrangements to deploy the workshop over
+a given calendar period can be made with Bioconductor core.  The
+workshop container can be used to conduct the workshop on any
+system with a Docker client.
+
+
+# Conclusions and paths forward
+
+We have described several aspects of
+Bioconductor's approach to ecosystem management for cancer
+genomics data science resources.  In light of 
+the dynamism
+of biotechnological innovation, it is clear that the project
+must anticipate change.  But it is challenging to introduce
+changes to processes on which a very large community depends
+for their daily research work.  Commitments to supporting reproducible
+research entail that Bioconductor preserves decades worth of images
+of software and data for immediate retrieval via
+web request by parties unknown
+to the project.
+
+We'll conclude this report with a few observations on
+general paths that the project is likely to take that
+should have favorable consequences to researchers in
+cancer genomics.
+
+- **Language-agnostic data and annotation**  The `alabaster.*` packages
+introduced in Bioconductor 3.17 are designed to convert existing
+Bioconductor data structures to formats that are more readily ingested
+by software in other languages.  Thus the `alabaster.mae`
+package will convert a MultiAssayExperiment into a collection
+of files of metadata (serialized in JSON), sample-level data
+(serialized as CSV), and assay data (serialized to HDF5).
+
+
+- **Zero-configuration genomic analysis environments**  Users
+of Docker containers have long been able to take advantage of
+Bioconductor containers pre-populated with Rstudio and runtime
+resources to support installation of any desired software packages.
+The bioc2u system (\url{https://github.com/bioconductor/bioc2u}) in conjunction
+with r2u (\url{github.com/eddelbuettel/r2u}) introduces the
+availability of Debian packages for all Bioconductor packages,
+made available in a CRAN-like repository.  Given a system running
+Ubuntu 22 or 20, the apt package manager will resolve any package
+requests with tested, fully linked binary packages.  Users do not
+have to perform any configuration or compilation of system
+utilities or package code.  This practice can greatly reduce
+resource consumption that occurs when individuals or
+workflow systems need to compile
+every package and its dependencies to perform analyses.
+
+- **Computation at the data**  Several members of Bioconductor's
+development core are on the technical development team of
+NHGRI's Analysis and Visualization Laboratory (AnVIL).  The aim
+of this project is to overthrow the prevalent model of downloading data for
+local analysis.  AnVIL mobilizes commercial cloud computing and
+storage to support truly elastic genomic analysis -- create and
+pay for only the computation you need.
+
+
+
 
 \newpage
 
