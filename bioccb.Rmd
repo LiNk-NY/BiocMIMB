@@ -1,6 +1,17 @@
 ---
 title: "Bioconductor's Computational Ecosystem for Genomic Data Science in Cancer"
-author: Multiple
+author: 
+  - Marcel Ramos 
+  - Lori Shepherd 
+  - Nathan Sheffield
+  - Alexandru Mahmoud
+  - Herve Pages
+  - Jen Wokaty
+  - Sean Davis
+  - Sehyun Oh
+  - Levi Waldron
+  - Martin Morgan
+  - Vincent Carey
 date: "`r format(Sys.time(), '%B %d, %Y')`"
 abstract: >
   The Bioconductor project enters its third decade
@@ -536,8 +547,6 @@ ggplot(df17, aes(x=mid)) + geom_density(bw=.2) + xlab("chr 17 bp")
 ```
 
 This display shows a strong peak in the vicinity of 7.5 Mb on chromosome 17, near TP53.
-The display lacks information on the direction of copy number alteration, and on annotation
-of the genome.  These issues will be addressed in later sections.
 
 # Genomic annotation resources relevant to cancer {#hubs}
 
@@ -1017,7 +1026,7 @@ at analysis time.
 
 ## Quality assessment of Bioconductor resources
 
-Figure \@ref(fig:wssc) is an overview of the periodic ecosystem
+Figure \@ref(fig:qapic) is an overview of the periodic ecosystem
 testing process for Bioconductor software packages in the
 release branch.  All Bioconductor
 and CRAN packages on which they depend are present and are updated
@@ -1075,6 +1084,7 @@ OHCA book is produced and managed with BiocBook.
 
 
 - **A system for authoring and deploying interactive workshops.**
+
 Figure \@ref(fig:wssc) gives an overview of the resources and
 objectives of the system underlying \url{workshop.bioconductor.org}.
 Given a kubernetes-enabled cluster
@@ -1158,9 +1168,13 @@ NHGRI's Analysis and Visualization Laboratory (AnVIL).  The aim
 of this project is to overthrow the prevalent model of downloading data for
 local analysis.  AnVIL mobilizes commercial cloud computing and
 storage to support truly elastic genomic analysis -- create and
-pay for only the computation you need.
+pay for only the computation you need.  The basic
+strategy is described in @Schatz2022.  This system was
+used in the production of the Telomere-to-Telomere
+genome build, see @Aganezov2022.
 
-
+We hope that the project can continue to support researchers in cancer
+genomics for another 20 years!
 
 
 \newpage
