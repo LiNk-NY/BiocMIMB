@@ -49,7 +49,7 @@ load("wflowtab.rda")
 needed = c("curatedTCGAData", "TCGAutils", "dplyr", "kableExtra", "TCGAutils",
 "survival", "GGally", "cBioPortalData", "GenomicRanges", "ggplot2",
 "BiocFileCache", "ExperimentHub", "AnnotationHub", "TumourMethData",
-"BiocStyle", "ensembldb", "rols", "GO.db",
+"BiocStyle", "ensembldb", "rols", "GO.db", "msigdb", "easierData",
 "SpatialFeatureExperiment", "SFEData", "EnsDb.Hsapiens.v86")
 ii = rownames(installed.packages())
 need = setdiff(needed, ii)
@@ -405,9 +405,11 @@ To see this for GBM:
 ```{r lkspar}
 mean(sapply(colData(gbrna), function(x) mean(is.na(x))>.90))
 ```
+In words, for 81% of clinical data fields in TCGA GBM data,
+at least 90% of entries are missing.
 
 Nevertheless, with careful inspection of fields and contents,
-clinical data can be extracted and combined with molecular
+nearly complete clinical data can be extracted and combined with molecular
 and genetic assay data with modest effort.
 
 The following code chunk illustrates a very crude
@@ -703,41 +705,37 @@ The token "hasPMP" refers to the element of the Relation Ontology
 knitr::include_graphics("ontoPair.png")
 ```
 
-
+Prospects for use of ontological discipline in the
+definition of new cell types are reviewed in a 2018
+paper from the Venter Institute (@Aevermann2018).
+The field of biological ontology is rapidly advancing,
+and the integration of ontology search and inference
+with data analytic frameworks requires more effort at this time.
 
 
 
 # Analytical workflows
 
+## Overview
 
-```{r tab-wflow, caption="Topical organization of packages with cancer applications.", echo=FALSE}
+Table \@ref(tab:tab-wflow) presents an informal topical
+labeling for Bioconductor software packages with
+cancer mentioned in the Description field of package
+metadata.
+
+```{r tab-wflow, echo=FALSE}
 wflowtab[7,1] = "Epigenetics"
 wflowtab[19,1] = "Subtyping"
 wflowtab[12,1] = "Literature mining"
 wflowtab = wflowtab[-10,]
 rownames(wflowtab) = NULL
-kbl(as.data.frame(wflowtab), booktabs=TRUE, longtable=TRUE) %>% 
+kbl(as.data.frame(wflowtab), booktabs=TRUE, longtable=TRUE, caption="Topical organization of packages with cancer applications.") %>% 
  column_spec(2, width="30em") %>%
  kable_styling("repeat_header")
 ```
 
-## Differential splicing
- 
-- psichomics - detailed workflow spec, instructions
-on importing and processing data from SRA
-
-- OutSplice
-
-## Ancestry inference
-
-- RAIDS
-
-## Clonal evolution of tumors
-
-- CIMICE
-- LACE GUI
-- OncoSimulR, models of fitness landscapes for asexual evolution
-- TRONCO oncoprint, logic of multiple mutation
+The vignettes of each of these packages provide background and
+illustration of their roles in cancer genomics.
 
 ## Packages supporting epigenomic analysis
 
@@ -775,7 +773,7 @@ of DNA methylation data (Zheng et al. 2018).
 
 Another popular epigenome experiment is ChIP-seq, and Bioconductor delivers many packages in 
 this area. DiffBind (Stark and Brown 2011) is a popular approach for 
-differential binding analysis of ChIP-seq peak data. [ More on ChIP seq to come ]
+differential binding analysis of ChIP-seq peak data. <!-- [ More on ChIP seq to come ] -->
 
 A variety of packages are also geared toward visualization of this type 
 of data. GenomicDistributions (Kupkova 2022) provides a variety of plots for visualization 
@@ -792,12 +790,62 @@ ranges. Bioconductor also provides data fetching mechanisms for epigenome dataâ€
 
 ## Some details on prediction of responsiveness to immune checkpoint blockade
 
-We consider the prediction of responsiveness to
-immune checkpoint blockade (@easierPap)
+The National Cancer Institute website on checkpoint inhibitors 
+in cancer immunotherapy @ICBnci
+lists 12 different cancer types
+amenable to treatment via immune checkpoint inhibition.
+The "easier" package in Bioconductor
+assembles multiple systems biology resources
+to produce patient-specific
+prediction of responsiveness to
+immune checkpoint blockade (ICB), as described in @easierPap.
+
+Figure \@ref(fig:easfin) presents on overview of results of
+immune response assessment in a cohort of patients with
+bladder cancer reported in @Mariathasan2018.
+Patient's bulk RNA-seq data are used to develop multiple
+quantitative descriptors of the tumor microenvironment,
+and scores for processes regarded as hallmarks of anti-cancer
+immune responses.
 
 ```{r easfin, echo=FALSE, fig.cap="Comparison of genomic features distinguishing patients non-responsive and responsive to immune checkpoint blockade.", out.width="95%"}
 knitr::include_graphics("easierFinal.png")
 ```
+
+This display encapsulates a) the capacity of measurements of
+genomic elements to discriminate patients who respond
+to ICB for bladder cancer (position of labeled
+item on x axis), b) the direction of association of
+element activity with immune response (shape of glyph) and c) the
+relative magnitudes of weights (size of glyph) estimated for features in
+initial model fitting.
+
+The design of this package is noteworthy in its approach
+to information hiding.  Parameters estimated in machine
+learning of tissue-specific relations between quantitative
+descriptors of the tumor microenvironment and hallmarks
+of immune response are stored in ExperimentHub.
+```{r looked, message=FALSE}
+library(easierData)
+list_easierData()
+```
+The structure of the stored model weights resource can
+be sketched by probing list elements.
+```{r lkstored}
+mw = eh[["EH6678"]]
+names(mw)                          # TCGA tumor types
+names(mw[["LUAD"]])                # TME descriptors
+rownames(mw[["LUAD"]]$pathways$CYT) # predict cytolytic activity
+                                    # using pathway activity
+```
+
+The vignette of the easier package steps through phases,
+using these tumor-type-specific weights to compute patient-specific measures
+of transcription factor activity or cell-cell interaction on the basis of bulk
+RNA-seq (units are transcripts per million), and a patient-specific
+measure of pathway activity using raw RNA-seq counts.  These metrics
+may be of interest in their own right for applications other than
+establishing predictions of response to ICB.
 
 ## Representing and visualizing a spatial transcriptomics experiment
 
