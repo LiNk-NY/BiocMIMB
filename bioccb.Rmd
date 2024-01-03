@@ -11,6 +11,8 @@ author:
   - name: Jen Wokaty
     affiliation:  City University of New York School of Public Health, New York, NY
   - name: Sean Davis
+    affiliation: University of Colorado Anschutz School of Medicine, Aurora, CO
+    orcid: 0000-0002-8991-6458
   - name: Sehyun Oh
     affiliation:  City University of New York School of Public Health, New York, NY
   - name: Levi Waldron
