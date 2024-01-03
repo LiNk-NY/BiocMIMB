@@ -1,17 +1,23 @@
 ---
 title: "Bioconductor's Computational Ecosystem for Genomic Data Science in Cancer"
 author: 
-  - Marcel Ramos 
-  - Lori Shepherd 
-  - Nathan Sheffield
-  - Alexandru Mahmoud
-  - Herve Pages
-  - Jen Wokaty
-  - Sean Davis
-  - Sehyun Oh
-  - Levi Waldron
-  - Martin Morgan
-  - Vincent Carey
+  - name: Marcel Ramos
+    affiliation:  City University of New York School of Public Health, New York, NY
+  - name: Lori Shepherd
+    affiliation: Roswell Park Comprehensive Cancer Center, Buffalo, NY
+  - name: Nathan Sheffield
+  - name: Alexandru Mahmoud
+  - name: Herve Pages
+  - name: Jen Wokaty
+    affiliation:  City University of New York School of Public Health, New York, NY
+  - name: Sean Davis
+  - name: Sehyun Oh
+    affiliation:  City University of New York School of Public Health, New York, NY
+  - name: Levi Waldron
+    affiliation:  City University of New York School of Public Health, New York, NY
+  - name: Martin Morgan
+    affiliation: Roswell Park Comprehensive Cancer Center, Buffalo, NY
+  - name: Vincent Carey
 date: "`r format(Sys.time(), '%B %d, %Y')`"
 abstract: >
   The Bioconductor project enters its third decade
