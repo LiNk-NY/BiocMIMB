@@ -32,18 +32,18 @@ abstract: >
   with over two thousand packages for genomic data
   science, over 100,000 annotation and experiment resources,
   and a global system for convenient distribution
-  to researchers. The impact of the project on genome
-  biology is attested to by over 60,000 PubMed Central
-  citations and terabytes of content shipped per month. This report
+  to researchers. Over 60,000 PubMed Central
+  citations and terabytes of content shipped per month 
+  attest to the impact of the project on cancer genomic data science. This report
   provides an overview of cancer genomics resources in Bioconductor.
   After an overview of Bioconductor project principles,
   we address exploration of institutionally curated cancer
-  genomics data such as TCGA.  Genomic annotation and ontology
-  resources relevant to cancer are reviewed.
+  genomics data such as TCGA. We then review genomic annotation and ontology
+  resources relevant to cancer and then briefly survey 
   Analytical workflows addressing specific topics in cancer
-  genomics are briefly surveyed.  Concluding sections cover
+  genomics.  Concluding sections cover
   how new software and data resources are brought into the
-  ecosystem, and how the project is tackling needs for
+  ecosystem and how the project is tackling needs for
   training of the research workforce.
   Bioconductor’s strategies for
   supporting methods developers and researchers in cancer
