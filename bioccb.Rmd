@@ -3,8 +3,10 @@ title: "Bioconductor's Computational Ecosystem for Genomic Data Science in Cance
 author: 
   - name: Marcel Ramos
     affiliation:  City University of New York School of Public Health, New York, NY
+    orcid: 0000-0002-3242-0582
   - name: Lori Shepherd
     affiliation: Roswell Park Comprehensive Cancer Center, Buffalo, NY
+    orcid: 0000-0002-5910-4010
   - name: Nathan Sheffield
   - name: Alexandru Mahmoud
   - name: Herve Pages
@@ -15,11 +17,15 @@ author:
     orcid: 0000-0002-8991-6458
   - name: Sehyun Oh
     affiliation:  City University of New York School of Public Health, New York, NY
+    orcid: 0000-0002-9490-3061
   - name: Levi Waldron
     affiliation:  City University of New York School of Public Health, New York, NY
+    orcid: 0000-0003-2725-0694
   - name: Martin Morgan
     affiliation: Roswell Park Comprehensive Cancer Center, Buffalo, NY
+    orcid: 0000-0002-5874-8148
   - name: Vincent Carey
+    orcid: 0000-0003-4046-0063
 date: "`r format(Sys.time(), '%B %d, %Y')`"
 abstract: >
   The Bioconductor project enters its third decade
