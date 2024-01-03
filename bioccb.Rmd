@@ -280,7 +280,7 @@ Multiple representations of assay results may be managed in this
 structure, but all assay arrays must have dimensions $G \times N$.
 
 For experiment collections in which the same samples are subjected
-to multiple genome-scale assays, MultiAssayExperiment containers are used.See \@ref(fig:masc) for the layout.
+to multiple genome-scale assays, MultiAssayExperiment containers are used. See \@ref(fig:masc) for the layout.
 
 ```{r masc, echo=FALSE, fig.cap="MultiAssayExperiment schematic.", out.width="80%"}
 knitr::include_graphics("MAEschema.png")
