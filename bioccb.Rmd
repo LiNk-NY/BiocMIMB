@@ -32,18 +32,18 @@ abstract: >
   with over two thousand packages for genomic data
   science, over 100,000 annotation and experiment resources,
   and a global system for convenient distribution
-  to researchers. The impact of the project on genome
-  biology is attested to by over 60,000 PubMed Central
-  citations and terabytes of content shipped per month. This report
+  to researchers. Over 60,000 PubMed Central
+  citations and terabytes of content shipped per month 
+  attest to the impact of the project on cancer genomic data science. This report
   provides an overview of cancer genomics resources in Bioconductor.
   After an overview of Bioconductor project principles,
   we address exploration of institutionally curated cancer
-  genomics data such as TCGA.  Genomic annotation and ontology
-  resources relevant to cancer are reviewed.
+  genomics data such as TCGA. We then review genomic annotation and ontology
+  resources relevant to cancer and then briefly survey 
   Analytical workflows addressing specific topics in cancer
-  genomics are briefly surveyed.  Concluding sections cover
+  genomics.  Concluding sections cover
   how new software and data resources are brought into the
-  ecosystem, and how the project is tackling needs for
+  ecosystem and how the project is tackling needs for
   training of the research workforce.
   Bioconductor’s strategies for
   supporting methods developers and researchers in cancer
@@ -216,12 +216,14 @@ depend upon versions of other packages.
 At its inception, 
 Bioconductor introduced a new approach to holistic package
 documentation called "vignette".
-Vignettes narrate package operations
-and include executable code.
+Vignettes provide narrative and explanation interleaved with 
+executable code describing package operations.
 While R function manual pages describe
 the operation of individual functions,
 vignettes illustrate the interoperation
-of package components.
+of package components and provide motivation
+for both package design but also context
+for its use.
 
 ## R package repositories; repository evolution
 
@@ -238,7 +240,7 @@ for this restriction.
 
 Major updates to the R language occur annually, and
 updates are preceded by careful assessment of effects of
-language change on package operations.  These effects
+language change on Bioconductor package operations.  These effects
 can be identified through changes in the output of R CMD check.
 The Bioconductor ecosystem is updated twice a year, once
 to coincide with update to R, and once about six months
@@ -251,11 +253,10 @@ The BiocCheck function is used to provide more
 stringent assessment of package compliance with basic
 principles of the Bioconductor ecosystem.
 
-The BiocManager package includes code for
-checking the consistency and
-currency of the current
-collection of installed packages, and for
-installing or updating packages.  This is important
+The BiocManager package provides for installing and updating package 
+and has functionality for verifying the coherence and version status 
+of the currently installed package collection.
+This is important
 in the context of a language and package ecosystem
 that changes every six months, while analyses may
 take years to complete.  Tools for recreating past
@@ -279,7 +280,7 @@ Multiple representations of assay results may be managed in this
 structure, but all assay arrays must have dimensions $G \times N$.
 
 For experiment collections in which the same samples are subjected
-to multiple genome-scale assays, MultiAssayExperiment containers are used.See \@ref(fig:masc) for the layout.
+to multiple genome-scale assays, MultiAssayExperiment containers are used. See \@ref(fig:masc) for the layout.
 
 ```{r masc, echo=FALSE, fig.cap="MultiAssayExperiment schematic.", out.width="80%"}
 knitr::include_graphics("MAEschema.png")
