@@ -10,7 +10,7 @@ author:
   - name: Nathan Sheffield
   - name: Alexandru Mahmoud
   - name: Hervé Pagès
-    affiliation: Fred Hutchinson Cancer Research Center, Seattle, WA
+    affiliation: Fred Hutchinson Cancer Center, Seattle, WA
   - name: Jen Wokaty
     affiliation:  City University of New York School of Public Health, New York, NY
   - name: Sean Davis
