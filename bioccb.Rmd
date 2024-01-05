@@ -9,7 +9,8 @@ author:
     orcid: 0000-0002-5910-4010
   - name: Nathan Sheffield
   - name: Alexandru Mahmoud
-  - name: Herve Pages
+  - name: Hervé Pagès
+    affiliation: Fred Hutchinson Cancer Center, Seattle, WA
   - name: Jen Wokaty
     affiliation:  City University of New York School of Public Health, New York, NY
   - name: Sean Davis
