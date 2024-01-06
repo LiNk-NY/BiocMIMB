@@ -103,17 +103,44 @@ getass = function(mae) gsub(".*_(.*)-.*", "\\1", gsub("TIC_", "TIC.", grep("mRNA
 load("tcgatab.rda")
 library(dplyr)
 library(kableExtra)
-tenco = "Code,Type
+tenco = "Code,Tumor Type
 ACC,Adrenocortical Carcinoma
 BLCA,Bladder Urothelial Carcinoma
 BRCA,Breast Invasive Carcinoma
-CESC,Cervical Squamous Cell Carcinoma And Endocervical Adenocarcinoma
+CESC,Cervical Squamous Cell Carcinoma and Endocervical Adenocarcinoma
 CHOL,Cholangiocarcinoma
+CNTL,Controls
 COAD,Colon Adenocarcinoma
 DLBC,Lymphoid Neoplasm Diffuse Large B-cell Lymphoma
 ESCA,Esophageal Carcinoma
+FPPP,FFPE Pilot Phase II
 GBM,Glioblastoma Multiforme
-HNSC,Head And Neck Squamous Cell Carcinoma"
+HNSC,Head and Neck Squamous Cell Carcinoma
+KICH,Kidney Chromophobe
+KIRC,Kidney Renal Clear Cell Carcinoma
+KIRP,Kidney Renal Papillary Cell Carcinoma
+LAML,Acute Myeloid Leukemia
+LCML,Chronic Myelogenous Leukemia
+LGG,Brain Lower Grade Glioma
+LIHC,Liver Hepatocellular Carcinoma
+LUAD,Lung Adenocarcinoma
+LUSC,Lung Squamous Cell Carcinoma
+MESO,Mesothelioma
+MISC,Miscellaneous
+OV,Ovarian Serous Cystadenocarcinoma
+PAAD,Pancreatic Adenocarcinoma
+PCPG,Pheochromocytoma and Paraganglioma
+PRAD,Prostate Adenocarcinoma
+READ,Rectum Adenocarcinoma
+SARC,Sarcoma
+SKCM,Skin Cutaneous Melanoma
+STAD,Stomach Adenocarcinoma
+TGCT,Testicular Germ Cell Tumors
+THCA,Thyroid Carcinoma
+THYM,Thymoma
+UCEC,Uterine Corpus Endometrial Carcinoma
+UCS,Uterine Carcinosarcoma
+UVM,Uveal Melanoma"
 cotab = read.csv(textConnection(tenco))
 
 
@@ -282,17 +309,17 @@ Multiple representations of assay results may be managed in this
 structure, but all assay arrays must have dimensions $G \times N$.
 
 For experiment collections in which the same samples are subjected
-to multiple genome-scale assays, MultiAssayExperiment containers are used. See \@ref(fig:masc) for the layout.
+to multiple genome-scale assays, MultiAssayExperiment containers are used. See Figure \@ref(fig:masc) for the layout.
 
 ```{r masc, echo=FALSE, fig.cap="MultiAssayExperiment schematic.", out.width="80%"}
 knitr::include_graphics("MAEschema.png")
 ```
 Further details on these data structures will be provided in section \@ref(class).
 
-## Downloading and caching {#cache}
+## Downloading and caching cancer genomics data and annotations {#cache}
 
 Downloading and managing data from various online resources
-can be extremely time consuming.  Bioconductor encourages data caching for
+can be excessively time consuming.  Bioconductor encourages data caching for
 increased efficiency and reproducibility.  The caching data methods
 employed in Bioconductor
 allow analysis code to
@@ -322,9 +349,9 @@ the reproducibility of analyses across different laboratories.
 
 The curatedTCGAData package provides some resources through
 ExperimentHub, as do many other self-identified "CancerData" resources. Once the
-ExperimentHub is loaded, it can be queried for terms of interest.
+ExperimentHub is loaded, it can be queried for terms of interest. 
 
-```{r useeh}
+```{r useeh} <!-- , fig.cap="ExperimentHub attachment, retrieval, query, and response when seeking cancer-related data.", message=FALSE} -->
 library(ExperimentHub)
 eh <- ExperimentHub()
 query(eh, "CancerData")
@@ -335,23 +362,17 @@ Multiple terms can be used to narrow results before choosing a download.
 ```{r doeso}
 query(eh, c("cancerData", "esophageal"))
 ```
-```{r showcode, eval=FALSE}
-eh['EH8527']
-wgbs_rse <- eh[['EH8527']]
-```
 
-Similarly AnnotationHub files can be downloaded for annotating data. For example
+Similarly AnnotationHub files can be downloaded for annotating data. For example,
 the ensembl 110 release of gene and protein annotations are obtained with the
 following:
 
 
-```{r annochk}
+```{r annochk, eval=FALSE}
 library(AnnotationHub)
 ah <- AnnotationHub()
 tag = names(query(ah, c("Ensembl","110", "Homo sapiens")))
-tag
 ens110 <- ah[[tag]]
-ens110
 ```
 
 # Exploring institutionally curated cancer genomics data
@@ -365,17 +386,16 @@ curatedTCGAData package.
 library(curatedTCGAData)
 tcgatab = curatedTCGAData(version="2.1.1")
 ```
-The first 10 records are in Table \@ref(tab:tab-lktab).
+Records obtained for adrenocortical carcinoma (code ACC) are in Table \@ref(tab:tab-lktab).
 ```{r tab-lktab,echo=FALSE}
-kbl(head(tcgatab[,1:4],10), booktabs=TRUE, caption="First ten records
-returned by curatedTCGAData::curatedTCGAData().")
+kbl(tcgatab[grep("ACC", tcgatab$title),1:4], booktabs=TRUE, caption="Records returned by curatedTCGAData::curatedTCGAData(), filtered to those pertaining to adrenocortical carcinoma.")
 ```
 
 Various conventions are in play in this table.  The "title" field is
 of primary concern.  The title string can be decomposed into
 substrings with interpretation
 `[tumorcode]_[assay]-[date]_[optional codes]`.  The column `ah_id` will be
-explained in section \@ref(hubs), and column
+explained in section \@ref(hubs), and entries in column
 `rdataclass` will be discussed in section \@ref(class) below.
 
 ### Tumor code resolution
@@ -451,7 +471,7 @@ and genetic assay data with modest effort.
 
 The following code chunk illustrates a very crude
 approach to comparing survival profiles for BRCA, GBM, and LUAD
-donors.
+donors.  The result is in Figure \@ref(fig:dothesurv).
 
 ```{r dothesurv,fig.cap="Survival profile extraction from three MultiAssayExperiments produced with curatedTCGAData calls.", out.width="80%", message=FALSE}
 # obtain mutation data for BRCA, GBM, LUAD; could use any or all assay types
@@ -475,10 +495,10 @@ ggsurv(survfit(allsurv~type))
 
 At this point, survival times within tumor type can be stratified by any
 features of the mutation profiles of individual samples.
-"RaggedExperiment" class is employed to test each BRCA sample for
-presence of any mutation in the gene TTN.
+The "RaggedExperiment" class is employed to test each BRCA sample for
+presence of any mutation in the gene TTN.  See Figure \@ref(fig:strat).
 
-```{r lkttn}
+```{r strat, fig.cap="Survival distributions for donors of breast tumors in TCGA, stratified by presence or absence of mutation in gene TTN."}
 bprim = TCGAprimaryTumors(brmut)
 mutsyms = assay(experiments(bprim)[[1]], "Hugo_Symbol")
 cn = rownames(colData(bprim)) # short
@@ -603,7 +623,7 @@ head(table(genes(EnsDb.Hsapiens.v86)$gene_biotype))
 ```
 
 More recent versions of Ensembl gene annotation are available
-from AnnotationHub, as illustrated above in \@ref(cache) with
+from AnnotationHub, as illustrated above in section \@ref(cache) with
 the creation of `ens110`.
 
 ## Gene sets
@@ -700,7 +720,7 @@ records with `olsSearch`:
 lk2 = olsSearch(lk1)
 lk3 = as(lk2, "data.frame")
 lk3$description = unlist(lk3$description)
-kbl(lk3[,4:6], booktabs=TRUE) |> column_spec(2, width="25em") |> column_spec(3,
+kbl(lk3[,4:6], booktabs=TRUE) |> column_spec(2, width="15em") |> column_spec(3,
   width="15em")
 ```
 The detailed descriptions of the NCI Thesaurus entries show
@@ -879,6 +899,9 @@ RNA-seq (units are transcripts per million), and a patient-specific
 measure of pathway activity using raw RNA-seq counts.  These metrics
 may be of interest in their own right for applications other than
 establishing predictions of response to ICB.
+
+Appendix \@ref(app3) provides the names and versions of all packages
+used to produce this analysis.
 
 ## Representing and visualizing a spatial transcriptomics experiment
 
@@ -1208,7 +1231,7 @@ Quoted text is the content of the Description element of the package DESCRIPTION
 text are as reported in the Authors field.
 
 ```{r tab-fintab, caption="Bioconductor packages mentioning cancer in package description.", echo=FALSE}
-kbl(as.data.frame(candesc2), booktabs=TRUE, longtable=TRUE) %>% column_spec(2, width="40em") %>%
+kbl(as.data.frame(candesc2), booktabs=TRUE, longtable=TRUE) %>% column_spec(2, width="25em") %>%
  kable_styling("repeat_header")
 #longtable = TRUE, caption = "Test") %>%
 #  kable_styling(latex_options = c("hold_position", "repeat_header")) ```
@@ -1222,7 +1245,7 @@ Quoted text is the content of the Description element of the package DESCRIPTION
 text are as reported in the Authors field.
 
 ```{r tab-fintab2, caption="Bioconductor 'experimental data packages' mentioning cancer in package description.", echo=FALSE}
-kbl(as.data.frame(datadesc2), booktabs=TRUE, longtable=TRUE) %>% column_spec(2, width="35em") %>%
+kbl(as.data.frame(datadesc2), booktabs=TRUE, longtable=TRUE) %>% column_spec(2, width="25em") %>%
  kable_styling("repeat_header")
 ```
 
