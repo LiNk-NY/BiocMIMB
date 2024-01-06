@@ -78,6 +78,8 @@ load("candesc.rda")
 load("candesc2.rda")
 load("datadesc.rda")
 load("datadesc2.rda")
+datadesc2[48,2] = gsub("display", "display ", datadesc2[48,2])
+datadesc2[49,2] = gsub("Mut", " Mut ", datadesc2[48,2])
 load("easvig.rda")
 load("wflowtab.rda")
 needed = c("curatedTCGAData", "TCGAutils", "dplyr", "kableExtra", "TCGAutils",
