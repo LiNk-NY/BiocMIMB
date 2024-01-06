@@ -34,13 +34,13 @@ abstract: >
   science, over 100,000 annotation and experiment resources,
   and a global system for convenient distribution
   to researchers. Over 60,000 PubMed Central
-  citations and terabytes of content shipped per month 
+  citations and terabytes of content shipped per month
   attest to the impact of the project on cancer genomic data science. This report
   provides an overview of cancer genomics resources in Bioconductor.
   After an overview of Bioconductor project principles,
   we address exploration of institutionally curated cancer
   genomics data such as TCGA. We then review genomic annotation and ontology
-  resources relevant to cancer and then briefly survey 
+  resources relevant to cancer and then briefly survey
   Analytical workflows addressing specific topics in cancer
   genomics.  Concluding sections cover
   how new software and data resources are brought into the
@@ -67,8 +67,9 @@ header-includes:
 - \usepackage[normalem]{ulem}
 output:
   BiocStyle::pdf_document:
-    toc: yes
+    toc: no
     number_sections: yes
+    keep_tex: true
 bibliography: library.bib
 ---
 
@@ -203,7 +204,7 @@ Bioconductor experimental data packages that use the term "cancer" in their pack
 
 Software tools and data resources in Bioconductor are organized
 into "R packages".  These are collections of folders with data,
-code (principally R functions), and documentation 
+code (principally R functions), and documentation
 following a protocol specified in
 [Writing R Extensions](https://cran.r-project.org/doc/manuals/R-exts.html).  R packages have a DESCRIPTION file with metadata about
 package contents and provenance.  Package structure can be
@@ -214,10 +215,10 @@ for a package specifies its version and
 also gives precise definition of how an R package may
 depend upon versions of other packages.
 
-At its inception, 
+At its inception,
 Bioconductor introduced a new approach to holistic package
 documentation called "vignette".
-Vignettes provide narrative and explanation interleaved with 
+Vignettes provide narrative and explanation interleaved with
 executable code describing package operations.
 While R function manual pages describe
 the operation of individual functions,
@@ -254,8 +255,8 @@ The BiocCheck function is used to provide more
 stringent assessment of package compliance with basic
 principles of the Bioconductor ecosystem.
 
-The BiocManager package provides for installing and updating package 
-and has functionality for verifying the coherence and version status 
+The BiocManager package provides for installing and updating package
+and has functionality for verifying the coherence and version status
 of the currently installed package collection.
 This is important
 in the context of a language and package ecosystem
@@ -326,13 +327,15 @@ ExperimentHub is loaded, it can be queried for terms of interest.
 ```{r useeh}
 library(ExperimentHub)
 eh <- ExperimentHub()
-query(eh, "curatedTCGAData")
 query(eh, "CancerData")
 ```
+
 Multiple terms can be used to narrow results before choosing a download.
 
 ```{r doeso}
 query(eh, c("cancerData", "esophageal"))
+```
+```{r showcode, eval=FALSE}
 eh['EH8527']
 wgbs_rse <- eh[['EH8527']]
 ```
@@ -432,7 +435,7 @@ normal tissue or metastases.
 
 
 Clinical and phenotypic data on all TCGA samples are voluminous.  For example,
-there are `r ncol(colData(br))` fields of sample level data for BRCA 
+there are `r ncol(colData(br))` fields of sample level data for BRCA
 samples, and `r ncol(colData(gb))` fields for GBM samples.  Many of these
 fields are meaningfully populated for only a very small minority of samples.
 To see this for GBM:
@@ -448,7 +451,7 @@ and genetic assay data with modest effort.
 
 The following code chunk illustrates a very crude
 approach to comparing survival profiles for BRCA, GBM, and LUAD
-donors.  
+donors.
 
 ```{r dothesurv,fig.cap="Survival profile extraction from three MultiAssayExperiments produced with curatedTCGAData calls.", out.width="80%", message=FALSE}
 # obtain mutation data for BRCA, GBM, LUAD; could use any or all assay types
@@ -494,10 +497,10 @@ any molecular assay outcomes and any clinical data collected in TCGA.
 
 ## cBioPortal
 
-The [cBioPortal](https://www.cbioportal.org/) user guide 
-defines the goal of the portal to be reducing "the barriers between complex 
-genomic data and cancer researchers by providing rapid, intuitive, and high-quality 
-access to molecular profiles and clinical attributes from large-scale cancer genomics projects, and 
+The [cBioPortal](https://www.cbioportal.org/) user guide
+defines the goal of the portal to be reducing "the barriers between complex
+genomic data and cancer researchers by providing rapid, intuitive, and high-quality
+access to molecular profiles and clinical attributes from large-scale cancer genomics projects, and
 therefore to empower researchers to translate these rich data sets into biologic insights and clinical applications."
 
 Bioconductor's cBioPortalData package simplifies access to over 300 genomic studies of
@@ -517,9 +520,9 @@ A pruned selection of records from the cBioPortal
 studies table is given in Table \@ref(tab:tab-cball).
 
 ```{r tab-cball,echo=FALSE}
-filt = allst |> dplyr::filter(!grepl("TCGA", name)) |> 
-  mutate(name=gsub(" \\(.*", "", name)) |> 
-  dplyr::select(name, description, studyId) |> as.data.frame() |> head(9) 
+filt = allst |> dplyr::filter(!grepl("TCGA", name)) |>
+  mutate(name=gsub(" \\(.*", "", name)) |>
+  dplyr::select(name, description, studyId) |> as.data.frame() |> head(9)
 kbl(filt, booktabs=TRUE,
     caption="Excerpts from four fields on selected records in the cBioPortal getStudies output.",
     longtable=TRUE) |> column_spec(1, width="12em") |> column_spec(2, width="15em")
@@ -631,7 +634,7 @@ details(wangmet)
 ## Ontologies
 
 Informal reasoning about cancer genomics employs conventional
-but frequently ambiguous terminology.  In modern 
+but frequently ambiguous terminology.  In modern
 information science, ontologies are structured vocabularies
 (sets of "terms", which may be single words or natural language
 phrases) accompanied by
@@ -640,7 +643,7 @@ explicit statements of semantic relationships among terms.
 Bioconductor provides several approaches for using ontologies
 in cancer data science.  The most familiar ontology
 in this domain is Gene Ontology (GO), which organizes vocabulary
-about genes and gene products in 
+about genes and gene products in
 the areas of molecular function, cellular components, and
 biological processes.
 
@@ -661,7 +664,7 @@ can be used to find mappings from the GO term to gene and protein
 identifiers.  This generates a fairly large table:
 ```{r useGO2, message=FALSE}
 library(org.Hs.eg.db)
-go139 = select(org.Hs.eg.db, keys="GO:0000139", keytype="GO", 
+go139 = select(org.Hs.eg.db, keys="GO:0000139", keytype="GO",
    columns=c("ENTREZID", "SYMBOL", "PFAM"))
 dim(go139)
 head(go139)
@@ -758,7 +761,7 @@ wflowtab[19,1] = "Subtyping"
 wflowtab[12,1] = "Literature mining"
 wflowtab = wflowtab[-10,]
 rownames(wflowtab) = NULL
-kbl(as.data.frame(wflowtab), booktabs=TRUE, longtable=TRUE, caption="Topical organization of packages with cancer applications.") %>% 
+kbl(as.data.frame(wflowtab), booktabs=TRUE, longtable=TRUE, caption="Topical organization of packages with cancer applications.") %>%
  column_spec(2, width="30em") %>%
  kable_styling("repeat_header")
 ```
@@ -768,58 +771,59 @@ illustration of their roles in cancer genomics.
 
 ## Packages supporting epigenomic analysis
 
-Bioconductor also provides a diverse array of packages for analysis of epigenome 
-data. Cancer is often studied under a developmental lens, so increasingly, studies 
-are measuring cell states using epigenomic methods. Epigenomics is the study of 
-chemical modifications and chromosomal conformations of DNA in a nucleus; in cancer 
-epigenomics, we study how the cancer epigenome differs among cancers and how 
-these relate to healthy epigenomes. As of 2023, Bioconductor includes 89 packages 
-under *Epigenetics* and 93 packages tagged under *FunctionalGenomics*, including dozens of tools 
-for analyzing a variety of epigenome assays, such as ATAC-seq, ChIP-seq, or 
-bisulfite-seq. Among these are also tools that handle more general analysis, such 
+Bioconductor also provides a diverse array of packages for analysis of epigenome
+data. Cancer is often studied under a developmental lens, so increasingly, studies
+are measuring cell states using epigenomic methods. Epigenomics is the study of
+chemical modifications and chromosomal conformations of DNA in a nucleus; in cancer
+epigenomics, we study how the cancer epigenome differs among cancers and how
+these relate to healthy epigenomes. As of 2023, Bioconductor includes 89 packages
+under *Epigenetics* and 93 packages tagged under *FunctionalGenomics*, including dozens of tools
+for analyzing a variety of epigenome assays, such as ATAC-seq, ChIP-seq, or
+bisulfite-seq. Among these are also tools that handle more general analysis, such
 as genomic region set enrichment.
 
-First, for ATAC-seq data, bioconductor packages include general-purpose pipelines, including scPipe(Tian et 
-al. 2018) (Tian et al. 2018) and esATAC(Wei et al. 2018) (Wei 
-et al. 2018), which start from fastq files and produce feature count 
-matrices. Alternatively, many practitioners elect to do general-purpose pipeline processing outside of 
-R, and then bring the processed data into R for statistical analysis, 
-visualization, and quality control. In this approach, ATACseqQC (Ou et al. 2018)provides 
-a variety of QC plots specific to ATAC-seq data (Ou et al. 2018).
+First, for ATAC-seq data, bioconductor packages include general-purpose pipelines, including scPipe
+[@Tian2018]
+and esATAC [@Wei2018], which start from fastq files and produce feature count
+matrices. Alternatively, many practitioners elect to do general-purpose pipeline processing outside of
+R, and then bring the processed data into R for statistical analysis,
+visualization, and quality control. In this approach, ATACseqQC
+provides
+a variety of QC plots specific to ATAC-seq data [@Ou2018].
 
-For DNA methylation, many popular packages have been developed to help with 
-all stages of a DNA methylation analysis. These include minfi (Aryee et 
-al. 2014), which specializes in methylation array analysis, biseq and bsseq (Hansen 
-et al. 2012) which provide fundamental infrastructure for sequencing-based assays, and RnBeads 
-(Mueller et al. 2019), which provides a comprehensive general-purpose analysis of DNA 
-methylation cohorts from arrays or sequencing-based assays. Other packages provide more specialized 
-analysis approaches, such as MIRA (Lawson et al. 2018), which  infers regulatory 
-activity of transcription factors using DNA methylation signals, (Sheffield et al. 2018), 
-or ELMER, which uses DNA methylation and gene expression in large cancer 
-cohorts to infer transcription factor networks (Silva et al. 2018). EpiDISH infer 
-the proportions of cell-types present in a bulk sample on the basis 
-of DNA methylation data (Zheng et al. 2018).
+For DNA methylation, many popular packages have been developed to help with
+all stages of a DNA methylation analysis. These include minfi [Aryee@2014],
+which specializes in methylation array analysis, biseq and bsseq [@Hansen2012] 
+which provide fundamental infrastructure for sequencing-based assays, and RnBeads
+[@Mueller2019], which provides a comprehensive general-purpose analysis of DNA
+methylation cohorts from arrays or sequencing-based assays. Other packages provide more specialized
+analysis approaches, such as MIRA [@Lawson2018], which  infers regulatory
+activity of transcription factors using DNA methylation signals, (Sheffield et al. 2018),
+or ELMER, which uses DNA methylation and gene expression in large cancer
+cohorts to infer transcription factor networks [@Silva2019]. EpiDISH infer
+the proportions of cell-types present in a bulk sample on the basis
+of DNA methylation data [@Zheng2018a].
 
-Another popular epigenome experiment is ChIP-seq, and Bioconductor delivers many packages in 
-this area. DiffBind (Stark and Brown 2011) is a popular approach for 
+Another popular epigenome experiment is ChIP-seq, and Bioconductor delivers many packages in
+this area. DiffBind [@Stark2011] is a popular approach for
 differential binding analysis of ChIP-seq peak data. <!-- [ More on ChIP seq to come ] -->
 
-A variety of packages are also geared toward visualization of this type 
-of data. GenomicDistributions (Kupkova 2022) provides a variety of plots for visualization 
-distributions of any type of genomic range data. The chromPlot package specializes 
-in plots across chromosomes. Then, there are several packages that deal with 
-unsupervised exploration of variation in data. PathwayPCA, MOFA2 (Argelaguet et al. 2020) 
-and COCOA (Lawson et al. 2020) can process any epigenomic signal data. 
-A variety of alternative approaches for enrichment analysis, which include LOLA (Sheffield 
-and Bock 2016), chipenrich, regionR (Gel et al. 2016), and FGNet (Aibar 
-et al. 2015). Annotation packages are popular as well. ChIPpeakAnno (Zhu 2010) 
-and annotatr (Cavalcante and Sartor 2017) are popular packages for annotating genomic 
-ranges. Bioconductor also provides data fetching mechanisms for epigenome data…
+A variety of packages are also geared toward visualization of this type
+of data. GenomicDistributions [@Kupkova2022] provides a variety of plots for visualization
+distributions of any type of genomic range data. The chromPlot package specializes
+in plots across chromosomes. Then, there are several packages that deal with
+unsupervised exploration of variation in epigenomic data. PathwayPCA, MOFA2 [@Argelaguet2020]
+and COCOA [@Lawson2020] can process any epigenomic signal data.
+A variety of alternative approaches for enrichment analysis, which include LOLA [@Sheffield2016],
+chipenrich, regionR [@Gel2015], and FGNet [@Aibar2015].
+Annotation packages are popular as well. ChIPpeakAnno [@Zhu2010]
+and annotatr [@Cavalcante2017] are popular packages for annotating genomic
+ranges.
 
 
 ## Some details on prediction of responsiveness to immune checkpoint blockade
 
-The National Cancer Institute website on checkpoint inhibitors 
+The National Cancer Institute website on checkpoint inhibitors
 in cancer immunotherapy @ICBnci
 lists 12 different cancer types
 amenable to treatment via immune checkpoint inhibition.
@@ -894,9 +898,9 @@ lpostn=log(as.numeric(assay(jbr["POSTN",]))+1)
 Figure \@ref(fig:dospat)
 
 ```{r dospat, fig.cap="Informal rendering of data from Visium studies of breast cancer described in Janesick et al. 2023.", out.width="100%", message=FALSE}
-strom = ggplot(colGeometries(jbr)$centroids, aes(colour=lpostn)) + 
+strom = ggplot(colGeometries(jbr)$centroids, aes(colour=lpostn)) +
   geom_sf(size=.01) + scale_color_viridis_c() + ggtitle("POSTN, stromal")
-fasn = ggplot(colGeometries(jbr)$centroids, aes(colour=lfasn)) + 
+fasn = ggplot(colGeometries(jbr)$centroids, aes(colour=lfasn)) +
   geom_sf(size=.01) + scale_color_viridis_c() + ggtitle("FASN, invasive")
 library(gridExtra)
 grid.arrange(strom, fasn, ncol=2)
@@ -922,7 +926,7 @@ package, submitted 27 September 2023.  The issue number
 at the contributions site is 3169.  This contribution is of
 particular interest as it addresses new data resources from
 whole genome and reduced representation bisulfite sequencing
-experiments.  Specifics on these high-resolution studies 
+experiments.  Specifics on these high-resolution studies
 of DNA methylation
 in a variety of clinical situtions are given below.
 
@@ -933,9 +937,9 @@ in a variety of clinical situtions are given below.
 
 Inheritance is a key feature of object-oriented programming (OOP) that allows us to define a new class out of existing classes and add new features, which provides reusability of code. Inheritance carries over attributes and methods defined for base classes; ‘Attributes’ are variables that are bound in a class. They are used to define behavior and methods for objects of that class. ‘Methods’ are functions defined within a class that receive an instance of the class, conventionally called self, as the first argument. The attributes defined for a base class will automatically be present in the derived class, and the methods for the base class will work for the derived class. The R programming language has three different class systems: S3, S4, and Reference. Inheritance in S3 classes does not have any fixed definition, and hence attributes of S3 objects can be arbitrary. Derived classes, however, inherit the methods defined for the base class. Inheritance in S4 classes is more structured, and derived classes inherit both attributes and methods of the parent class. Reference classes are similar to S4 classes, but they are mutable and have reference semantics.
 
-S4 classes are used extensively in Bioconductor to create data structures that store complex information, such as biological assay data and metadata, in one or more slots. The entire structure can then be assigned to an R object, and the types of information in each slot of the object are tightly controlled. S4 generics and methods define functions that can be applied to these objects, providing a rich software development infrastructure while ensuring interoperability, reusability, and efficiency. 
+S4 classes are used extensively in Bioconductor to create data structures that store complex information, such as biological assay data and metadata, in one or more slots. The entire structure can then be assigned to an R object, and the types of information in each slot of the object are tightly controlled. S4 generics and methods define functions that can be applied to these objects, providing a rich software development infrastructure while ensuring interoperability, reusability, and efficiency.
 
-Bioconductor have established Bioconductor classes to represent different types of biological data. Data and tools distributed through Bioconductor adopt Bioconductor classes, providing convenient methods and improving usability and interoperability within the Bioconductor ecosystem. 
+Bioconductor have established Bioconductor classes to represent different types of biological data. Data and tools distributed through Bioconductor adopt Bioconductor classes, providing convenient methods and improving usability and interoperability within the Bioconductor ecosystem.
 
 ```{r mktab,echo=FALSE,messages=FALSE}
 ltab = "Data Types:Bioconductor Classes
@@ -949,10 +953,10 @@ Single-cell data:SingleCellExperiment
 Mass spectrometry data:Spectra"
 x = read.delim(textConnection(ltab),sep=":",check.names=FALSE)
 suppressMessages({library(kableExtra)})
-kbl(x, booktabs=TRUE) 
+kbl(x, booktabs=TRUE)
 ```
 
-The GRanges class represents a collection of genomic ranges and associated annotations. Each element in the vector represents a set genomic ranges in terms of the sequence name (seqnames, typically the chromosome), start and end coordinates (ranges, as an IRanges object), strand (strand, either positive, negative, or unstranded), and optional metadata columns (e.g., exon_id and exon_name in the below). 
+The GRanges class represents a collection of genomic ranges and associated annotations. Each element in the vector represents a set genomic ranges in terms of the sequence name (seqnames, typically the chromosome), start and end coordinates (ranges, as an IRanges object), strand (strand, either positive, negative, or unstranded), and optional metadata columns (e.g., exon_id and exon_name in the below).
 
 ```
 GRanges object with 4 ranges and 2 metadata columns:
@@ -969,7 +973,7 @@ GRanges object with 4 ranges and 2 metadata columns:
 The GRangesList object serves as a container for genomic features consisting of multiple
 ranges that are grouped by a parent features, such as spliced transcripts that are
 comprised of exons. A GRangesList object behaves like a list and many of the same
-methods for GRanges objects are available for GRangesList object as well. 
+methods for GRanges objects are available for GRangesList object as well.
 
 The SummarizedExperiment class (see Figure \@ref(fig:sesc) is a matrix-like container, where rows represent features of interest (e.g., genes, transcripts, exons, etc.) and columns represent samples. The attributes of this object include experimental results (in assays), information on observations (in rowData) and samples (in colData), and additional metadata (in metadata). SummarizedExperiment objects can simultaneouly manage several experimental results as long as they are of the same dimensions. The best benefit of using SummarizedExperiment class is the coordination of the metadata and assays when subsetting. SummarizedExperiment is similar to the historical ExpressionSet class, but more flexible in its row information, allowing both GRanges and DataFrames. ExpressionSet object can be easily converted to SummarizedExperiment.
 
@@ -1011,9 +1015,9 @@ names(colData(demm))
 table(demm$metastatis_site)
 ```
 
-References to `demm` involve an 800MB excerpt of a 
+References to `demm` involve an 800MB excerpt of a
 prostate cancer atlas with a
-storage footprint of 40GB.  
+storage footprint of 40GB.
 Ideally,
 queries about particular genomic
 regions on particular samples, whole-sample statistical summaries,
@@ -1027,7 +1031,7 @@ gene ATM.
 ```{r getatm, message=FALSE}
 library(EnsDb.Hsapiens.v86)
 gg = genes(EnsDb.Hsapiens.v86)      # get gene addresses
-atmpos = gg[gg$gene_name == "ATM" & 
+atmpos = gg[gg$gene_name == "ATM" &
     gg$gene_biotype == "protein_coding"] # filter to ATM
 seqlevelsStyle(atmpos) = "UCSC"     # translate chr names
 assay(subsetByOverlaps(demm, atmpos+1e6))  # get betas
@@ -1046,7 +1050,7 @@ Figure \@ref(fig:qapic) is an overview of the periodic ecosystem
 testing process for Bioconductor software packages in the
 release branch.  All Bioconductor
 and CRAN packages on which they depend are present and are updated
-on change to sources.  
+on change to sources.
 
 ```{r qapic, echo=FALSE, fig.cap="Build report for Bioc 3.18, 12-29-2023.", out.width="121%"}
 knitr::include_graphics("QApage.jpg")
@@ -1069,7 +1073,7 @@ then removed.
 
 The Bioconductor project has undertaken a number
 of initiatives to support growth of the
-scientific workforce's capacity to efficiently 
+scientific workforce's capacity to efficiently
 integrate and interpret
 genome-scale experiments.
 
@@ -1079,7 +1083,7 @@ practices in lesson design and development, and open source
 collaboration skills".  Bioconductor community members have
 created bioc-intro, bioc-project, and bioc-rnaseq repositories
 using The Carpentries Incubator template.  This arrangement helps
-Bioconductor create and manage a "train the trainer" process 
+Bioconductor create and manage a "train the trainer" process
 according to tested pedagogical principles.
 
 - **Curating monographs for topics in genomic data science.**  The
@@ -1107,7 +1111,7 @@ Given a kubernetes-enabled cluster
 the workshop system assembles
 
 - compute and storage elements,
-- static components (training texts and shareable data), 
+- static components (training texts and shareable data),
 - development environments (containers with all runtime elements
 required to compiled code, conduct analyses, communicate with GPUs).
 
@@ -1115,7 +1119,7 @@ required to compiled code, conduct analyses, communicate with GPUs).
 knitr::include_graphics("WorkshopSCHEMA.png")
 ```
 
-A lightly customized deployment of the Galaxy system (usegalaxy.org) 
+A lightly customized deployment of the Galaxy system (usegalaxy.org)
 is used to deal with authentication
 and process initiation and termination.
 
@@ -1137,7 +1141,7 @@ system with a Docker client.
 
 We have described several aspects of
 Bioconductor's approach to ecosystem management for cancer
-genomics data science resources.  In light of 
+genomics data science resources.  In light of
 the dynamism
 of biotechnological innovation, it is clear that the project
 must anticipate change.  But it is challenging to introduce
@@ -1200,7 +1204,7 @@ This work was supported in part by NIH NCI 3U24CA180996-10S1, NHGRI 5U24HG004059
 
 # Appendix 1 - Bioconductor software packages with 'cancer' in package description {#app1}
 
-Quoted text is the content of the Description element of the package DESCRIPTION.  Names following the 
+Quoted text is the content of the Description element of the package DESCRIPTION.  Names following the
 text are as reported in the Authors field.
 
 ```{r tab-fintab, caption="Bioconductor packages mentioning cancer in package description.", echo=FALSE}
@@ -1214,7 +1218,7 @@ kbl(as.data.frame(candesc2), booktabs=TRUE, longtable=TRUE) %>% column_spec(2, w
 
 # Appendix 2 - Bioconductor data packages with 'cancer' in package description {#app2}
 
-Quoted text is the content of the Description element of the package DESCRIPTION.  Names following the 
+Quoted text is the content of the Description element of the package DESCRIPTION.  Names following the
 text are as reported in the Authors field.
 
 ```{r tab-fintab2, caption="Bioconductor 'experimental data packages' mentioning cancer in package description.", echo=FALSE}
@@ -1227,7 +1231,7 @@ kbl(as.data.frame(datadesc2), booktabs=TRUE, longtable=TRUE) %>% column_spec(2, 
 # Appendix 3 - Software packages used in the construction of Figure \@ref(fig:easfin)  {#app3}
 
 ```{r tab-fintab3, caption="Software packages used in the construction of the 'easier' vignette.", echo=FALSE}
-kbl(as.data.frame(easvig), booktabs=TRUE, longtable=TRUE) %>% 
+kbl(as.data.frame(easvig), booktabs=TRUE, longtable=TRUE) %>%
  kable_styling("repeat_header")
 ```
 
