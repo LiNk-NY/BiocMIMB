@@ -1,6 +1,12 @@
 ---
 title: "Bioconductor's Computational Ecosystem for Genomic Data Science in Cancer"
 author: 
+  - name: Dario Righelli
+    affiliation:  Department of Statistical Sciences, University of Padova, Padova, IT
+    orcid: 0000-0003-1504-3583
+  - name: Davide Risso
+    affiliation:  Department of Statistical Sciences, University of Padova, Padova, IT
+    orcid: 0000-0001-8508-5012
   - name: Marcel Ramos
     affiliation:  City University of New York School of Public Health, New York, NY
     orcid: 0000-0002-3242-0582
