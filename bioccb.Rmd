@@ -82,6 +82,8 @@ output:
     number_sections: yes
     keep_tex: true
 bibliography: library.bib
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r helpercode,echo=FALSE,message=FALSE,results="hide"}
@@ -924,10 +926,52 @@ used to produce this analysis.
 ## Representing and visualizing a spatial transcriptomics experiment
 
 Spatial Transcriptomics experiments can be divided in two major families,
-spot-based (i.e. 10x genomics Visium [ref], Slide-seq [ref]) and molecule-based (i.e. MERFISH[ref], seqFISH(+) [ref], CosMx [ref]), . The first one collects, together with the expression of the transcripts the coordinates of barcoded spots, which, depending on the technology could be represented by a small hole on a slide where the cells falls or a bead where the transcripts are ligate.
-On the other hand, the latter family detects pre-defined panel of transcripts in-loco by combining fluorescent probes through the FISH technique.
+spot-based (i.e. 10x genomics Visium [ref], Slide-seq [ref]) and molecule-based 
+(i.e. MERFISH[ref], seqFISH(+) [ref], CosMx [ref]), . The first one collects, 
+together with the expression of the transcripts the coordinates of barcoded 
+spots, which, depending on the technology could be represented by a small hole 
+on a slide where the cells falls or a bead where the transcripts are ligate.
+On the other hand, the latter family detects pre-defined panel of transcripts 
+in-loco by combining fluorescent probes through the FISH technique.
 In both cases the number of trascripts depends on the adopted technology.
-To handle spatial trancriptomics technololgies in the Bioconductor project it's possible to find multiple approaches  
+To handle spatial trancriptomics technololgies in the Bioconductor project it's 
+possible to find multiple approaches.
+The SpatialExperiment infrastructure [ref] allows to handle both technology 
+families by aid of the `SpatialExperiment` class, allowing to easily store and 
+manipulate the data.
+The TENxVisiumData package provides a collection of 13 datasets from
+23 samples across two organisms (human and mouse) and 13 tissues from the 
+official 10xGenomics website, of which 5 are related to cancer.
+
+In particular we recognize 2 Human Breast Cancer (retrievable with `HumanBreastCancerIDC`, `HumanBreastCancerILC`), 1 Human Colorectal Cancer (`HumanColorectalCancer`), 1 Human Glioblastoma (`HumanGlioblastoma`) and 1 HumanOvarianCancer (`HumanOvarianCancer`).
+
+```{r}
+library(TENxVisiumData)
+library(BayesSpace)
+hbc <- HumanBreastCancerIDC()
+hbc <- hbc[,hbc$sample_id=="HumanBreastCancerIDC1"]
+hbc <- spatialPreprocess(hbc, platform="Visium", n.PCs=7, n.HVGs=2000)
+BiocManager::install("ggspavis")
+library(ggspavis)
+hbc$in_tissue =TRUE
+plotSpots(hbc)
+# bayesspace works with SingleCellExperiment with coordinates as row 
+# and col in colData
+hbc$row <- spatialCoords(hbc)[,2]
+hbc$col <- spatialCoords(hbc)[,1]
+hbc$imagerow <- spatialCoords(hbc)[,2]
+hbc$imagecol <- spatialCoords(hbc)[,1]
+hbc <- qTune(hbc, qs=seq(2, 10), platform="Visium", d=7)
+qPlot(hbc)
+
+hbc <- spatialCluster(hbc, q=9, platform="Visium", d=7,
+                           init.method="mclust", model="t", gamma=2,
+                           nrep=1000, burn.in=100,
+                           save.chain=TRUE)
+table(hbc$cluster.init, hbc$spatial.cluster)
+clusterPlot(hbc)
+```
+
 
 ```{r spatchunk, message=FALSE,cache=FALSE}
 library(SpatialFeatureExperiment)
