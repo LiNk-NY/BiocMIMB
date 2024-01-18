@@ -318,6 +318,7 @@ and the table are linked together in the SummarizedExperiment; see Figure \@ref(
 ```{r sesc, echo=FALSE, fig.cap="SummarizedExperiment schematic.", out.width="80%"}
 knitr::include_graphics("SEschema.png")
 ```
+
 Multiple representations of assay results may be managed in this
 structure, but all assay arrays must have dimensions $G \times N$.
 
@@ -327,6 +328,7 @@ to multiple genome-scale assays, MultiAssayExperiment containers are used. See F
 ```{r masc, echo=FALSE, fig.cap="MultiAssayExperiment schematic.", out.width="80%"}
 knitr::include_graphics("MAEschema.png")
 ```
+
 Further details on these data structures will be provided in section \@ref(class).
 
 ## Downloading and caching cancer genomics data and annotations {#cache}
@@ -363,8 +365,8 @@ the reproducibility of analyses across different laboratories.
 The curatedTCGAData package provides some resources through
 ExperimentHub, as do many other self-identified "CancerData" resources. Once the
 ExperimentHub is loaded, it can be queried for terms of interest. 
-
-```{r useeh} <!-- , fig.cap="ExperimentHub attachment, retrieval, query, and response when seeking cancer-related data.", message=FALSE} -->
+<!-- , fig.cap="ExperimentHub attachment, retrieval, query, and response when seeking cancer-related data.", message=FALSE} -->
+```{r useeh} 
 library(ExperimentHub)
 eh <- ExperimentHub()
 query(eh, "CancerData")
@@ -437,6 +439,7 @@ for breast cancer, glioblastoma, and lung adenocarcinoma.")
 ### An example dataset for RNA-seq from glioblastoma multiforme
 
 We obtain normalized RNA-seq data on primary tumor samples for GBM with
+
 ```{r getgb, cache=FALSE,message=FALSE}
 gbrna = TCGAprimaryTumors(curatedTCGAData("GBM", 
     "RNASeq2GeneNorm", dry.run=FALSE, version="2.1.1"))
@@ -630,6 +633,7 @@ EnsDb.Hsapiens.v86
 
 The "genes" method provides addresses and additional
 annotations.
+
 ```{r lkgens}
 names(mcols(genes(EnsDb.Hsapiens.v86)))
 head(table(genes(EnsDb.Hsapiens.v86)$gene_biotype))
@@ -648,6 +652,7 @@ is curated at Broad Institute, and can be harvested
 using the msigdb package.
 
 Collect all gene sets for humans:
+
 ```{r trymsig,message=FALSE,cache=FALSE}
 library(msigdb)
 hssigs = getMsigdb(org="hs", id="SYM", version=getMsigdbVersions())
@@ -918,6 +923,11 @@ used to produce this analysis.
 
 ## Representing and visualizing a spatial transcriptomics experiment
 
+Spatial Transcriptomics experiments can be divided in two major families,
+spot-based (i.e. 10x genomics Visium [ref], Slide-seq [ref]) and molecule-based (i.e. MERFISH[ref], seqFISH(+) [ref], CosMx [ref]), . The first one collects, together with the expression of the transcripts the coordinates of barcoded spots, which, depending on the technology could be represented by a small hole on a slide where the cells falls or a bead where the transcripts are ligate.
+On the other hand, the latter family detects pre-defined panel of transcripts in-loco by combining fluorescent probes through the FISH technique.
+In both cases the number of trascripts depends on the adopted technology.
+To handle spatial trancriptomics technololgies in the Bioconductor project it's possible to find multiple approaches  
 
 ```{r spatchunk, message=FALSE,cache=FALSE}
 library(SpatialFeatureExperiment)
