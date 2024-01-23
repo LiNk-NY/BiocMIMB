@@ -925,51 +925,157 @@ used to produce this analysis.
 
 ## Representing and visualizing a spatial transcriptomics experiment
 
-Spatial Transcriptomics experiments can be divided in two major families,
-spot-based (i.e. 10x genomics Visium [ref], Slide-seq [ref]) and molecule-based 
-(i.e. MERFISH[ref], seqFISH(+) [ref], CosMx [ref]), . The first one collects, 
-together with the expression of the transcripts the coordinates of barcoded 
-spots, which, depending on the technology could be represented by a small hole 
-on a slide where the cells falls or a bead where the transcripts are ligate.
-On the other hand, the latter family detects pre-defined panel of transcripts 
-in-loco by combining fluorescent probes through the FISH technique.
-In both cases the number of trascripts depends on the adopted technology.
-To handle spatial trancriptomics technololgies in the Bioconductor project it's 
-possible to find multiple approaches.
-The SpatialExperiment infrastructure [ref] allows to handle both technology 
-families by aid of the `SpatialExperiment` class, allowing to easily store and 
-manipulate the data.
-The TENxVisiumData package provides a collection of 13 datasets from
+<!-- Spatial Transcriptomics experiments can be divided in two major families, -->
+<!-- spot-based (i.e. 10x genomics Visium [ref], Slide-seq [ref]) and molecule-based  -->
+<!-- (i.e. MERFISH[ref], seqFISH(+) [ref], CosMx [ref]), . The first one collects,  -->
+<!-- together with the expression of the transcripts the coordinates of barcoded  -->
+<!-- spots, which, depending on the technology could be represented by a small hole -->
+<!-- on a slide where the cells falls or a bead where the transcripts are ligate. -->
+<!-- On the other hand, the latter family detects pre-defined panel of transcripts  -->
+<!-- in-loco by combining fluorescent probes through the FISH technique. -->
+<!-- In both cases the number of trascripts depends on the adopted technology. -->
+<!-- To handle spatial trancriptomics technololgies in the Bioconductor project -->
+<!-- it's possible to find multiple approaches. -->
+The Bioconductor project offers multiple approaches to handle and manupulate  
+spatial transcriptomics (ST) data.
+The SpatialExperiment infrastructure [ref] allows to handle different technology
+families by aid of the `SpatialExperiment` class, which hinerits from the SingleCellExperiment class, allowing to easily store and manipulate such data.
+The same infrastructure provides the ggspavis package for the data visualization and two ExperimentHub packages allowing to download
+multiple ST datasets. 
+The STexampleData is a collection of small dataset of different technologies mostly of human and mouse brain tissue.
+While the TENxVisiumData package provides a collection of 13 datasets from
 23 samples across two organisms (human and mouse) and 13 tissues from the 
 official 10xGenomics website, of which 5 are related to cancer.
+In particular, we recognize 2 Human Breast Cancer (retrievable with `HumanBreastCancerIDC`, `HumanBreastCancerILC`), 1 Human Colorectal Cancer (`HumanColorectalCancer`), 1 Human Glioblastoma (`HumanGlioblastoma`) and 1 HumanOvarianCancer (`HumanOvarianCancer`).
 
-In particular we recognize 2 Human Breast Cancer (retrievable with `HumanBreastCancerIDC`, `HumanBreastCancerILC`), 1 Human Colorectal Cancer (`HumanColorectalCancer`), 1 Human Glioblastoma (`HumanGlioblastoma`) and 1 HumanOvarianCancer (`HumanOvarianCancer`).
+Here we use the `HumanBreastCancerIDC` dataset by selecting one of the two
+samples and we plot the coordinates, as spots, with the ggspavis package.
 
 ```{r}
 library(TENxVisiumData)
-library(BayesSpace)
 hbc <- HumanBreastCancerIDC()
 hbc <- hbc[,hbc$sample_id=="HumanBreastCancerIDC1"]
-hbc <- spatialPreprocess(hbc, platform="Visium", n.PCs=7, n.HVGs=2000)
-BiocManager::install("ggspavis")
 library(ggspavis)
 hbc$in_tissue =TRUE
-plotSpots(hbc)
-# bayesspace works with SingleCellExperiment with coordinates as row 
-# and col in colData
-hbc$row <- spatialCoords(hbc)[,2]
-hbc$col <- spatialCoords(hbc)[,1]
-hbc$imagerow <- spatialCoords(hbc)[,2]
-hbc$imagecol <- spatialCoords(hbc)[,1]
-hbc <- qTune(hbc, qs=seq(2, 10), platform="Visium", d=7)
-qPlot(hbc)
+plotSpots(hbc, y_reverse=FALSE)
+```
 
-hbc <- spatialCluster(hbc, q=9, platform="Visium", d=7,
-                           init.method="mclust", model="t", gamma=2,
-                           nrep=1000, burn.in=100,
-                           save.chain=TRUE)
-table(hbc$cluster.init, hbc$spatial.cluster)
-clusterPlot(hbc)
+
+<!-- We notice that the image is rotated respect to the spots coordinate so we can  -->
+<!-- rotate it thanks to SpatialExperiment features -->
+<!-- ```{r} -->
+<!-- plot(imgRaster(hbc)) -->
+<!-- spi <- rotateImg(hbc, "HumanBreastCancerIDC1", "lowres", -90) -->
+<!-- plot(imgRaster(spi)) -->
+<!-- ``` -->
+
+
+```{r}
+is_mito <- grepl("(^MT-)|(^mt-)", rowData(hbc)$symbol)
+library(scater)
+hbc <- addPerCellQC(hbc, subsets = list(mito = is_mito))
+head(colData(hbc), 3)
+
+spe <- hbc
+# par(mfrow = c(1, 4))
+# hist(colData(spe)$sum, xlab = "sum", main = "UMIs per spot")
+# hist(colData(spe)$detected, xlab = "detected", main = "Genes per spot")
+# hist(colData(spe)$subsets_mito_percent, xlab = "percent mitochondrial", main = "Percent mito UMIs")
+# qc_lib_size <- colData(spe)$sum < 600
+# qc_detected <- colData(spe)$detected < 400
+# qc_mito <- colData(spe)$subsets_mito_percent > 28
+# apply(cbind(qc_lib_size, qc_detected, qc_mito), 2, sum)
+# discard <- qc_lib_size | qc_detected | qc_mito
+# table(discard)
+# colData(spe)$discard <- discard
+# 
+# BiocManager::install("nnSVG")
+library(nnSVG)
+## needed because the column name is hard coded in the nnSVG::filter_genes function 
+rowData(spe)$gene_name <- rowData(spe)$symbol 
+spe <- filter_genes(spe)
+spe <- computeLibraryFactors(spe)
+spe <- logNormCounts(spe)
+spe <- nnSVG(spe)
+library(SpatialExperiment)
+spe <- spe[order(rowData(spe)$rank),]
+# spe <- readRDS("~/Downloads/spennsvg.Rds")
+library(ggspavis)
+plotSpots(spe)
+gnr1 <- rowData(spe)$symbol[1]
+rownames(spe) <- rowData(spe)$symbol
+
+df <- as.data.frame(
+  cbind(spatialCoords(spe), 
+        expr = counts(spe)[1, ]))
+
+ggplot(df, aes(x = pxl_col_in_fullres, y = pxl_row_in_fullres, color = expr)) + 
+  geom_point(size = 0.8) + 
+  coord_fixed() + 
+  scale_y_reverse() + 
+  scale_color_gradient(low = "gray90", high = "blue", 
+                       trans = "sqrt", breaks = range(df$expr), 
+                       name = "counts") + 
+  ggtitle(gnr1) + 
+  theme_bw() + 
+  theme(plot.title = element_text(face = "italic"), 
+        panel.grid = element_blank(), 
+        axis.title = element_blank(), 
+        axis.text = element_blank(), 
+        axis.ticks = element_blank())
+
+# melanoma <- getRDS(dataset="2018_thrane_melanoma", sample="ST_mel1_rep2")
+# # bayesspace works with SingleCellExperiment with coordinates as row 
+# # and col in colData
+# gbm <- HumanGlioblastoma()
+# table(gbm$sample_id)
+# pos <- read.csv("/Users/inzirio/Library/CloudStorage/GoogleDrive-drighelli@gmail.com/My Drive/works/PABSTR/papers/BiocMIMB/spatial/tissue_positions_list.csv", header=FALSE)
+# colnames(pos) <- c("barcode", "in_tissue", "array_row", "array_col", "pxl_row_in_fullres", "pxl_col_in_fullres")
+# pos <- pos[pos$in_tissue,]
+# pos$barcode
+# idx <- match(colnames(altExp(gbm)), pos$barcode)
+# 
+# # length(idx)
+# sum(is.na(idx))
+# # 
+# urls <- list(WholeTranscriptome = list(
+#     "https://cf.10xgenomics.com/samples/spatial-exp/1.2.0/Parent_Visium_Human_Glioblastoma",
+#     "Parent_Visium_Human_Glioblastoma_filtered_feature_bc_matrix.tar.gz",
+#     "Parent_Visium_Human_Glioblastoma_spatial.tar.gz"))
+# urls
+# # 
+# # hbc$row <- rank(spatialCoords(hbc)[,2])
+# # hbc$col <- rank(spatialCoords(hbc)[,1])
+# # hbc$imagerow <- spatialCoords(hbc)[,2]
+# # hbc$imagecol <- spatialCoords(hbc)[,1]
+# set.seed(102)
+# melanoma <- spatialPreprocess(melanoma, platform="ST", 
+#                               n.PCs=7, n.HVGs=2000, log.normalize=FALSE)
+# hbc <- qTune(melanoma, qs=seq(2, 10), platform="ST", d=7)
+# qPlot(hbc)
+# melanoma <- hbc
+# set.seed(149)
+# melanoma <- spatialCluster(melanoma, q=4, platform="ST", d=7,
+#                            init.method="mclust", model="t", gamma=2,
+#                            nrep=1000, burn.in=100,
+#                            save.chain=TRUE)
+# # head(colData(melanoma))
+# # clusterPlot(melanoma)
+# library(ggplot2)
+# clusterPlot(melanoma, palette=c("purple", "red", "blue", "yellow"), color="black") +
+#   theme_bw() +
+#   xlab("Column") +
+#   ylab("Row") +
+#   labs(fill="BayesSpace\ncluster", title="Spatial clustering of ST_mel1_rep2")
+# # hbc <- spatialCluster(hbc, q=9, platform="Visium", d=7,
+#                            init.method="mclust", model="t", gamma=2,
+#                            nrep=1000, burn.in=100,
+#                            save.chain=TRUE)
+# table(hbc$cluster.init, hbc$spatial.cluster)
+# clusterPlot(hbc)
+
+## spatialDE / NNsvg 
+
 ```
 
 
