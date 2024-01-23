@@ -1015,6 +1015,17 @@ ggplot(df, aes(x = pxl_col_in_fullres, y = pxl_row_in_fullres, color = expr)) +
         axis.ticks = element_blank())
 ```
 
+The SpatialFeatureExperiment [ref] is a class inherithing from the 
+SpatialExperiment class, by integrating sf objects useful for spatial geometry 
+and statistics already implemented in the CRAN sf package.
+
+It also provides 9 datasets from 6 different technologies and tissues in the
+SFEData package.
+
+We specifically recognize 4 datasets related to cancer, melaanoma brain and extracranial metastasis (`BiermannMelaMetasData`), human breast cancer (`JanesickBreastData`) and
+lung cancer (`HeNSCLCData`), 
+
+Here we show how the data of the breast cancer dataset are distributed and how this expression varies in the tissue.
 
 ```{r spatchunk, message=FALSE,cache=FALSE}
 library(SpatialFeatureExperiment)
