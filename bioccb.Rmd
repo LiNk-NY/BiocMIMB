@@ -976,6 +976,7 @@ tissue spatial domains by fitting nearest-neighbor Gaussian processes.
 ```{r}
 library(scater)
 library(nnSVG)
+library(scran)
 #preprocessing
 is_mito <- grepl("(^MT-)|(^mt-)", rowData(hbc)$symbol)
 hbc <- addPerCellQC(hbc, subsets = list(mito = is_mito))
@@ -985,6 +986,7 @@ hbc <- filter_genes(hbc)
 hbc <- computeLibraryFactors(hbc)
 hbc <- logNormCounts(hbc)
 hvgs <- getTopHVGs(hbc, n=1000)
+hbc <- hbc[hvgs,]
 hbc <- nnSVG(hbc)
 hbc <- hbc[order(rowData(hbc)$rank),]
 # hbc <- readRDS("~/Downloads/spennsvg.Rds")
@@ -995,6 +997,7 @@ rownames(hbc) <- rowData(hbc)$symbol
 We now visualize the most spatially variable gene identified by nnSVG.
 
 ```{r}
+library(ggplot2)
 df <- as.data.frame(
   cbind(spatialCoords(hbc), 
         expr = counts(hbc)[1, ]))
