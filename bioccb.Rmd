@@ -923,7 +923,7 @@ establishing predictions of response to ICB.
 Appendix \@ref(app3) provides the names and versions of all packages
 used to produce this analysis.
 
-## Representing and visualizing a spatial transcriptomics experiment
+## Representing and visualizing spatial transcriptomics experiments
 
 <!-- Spatial Transcriptomics experiments can be divided in two major families, -->
 <!-- spot-based (i.e. 10x genomics Visium [ref], Slide-seq [ref]) and molecule-based  -->
@@ -936,17 +936,21 @@ used to produce this analysis.
 <!-- In both cases the number of trascripts depends on the adopted technology. -->
 <!-- To handle spatial trancriptomics technololgies in the Bioconductor project -->
 <!-- it's possible to find multiple approaches. -->
-The Bioconductor project offers multiple approaches to handle and manupulate  
+The Bioconductor project offers multiple approaches to handle and manipulate  
 spatial transcriptomics (ST) data.
-The SpatialExperiment infrastructure [ref] allows to handle different technology
-families by aid of the `SpatialExperiment` class, which hinerits from the SingleCellExperiment class, allowing to easily store and manipulate such data.
-The same infrastructure provides the ggspavis package for the data visualization and two ExperimentHub packages allowing to download
+The SpatialExperiment infrastructure [@rig22] allows to handle different technology
+families by aid of the `SpatialExperiment` class, which inherits from the 
+SingleCellExperiment class, allowing to easily store and manipulate such data.
+The same infrastructure provides the ggspavis package for the data visualization 
+and two ExperimentHub packages allowing to download
 multiple ST datasets. 
-The STexampleData is a collection of small dataset of different technologies mostly of human and mouse brain tissue.
+The STexampleData is a collection of small datasets of different technologies 
+mostly of human and mouse brain tissue.
 While the TENxVisiumData package provides a collection of 13 datasets from
 23 samples across two organisms (human and mouse) and 13 tissues from the 
-official 10xGenomics website, of which 5 are related to cancer.
-In particular, we recognize 2 Human Breast Cancer (retrievable with `HumanBreastCancerIDC`, `HumanBreastCancerILC`), 1 Human Colorectal Cancer (`HumanColorectalCancer`), 1 Human Glioblastoma (`HumanGlioblastoma`) and 1 HumanOvarianCancer (`HumanOvarianCancer`).
+official 10x-Genomics website, of which 5 are related to cancer.
+In particular, we recognize 2 Human Breast Cancer (retrievable with `HumanBreastCancerIDC`, `HumanBreastCancerILC`), 1 Human Colorectal Cancer (`HumanColorectalCancer`), 
+1 Human Glioblastoma (`HumanGlioblastoma`) and 1 HumanOvarianCancer (`HumanOvarianCancer`).
 
 Here we use the `HumanBreastCancerIDC` dataset by selecting one of the two
 samples and we plot the coordinates, as spots, with the ggspavis package.
@@ -970,9 +974,10 @@ plotSpots(hbc, y_reverse=FALSE)
 <!-- plot(imgRaster(spi)) -->
 <!-- ``` -->
 
-To investigate the spatially variable genes the nnSVG package in Bioconductor 
+To investigate the spatially variable genes the nnSVG package [@webr23] in Bioconductor 
 implements a method for the detection of genes which expression varies in the
 tissue spatial domains by fitting nearest-neighbor Gaussian processes.
+
 ```{r}
 library(scater)
 library(nnSVG)
@@ -994,7 +999,10 @@ gnr1 <- rowData(hbc)$symbol[1]
 rownames(hbc) <- rowData(hbc)$symbol
 ```
 
-We now visualize the most spatially variable gene identified by nnSVG.
+By ranking the results of nnSVG, we are able to detect the most spatially 
+variable genes. 
+Here we show how the top identified gene spatially varies across the spots in
+our experiment.
 
 ```{r}
 library(ggplot2)
@@ -1018,17 +1026,20 @@ ggplot(df, aes(x = pxl_col_in_fullres, y = pxl_row_in_fullres, color = expr)) +
         axis.ticks = element_blank())
 ```
 
-The SpatialFeatureExperiment [ref] is a class inherithing from the 
-SpatialExperiment class, by integrating sf objects useful for spatial geometry 
+The SpatialFeatureExperiment [@moses23] is a class inheriting from the 
+SpatialExperiment class, by integrating `sf` objects useful for spatial geometry 
 and statistics already implemented in the CRAN sf package.
 
 It also provides 9 datasets from 6 different technologies and tissues in the
 SFEData package.
 
-We specifically recognize 4 datasets related to cancer, melaanoma brain and extracranial metastasis (`BiermannMelaMetasData`), human breast cancer (`JanesickBreastData`) and
+We specifically recognize 4 datasets related to cancer, melaanoma brain and 
+extracranial metastasis (`BiermannMelaMetasData`), human breast cancer 
+(`JanesickBreastData`) and
 lung cancer (`HeNSCLCData`), 
 
-Here we show how the data of the breast cancer dataset are distributed and how this expression varies in the tissue.
+Here we show how the data of the breast cancer dataset are distributed and how 
+this expression varies in the tissue.
 
 ```{r spatchunk, message=FALSE,cache=FALSE}
 library(SpatialFeatureExperiment)
