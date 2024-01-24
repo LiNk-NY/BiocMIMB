@@ -1,12 +1,6 @@
 ---
 title: "Bioconductor's Computational Ecosystem for Genomic Data Science in Cancer"
 author: 
-  - name: Dario Righelli
-    affiliation:  Department of Statistical Sciences, University of Padova, Padova, IT
-    orcid: 0000-0003-1504-3583
-  - name: Davide Risso
-    affiliation:  Department of Statistical Sciences, University of Padova, Padova, IT
-    orcid: 0000-0001-8508-5012
   - name: Marcel Ramos
     affiliation:  City University of New York School of Public Health, New York, NY
     orcid: 0000-0002-3242-0582
@@ -23,6 +17,12 @@ author:
     affiliation: Fred Hutchinson Cancer Center, Seattle, WA
   - name: Jen Wokaty
     affiliation:  City University of New York School of Public Health, New York, NY
+  - name: Dario Righelli
+    affiliation:  Department of Statistical Sciences, University of Padova, Padova, Italy
+    orcid: 0000-0003-1504-3583
+  - name: Davide Risso
+    affiliation:  Department of Statistical Sciences, University of Padova, Padova, Italy
+    orcid: 0000-0001-8508-5012
   - name: Sean Davis
     affiliation: University of Colorado Anschutz School of Medicine, Aurora, CO
     orcid: 0000-0002-8991-6458
@@ -99,7 +99,9 @@ needed = c("curatedTCGAData", "TCGAutils", "dplyr", "kableExtra", "TCGAutils",
 "survival", "GGally", "cBioPortalData", "GenomicRanges", "ggplot2",
 "BiocFileCache", "ExperimentHub", "AnnotationHub", "TumourMethData",
 "BiocStyle", "ensembldb", "rols", "GO.db", "msigdb", "easierData",
-"SpatialFeatureExperiment", "SFEData", "EnsDb.Hsapiens.v86")
+"SpatialFeatureExperiment", "SFEData", "EnsDb.Hsapiens.v86",
+"SpatialExperiment", "TENxVisiumData", "ggspavis", "nnSVG", "scater", "scran",
+"Voyager")
 ii = rownames(installed.packages())
 need = setdiff(needed, ii)
 if (length(need)>0) {
@@ -925,121 +927,95 @@ used to produce this analysis.
 
 ## Representing and visualizing spatial transcriptomics experiments
 
-<!-- Spatial Transcriptomics experiments can be divided in two major families, -->
-<!-- spot-based (i.e. 10x genomics Visium [ref], Slide-seq [ref]) and molecule-based  -->
-<!-- (i.e. MERFISH[ref], seqFISH(+) [ref], CosMx [ref]), . The first one collects,  -->
-<!-- together with the expression of the transcripts the coordinates of barcoded  -->
-<!-- spots, which, depending on the technology could be represented by a small hole -->
-<!-- on a slide where the cells falls or a bead where the transcripts are ligate. -->
-<!-- On the other hand, the latter family detects pre-defined panel of transcripts  -->
-<!-- in-loco by combining fluorescent probes through the FISH technique. -->
-<!-- In both cases the number of trascripts depends on the adopted technology. -->
-<!-- To handle spatial trancriptomics technololgies in the Bioconductor project -->
-<!-- it's possible to find multiple approaches. -->
 The Bioconductor project offers multiple approaches to handle and manipulate  
 spatial transcriptomics (ST) data.
-The SpatialExperiment infrastructure [@rig22] allows to handle different technology
-families by aid of the `SpatialExperiment` class, which inherits from the 
-SingleCellExperiment class, allowing to easily store and manipulate such data.
-The same infrastructure provides the ggspavis package for the data visualization 
-and two ExperimentHub packages allowing to download
-multiple ST datasets. 
-The STexampleData is a collection of small datasets of different technologies 
-mostly of human and mouse brain tissue.
-While the TENxVisiumData package provides a collection of 13 datasets from
-23 samples across two organisms (human and mouse) and 13 tissues from the 
-official 10x-Genomics website, of which 5 are related to cancer.
-In particular, we recognize 2 Human Breast Cancer (retrievable with `HumanBreastCancerIDC`, `HumanBreastCancerILC`), 1 Human Colorectal Cancer (`HumanColorectalCancer`), 
-1 Human Glioblastoma (`HumanGlioblastoma`) and 1 HumanOvarianCancer (`HumanOvarianCancer`).
+The SpatialExperiment class [@rig22] is designed to be a lightweight,
+technology-agnostic container. By inheriting from the 
+SingleCellExperiment class, it unlocks the use in ST data of 
+analysis packages designed for single-cell data, such as scater for exploration
+and QC, and scran for normalization.
+SpatialFeatureExperiment [@moses23] extends SpatialExperiment to easily 
+reuse polygons and other spatial geometry features from geospatial CRAN 
+packages, such as sf. See also MoleculeExperiment [@Couto2023] for a different
+approach based on the data.table package.
 
-Here we use the `HumanBreastCancerIDC` dataset by selecting one of the two
-samples and we plot the coordinates, as spots, with the ggspavis package.
+In addition to data containers, Bioconductor provides a rich set of ST data.
+The STexampleData and SFEData packages contain a collection of datasets from 
+different technologies and tissues.
+The TENxVisiumData package provides a collection of 13 in-house 10X Genomics 
+Visium datasets from 23 samples across two organisms (human and mouse) and 13 
+tissues.
+The MerfishData package contains two annotated samples assayd with the MERFISH
+in-situ imaging protocol.
 
-```{r}
+Finally, Bioconductor offers a growing collection of analysis methods tailored 
+for spot-based and in-situ ST data, including methods for visualization,
+data exploration and quality control, spot deconvolution,
+spatially-aware clustering, and identification of spatially-variable genes.
+
+To show a simple example of an analysis workflow on spot-based data,
+we explore a fresh frozen 
+Invasive Ductal Carcinoma breast tissue assayed
+with the 10X Genomics Visium platform. 
+First, we use the ggspavis package for visualization.
+
+```{r tenxvisium}
 library(TENxVisiumData)
 library(SpatialExperiment)
 library(ggspavis)
 hbc <- HumanBreastCancerIDC()
 hbc <- hbc[,hbc$sample_id=="HumanBreastCancerIDC1"]
-hbc$in_tissue =TRUE
-plotSpots(hbc, y_reverse=FALSE)
+hbc$in_tissue <- TRUE
+hbc <- rotateImg(hbc, degrees=-90)
+plotVisium(hbc, y_reverse = FALSE)
 ```
 
+To investigate the spatially variable genes the nnSVG package 
+implements a method for the detection of genes whose expression varies in the
+tissue spatial domains by fitting nearest-neighbor Gaussian processes [@webr23].
 
-<!-- We notice that the image is rotated respect to the spots coordinate so we can  -->
-<!-- rotate it thanks to SpatialExperiment features -->
-<!-- ```{r} -->
-<!-- plot(imgRaster(hbc)) -->
-<!-- spi <- rotateImg(hbc, "HumanBreastCancerIDC1", "lowres", -90) -->
-<!-- plot(imgRaster(spi)) -->
-<!-- ``` -->
-
-To investigate the spatially variable genes the nnSVG package [@webr23] in Bioconductor 
-implements a method for the detection of genes which expression varies in the
-tissue spatial domains by fitting nearest-neighbor Gaussian processes.
-
-```{r}
+```{r nnsvg}
 library(scater)
 library(nnSVG)
 library(scran)
-#preprocessing
+
+#add quality metrics
 is_mito <- grepl("(^MT-)|(^mt-)", rowData(hbc)$symbol)
 hbc <- addPerCellQC(hbc, subsets = list(mito = is_mito))
+
 ## needed because the column name is hard coded in the nnSVG::filter_genes
 rowData(hbc)$gene_name <- rowData(hbc)$symbol 
+
+## filter and normalize gene expression
 hbc <- filter_genes(hbc)
 hbc <- computeLibraryFactors(hbc)
 hbc <- logNormCounts(hbc)
+
+## select highly variable genes
 hvgs <- getTopHVGs(hbc, n=1000)
 hbc <- hbc[hvgs,]
-hbc <- nnSVG(hbc)
+
+## identify spatially variable genes
+hbc <- nnSVG(hbc, n_threads=4)
+
+## post-processing
 hbc <- hbc[order(rowData(hbc)$rank),]
-# hbc <- readRDS("~/Downloads/spennsvg.Rds")
+
 gnr1 <- rowData(hbc)$symbol[1]
 rownames(hbc) <- rowData(hbc)$symbol
 ```
 
 By ranking the results of nnSVG, we are able to detect the most spatially 
-variable genes. 
-Here we show how the top identified gene spatially varies across the spots in
-our experiment.
+variable genes. As an example, we show how the most spatially variable gene varies
+across the tissue.
 
-```{r}
-library(ggplot2)
-df <- as.data.frame(
-  cbind(spatialCoords(hbc), 
-        expr = counts(hbc)[1, ]))
-
-ggplot(df, aes(x = pxl_col_in_fullres, y = pxl_row_in_fullres, color = expr)) + 
-  geom_point(size = 0.8) + 
-  coord_fixed() + 
-  scale_y_reverse() + 
-  scale_color_gradient(low = "gray90", high = "blue", 
-                       trans = "sqrt", breaks = range(df$expr), 
-                       name = "counts") + 
-  ggtitle(gnr1) + 
-  theme_bw() + 
-  theme(plot.title = element_text(face = "italic"), 
-        panel.grid = element_blank(), 
-        axis.title = element_blank(), 
-        axis.text = element_blank(), 
-        axis.ticks = element_blank())
+```{r plotvisium}
+plotVisium(hbc, y_reverse = FALSE, fill = gnr1, palette="red")
 ```
 
-The SpatialFeatureExperiment [@moses23] is a class inheriting from the 
-SpatialExperiment class, by integrating `sf` objects useful for spatial geometry 
-and statistics already implemented in the CRAN sf package.
 
-It also provides 9 datasets from 6 different technologies and tissues in the
-SFEData package.
-
-We specifically recognize 4 datasets related to cancer, melaanoma brain and 
-extracranial metastasis (`BiermannMelaMetasData`), human breast cancer 
-(`JanesickBreastData`) and
-lung cancer (`HeNSCLCData`), 
-
-Here we show how the data of the breast cancer dataset are distributed and how 
-this expression varies in the tissue.
+Finally, we show an example of an in-situ ST technology, by visualizing a breast
+cancer sample assayed with the 10X Genomics Xenium platform.
 
 ```{r spatchunk, message=FALSE,cache=FALSE}
 library(SpatialFeatureExperiment)
@@ -1047,21 +1023,31 @@ library(SFEData)
 jbr = JanesickBreastData("rep1")
 jbr
 ```
-The expression values have strongly skewed distributions.
-For exploratory visualization we log-transform.
-```{r dotx}
-lfasn=log(as.numeric(assay(jbr["FASN",]))+1)
-lpostn=log(as.numeric(assay(jbr["POSTN",]))+1)
-```
-Figure \@ref(fig:dospat)
 
-```{r dospat, fig.cap="Informal rendering of data from Visium studies of breast cancer described in Janesick et al. 2023.", out.width="100%", message=FALSE}
-strom = ggplot(colGeometries(jbr)$centroids, aes(colour=lpostn)) +
-  geom_sf(size=.01) + scale_color_viridis_c() + ggtitle("POSTN, stromal")
-fasn = ggplot(colGeometries(jbr)$centroids, aes(colour=lfasn)) +
-  geom_sf(size=.01) + scale_color_viridis_c() + ggtitle("FASN, invasive")
-library(gridExtra)
-grid.arrange(strom, fasn, ncol=2)
+We can leverage the nature of in-situ data to explore the cell density across the
+tissue, identifying the tissue's macrostructure, and the cell segmentation, 
+zooming in a small portion of the tissue.
+
+```{r plotvoyager}
+library(Voyager)
+plotCellBin2D(jbr, hex = TRUE)
+plotGeometry(jbr, "cellSeg", bbox=c("xmin"=0, "ymin"=4000, "xmax"=1000, "ymax"=5000))
+```
+
+Finally, we can visualize the expression of marker genes after log-normalizing
+the data.
+
+```{r sfemark}
+jbr <- jbr[, jbr$nCounts >= 20]
+jbr <- logNormCounts(jbr)
+plotSpatialFeature(jbr, "FASN", colGeometryName = "centroids",
+                   scattermore = TRUE, ncol = 2, pointsize = 0.5) +
+  ggtitle("FASN, invasive")
+
+plotSpatialFeature(jbr, "POSTN", colGeometryName = "centroids",
+                   scattermore = TRUE, ncol = 2, pointsize = 0.5) +
+  ggtitle("POSTN, stromal")
+
 ```
 
 # Components and processes for introducing new data, analytic tools, documents {#class}
@@ -1108,6 +1094,7 @@ Gene sets:GeneSet
 Rectangular Features x samples:SummarizedExperiment
 Multi-omics data:MultiAssayExperiment
 Single-cell data:SingleCellExperiment
+Spatial Transcriptomics:SpatialExperiment
 Mass spectrometry data:Spectra"
 x = read.delim(textConnection(ltab),sep=":",check.names=FALSE)
 suppressMessages({library(kableExtra)})
