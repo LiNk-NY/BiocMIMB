@@ -945,7 +945,7 @@ different technologies and tissues.
 The TENxVisiumData package provides a collection of 13 in-house 10X Genomics 
 Visium datasets from 23 samples across two organisms (human and mouse) and 13 
 tissues.
-The MerfishData package contains two annotated samples assayd with the MERFISH
+The MerfishData package contains two annotated samples assayed with the MERFISH
 in-situ imaging protocol.
 
 Finally, Bioconductor offers a growing collection of analysis methods tailored 
@@ -1026,12 +1026,15 @@ jbr
 
 We can leverage the nature of in-situ data to explore the cell density across the
 tissue, identifying the tissue's macrostructure, and the cell segmentation, 
-zooming in a small portion of the tissue.
+zooming in on a small portion of the tissue.
 
 ```{r plotvoyager}
 library(Voyager)
-plotCellBin2D(jbr, hex = TRUE)
-plotGeometry(jbr, "cellSeg", bbox=c("xmin"=0, "ymin"=4000, "xmax"=1000, "ymax"=5000))
+cellbins <- plotCellBin2D(jbr, hex = TRUE)
+cellgeo <- plotGeometry(jbr, "cellSeg", bbox=c("xmin"=0, "ymin"=4000, "xmax"=1000, "ymax"=5000))
+
+library(gridExtra)
+grid.arrange(cellbins, cellgeo, ncol=2)
 ```
 
 Finally, we can visualize the expression of marker genes after log-normalizing
@@ -1040,14 +1043,16 @@ the data.
 ```{r sfemark}
 jbr <- jbr[, jbr$nCounts >= 20]
 jbr <- logNormCounts(jbr)
-plotSpatialFeature(jbr, "FASN", colGeometryName = "centroids",
-                   scattermore = TRUE, ncol = 2, pointsize = 0.5) +
-  ggtitle("FASN, invasive")
 
-plotSpatialFeature(jbr, "POSTN", colGeometryName = "centroids",
+strom <- plotSpatialFeature(jbr, "POSTN", colGeometryName = "centroids",
                    scattermore = TRUE, ncol = 2, pointsize = 0.5) +
   ggtitle("POSTN, stromal")
 
+fasn <- plotSpatialFeature(jbr, "FASN", colGeometryName = "centroids",
+                   scattermore = TRUE, ncol = 2, pointsize = 0.5) +
+  ggtitle("FASN, invasive")
+
+grid.arrange(strom, fasn, ncol=2)
 ```
 
 # Components and processes for introducing new data, analytic tools, documents {#class}
