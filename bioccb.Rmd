@@ -101,7 +101,8 @@ needed = c("curatedTCGAData", "TCGAutils", "dplyr", "kableExtra", "TCGAutils",
 "BiocStyle", "ensembldb", "rols", "GO.db", "msigdb", "easierData",
 "SpatialFeatureExperiment", "SFEData", "EnsDb.Hsapiens.v86",
 "SpatialExperiment", "TENxVisiumData", "ggspavis", "nnSVG", "scater", "scran",
-"Voyager")
+"Voyager", "scattermore", "gridExtra")
+
 ii = rownames(installed.packages())
 need = setdiff(needed, ii)
 if (length(need)>0) {
