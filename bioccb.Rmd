@@ -421,7 +421,7 @@ explained in section \@ref(hubs), and entries in column
 ### Tumor code resolution
 
 There are 33 different tumor types available in TCGA.  The
-decoding of tumor codes for the first ten in alphabetical order is
+decoding of tumor codes in alphabetical order is
 provided in Table \@ref(tab:tab-deco).
 
 ```{r tab-deco,echo=FALSE}
@@ -664,7 +664,7 @@ hssigs = getMsigdb(org="hs", id="SYM", version=getMsigdbVersions())
 ```
 Find those with CANCER in their name:
 ```{r lknms}
-nms = grep("ANCER", names(hssigs), value=TRUE)
+nms = grep("CANCER", names(hssigs), value=TRUE)
 head(nms)
 wangmet = hssigs[["WANG_METASTASIS_OF_BREAST_CANCER_ESR1_UP"]]
 wangmet
@@ -1064,7 +1064,7 @@ grid.arrange(strom, fasn, ncol=2)
 
 Proposed contributions to Bioconductor's ecosystem of software packages,
 data resources, and documentation are registered at
-\url{https://contributions.bioconductor.org/issues}.  Contributors
+\url{https://github.com/bioconductor/contributions/issues}.  Contributors
 identify a public github.com repository that houses
 their software, or some durable open data repository
 for a data contribution.  The contributor
