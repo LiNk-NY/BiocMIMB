@@ -1045,7 +1045,7 @@ the data.
 ```{r sfemark, fig.cap="Spatial expression of marker genes"}
 jbr <- jbr[, jbr$nCounts >= 20]
 jbr <- logNormCounts(jbr)
-
+library(scattermore)
 strom <- plotSpatialFeature(jbr, "POSTN", colGeometryName = "centroids",
                    scattermore = TRUE, ncol = 2, pointsize = 0.5) +
   ggtitle("POSTN, stromal")
