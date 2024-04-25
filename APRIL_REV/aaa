@@ -1,0 +1,35 @@
+Computation is a central component of cancer genomics
+research. Tumor sequencing is the basis of computational
+investigation of mutational, epigenetic and immunologic
+processes associated with cancer initiation and progression.
+Numerous computational workflows have been produced to
+profile tumor cell transcriptomes and proteomes.
+New technologies promise to unite sequence-based
+characterizations with digital histopathology,
+ultimately driving efforts in molecule design
+and evaluation to produce patient-centered treatments.
+
+Bioconductor is an open source software project with
+a 20 year history of uniting biostatisticians, bioinformaticians,
+and genome researchers in the creation of an ecosystem
+of data, annotation, and analysis resources for research
+in genome-scale biology. This paper will review current
+approaches of the project to advancing cancer genomics.
+After a brief discussion of basic principles of the Bioconductor
+project, we will present a ``top down'' survey of resources
+useful for cancer bioinformatics. Primary sections address
+
+\begin{itemize}
+\tightlist
+\item
+  how to explore institutionally curated cancer genomics data
+\item
+  genomic annotation resources relevant to cancer genomics
+\item
+  analytical workflows
+\item
+  components for introducing new data or analyses
+\item
+  pedagogics and workforce development.
+\end{itemize}
+

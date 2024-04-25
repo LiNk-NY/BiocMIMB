@@ -1,0 +1,168 @@
+\section{Bioconductor principles}\label{bioconductor-principles}}
+
+\hypertarget{r-packages-and-vignettes}{%
+\subsection{R packages and vignettes}\label{r-packages-and-vignettes}}
+
+Software tools and data resources in Bioconductor are organized
+into ``R packages''. These are collections of folders with data,
+code (principally R functions), and documentation
+following a protocol specified in
+\href{https://cran.r-project.org/doc/manuals/R-exts.html}{Writing R Extensions}. R packages have a DESCRIPTION file with metadata about
+package contents and provenance. Package structure can be
+checked for validity using the \texttt{R CMD check} facility.
+Documentation of code and data can be programmatically
+checked for existence and validity. The DESCRIPTION file
+for a package specifies its version and
+also gives precise definition of how an R package may
+depend upon versions of other packages.
+
+At its inception,
+Bioconductor introduced a new approach to holistic package
+documentation called ``vignette''.
+Vignettes provide narrative and explanation interleaved with
+executable code describing package operations.
+While R function manual pages describe
+the operation of individual functions,
+vignettes illustrate the interoperation
+of package components and provide motivation
+for both package design but also context
+for its use.
+
+\hypertarget{r-package-repositories-repository-evolution}{%
+\subsection{R package repositories; repository evolution}\label{r-package-repositories-repository-evolution}}
+
+Bioconductor software forms a coherent ecosystem that
+can be checked for consistency of versions of all
+packages available in a given installation of R.
+Bioconductor packages may specify dependency on
+other Bioconductor packages, or packages that are
+available in the CRAN repository. Bioconductor does
+not include packages with dependencies on ``github-only''
+packages. Later in this paper we will provide details
+on package quality assurance that provide a rationale
+for this restriction.
+
+Major updates to the R language occur annually, and
+updates are preceded by careful assessment of effects of
+language change on Bioconductor package operations. These effects
+can be identified through changes in the output of R CMD check.
+The Bioconductor ecosystem is updated twice a year, once
+to coincide with update to R, and once about six months
+later. The semianual updates reflect the need to track
+developments in the fast-moving field of genomic data science.
+
+\hypertarget{package-quality-assessment-installation-consistency}{%
+\subsection{Package quality assessment; installation consistency}\label{package-quality-assessment-installation-consistency}}
+
+The BiocCheck function is used to provide more
+stringent assessment of package compliance with basic
+principles of the Bioconductor ecosystem.
+
+The BiocManager package provides for installing and updating package
+and has functionality for verifying the coherence and version status
+of the currently installed package collection.
+This is important
+in the context of a language and package ecosystem
+that changes every six months, while analyses may
+take years to complete. Tools for recreating past
+package collections are available to assist in
+reproducing outputs of prior analyses.
+
+\hypertarget{unifying-assay-and-sample-data-summarizedexperiment-and-multiassayexperiment}{%
+\subsection{Unifying assay and sample data: SummarizedExperiment and MultiAssayExperiment}\label{unifying-assay-and-sample-data-summarizedexperiment-and-multiassayexperiment}}
+
+Most of the data from genome-scale experiments to be discussed
+in this chapter are organized in special data containers
+rooted in the concepts of the SummarizedExperiment class.
+Briefly, assay data are thought of as occupying a \(G \times N\)
+array, and sample level data occupy an \(N \times K\) table. The array
+and the table are linked together in the SummarizedExperiment; see Figure \ref{fig:sesc}.
+
+\begin{figure}
+\includegraphics[width=0.8\linewidth,]{SEschema} \caption{SummarizedExperiment schematic.}\label{fig:sesc}
+\end{figure}
+
+Multiple representations of assay results may be managed in this
+structure, but all assay arrays must have dimensions \(G \times N\).
+
+For experiment collections in which the same samples are subjected
+to multiple genome-scale assays, MultiAssayExperiment containers are used. See Figure \ref{fig:masc} for the layout.
+
+\begin{figure}
+\includegraphics[width=0.8\linewidth,]{MAEschema} \caption{MultiAssayExperiment schematic.}\label{fig:masc}
+\end{figure}
+
+Further details on these data structures will be provided in section \ref{class}.
+
+\hypertarget{cache}{%
+\subsection{Downloading and caching cancer genomics data and annotations}\label{cache}}
+
+Downloading and managing data from various online resources
+can be excessively time consuming. Bioconductor encourages data caching for
+increased efficiency and reproducibility. The caching data methods
+employed in Bioconductor
+allow analysis code to
+concisely refer to data resources as needed, with minimal attention to how
+data are stored, retrieved or transformed.
+It allows for easy management and reuse of data that are on remote
+servers or in cloud, storing source
+location and providing information for data updates. The BiocFileCache
+Bioconductor package handles data management from within R.
+
+BiocFileCache is a general-use caching system but Bioconductor also provides
+``Hubs'', AnnotationHub and ExperimentHub, to help distributed annotation or
+experimental data hosted externally. Both AnnotationHub and ExperimentHub use
+BiocFileCache to handle download and caching of data.
+
+AnnotationHub provides a centralized repository of diverse genomic annotations,
+facilitating easy access and integration into analyses. Researchers can
+seamlessly retrieve information such as genomic features, functional
+annotations, and variant data, streamlining the annotation process for their
+analyses.
+
+ExperimentHub extends this concept to experimental data. It serves as a
+centralized hub for storing and sharing curated experiment-level datasets,
+allowing researchers to access a wide range of experimental designs and
+conditions. This cloud-based infrastructure enhances collaboration and promotes
+the reproducibility of analyses across different laboratories.
+
+The curatedTCGAData package provides some resources through
+ExperimentHub, as do many other self-identified ``CancerData'' resources. Once the
+ExperimentHub is loaded, it can be queried for terms of interest.
+
+\texttt{\{r useeh\} \textless{}!-\/- , fig.cap="ExperimentHub attachment, retrieval, query, and response when seeking cancer-related data.", message=FALSE\} -\/-\textgreater{} library(ExperimentHub) eh \textless{}- ExperimentHub() query(eh, "CancerData")}
+
+Multiple terms can be used to narrow results before choosing a download.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{query}\NormalTok{(eh, }\KeywordTok{c}\NormalTok{(}\StringTok{"cancerData"}\NormalTok{, }\StringTok{"esophageal"}\NormalTok{))}
+\CommentTok{\#\# ExperimentHub with 2 records}
+\CommentTok{\#\# \# snapshotDate(): 2023{-}10{-}24}
+\CommentTok{\#\# \# $dataprovider: University of California San Francisco}
+\CommentTok{\#\# \# $species: Homo sapiens}
+\CommentTok{\#\# \# $rdataclass: RangedSummarizedExperiment, data.frame}
+\CommentTok{\#\# \# additional mcols(): taxonomyid, genome, description,}
+\CommentTok{\#\# \#   coordinate\_1\_based, maintainer, rdatadateadded, preparerclass, tags,}
+\CommentTok{\#\# \#   rdatapath, sourceurl, sourcetype }
+\CommentTok{\#\# \# retrieve records with, e.g., \textquotesingle{}object[["EH8527"]]\textquotesingle{} }
+\CommentTok{\#\# }
+\CommentTok{\#\#            title                           }
+\CommentTok{\#\#   EH8527 | cao\_esophageal\_wgbs\_hg19        }
+\CommentTok{\#\#   EH8530 | cao\_esophageal\_transcript\_counts}
+\end{Highlighting}
+\end{Shaded}
+
+Similarly AnnotationHub files can be downloaded for annotating data. For example,
+the ensembl 110 release of gene and protein annotations are obtained with the
+following:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(AnnotationHub)}
+\NormalTok{ah \textless{}{-}}\StringTok{ }\KeywordTok{AnnotationHub}\NormalTok{()}
+\NormalTok{tag =}\StringTok{ }\KeywordTok{names}\NormalTok{(}\KeywordTok{query}\NormalTok{(ah, }\KeywordTok{c}\NormalTok{(}\StringTok{"Ensembl"}\NormalTok{,}\StringTok{"110"}\NormalTok{, }\StringTok{"Homo sapiens"}\NormalTok{)))}
+\NormalTok{ens110 \textless{}{-}}\StringTok{ }\NormalTok{ah[[tag]]}
+\end{Highlighting}
+\end{Shaded}
+

@@ -1,0 +1,600 @@
+
+
+% RECOMMENDED %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\documentclass[graybox]{svmult}
+
+% choose options for [] as required from the list
+% in the Reference Guide
+
+%\usepackage{type1cm}        % activate if the above 3 fonts are
+%                            % not available on your system
+%
+%\usepackage{makeidx}         % allows index generation
+\usepackage{graphicx}        % standard LaTeX graphics tool
+                             % when including figure files
+\usepackage{multicol}        % used for the two-column index
+\usepackage[bottom]{footmisc}% places footnotes at page bottom
+
+
+\usepackage{newtxtext}       % 
+\usepackage[varvw]{newtxmath}       % selects Times Roman as basic font
+
+% see the list of further useful packages
+% in the Reference Guide
+
+%\makeindex             % used for the subject index
+                       % please use the style svind.ist with
+                       % your makeindex program
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+
+\title*{Bioconductor's Computational Ecosystem for Genomic Data Science in Cancer}
+\titlerunning{Bioconductor for Cancer Data Science}
+% Use \titlerunning{Short Title} for an abbreviated version of
+% your contribution title if the original one is too long
+\author{Name of First Author\orcidID{0000-1111-2222-3333} and\\ Name of Second Author\orcidID{1111-2222-3333-4444}}
+% Use \authorrunning{Short Title} for an abbreviated version of
+% your contribution title if the original one is too long
+\institute{Name of First Author \at Name, Address of Institute, \email{name@email.address}
+\and Name of Second Author \at Name, Address of Institute \email{name@email.address}}
+%
+% Use the package "url.sty" to avoid
+% problems with special characters
+% used in your e-mail or web address
+%
+\maketitle
+
+\abstract{
+The Bioconductor project enters its third decade with over two 
+thousand packages for genomic data science, over 100,000 annotation and 
+experiment resources, and a global system for convenient distribution to 
+researchers. Over 60,000 PubMed Central citations and terabytes of content 
+shipped per month attest to the impact of the project 
+on cancer genomic data science. This report provides an overview 
+of cancer genomics resources in Bioconductor. After an overview 
+of Bioconductor project principles, we address exploration 
+of institutionally curated cancer genomics data such as TCGA. 
+We then review genomic annotation and ontology resources 
+relevant to cancer and then briefly survey analytical 
+workflows addressing specific topics in cancer genomics. 
+Concluding sections cover how new software and data 
+resources are brought into the ecosystem and how the 
+project is tackling needs for training of the research 
+workforce. Bioconductor's strategies for supporting 
+methods developers and researchers in cancer genomics 
+are evolving along with experimental and computational 
+technologies. All the tools described in this report 
+are backed by regularly maintained learning resources 
+that can be used locally or in cloud computing environments.
+}
+
+
+
+\section{Introduction}
+\label{sec:1}
+
+Computation is a central component of cancer genomics
+research. Tumor sequencing is the basis of computational
+investigation of mutational, epigenetic and immunologic
+processes associated with cancer initiation and progression.
+Numerous computational workflows have been produced to
+profile tumor cell transcriptomes and proteomes.
+New technologies promise to unite sequence-based
+characterizations with digital histopathology,
+ultimately driving efforts in molecule design
+and evaluation to produce patient-centered treatments.
+
+Bioconductor is an open source software project with
+a 20 year history of uniting biostatisticians, bioinformaticians,
+and genome researchers in the creation of an ecosystem
+of data, annotation, and analysis resources for research
+in genome-scale biology. This paper will review current
+approaches of the project to advancing cancer genomics.
+After a brief discussion of basic principles of the Bioconductor
+project, we will present a ``top down'' survey of resources
+useful for cancer bioinformatics. Primary sections address
+
+\begin{itemize}
+\tightlist
+\item
+  how to explore institutionally curated cancer genomics data
+\item
+  genomic annotation resources relevant to cancer genomics
+\item
+  analytical workflows
+\item
+  components for introducing new data or analyses
+\item
+  pedagogics and workforce development.
+\end{itemize}
+
+\section{Bioconductor principles}
+
+
+\subsection{R packages and vignettes}\label{r-packages-and-vignettes}}
+
+Software tools and data resources in Bioconductor are organized
+into ``R packages''. These are collections of folders with data,
+code (principally R functions), and documentation
+following a protocol specified in
+\href{https://cran.r-project.org/doc/manuals/R-exts.html}{Writing R Extensions}. R packages have a DESCRIPTION file with metadata about
+package contents and provenance. Package structure can be
+checked for validity using the \texttt{R CMD check} facility.
+Documentation of code and data can be programmatically
+checked for existence and validity. The DESCRIPTION file
+for a package specifies its version and
+also gives precise definition of how an R package may
+depend upon versions of other packages.
+
+At its inception,
+Bioconductor introduced a new approach to holistic package
+documentation called ``vignette''.
+Vignettes provide narrative and explanation interleaved with
+executable code describing package operations.
+While R function manual pages describe
+the operation of individual functions,
+vignettes illustrate the interoperation
+of package components and provide motivation
+for both package design but also context
+for its use.
+
+\subsection{R package repositories; repository evolution}\label{r-package-repositories-repository-evolution}}
+
+Bioconductor software forms a coherent ecosystem that
+can be checked for consistency of versions of all
+packages available in a given installation of R.
+Bioconductor packages may specify dependency on
+other Bioconductor packages, or packages that are
+available in the CRAN repository. Bioconductor does
+not include packages with dependencies on ``github-only''
+packages. Later in this paper we will provide details
+on package quality assurance that provide a rationale
+for this restriction.
+
+Major updates to the R language occur annually, and
+updates are preceded by careful assessment of effects of
+language change on Bioconductor package operations. These effects
+can be identified through changes in the output of R CMD check.
+The Bioconductor ecosystem is updated twice a year, once
+to coincide with update to R, and once about six months
+later. The semianual updates reflect the need to track
+developments in the fast-moving field of genomic data science.
+
+\subsection{Package quality assessment; installation consistency}\label{package-quality-assessment-installation-consistency}}
+
+The BiocCheck function is used to provide more
+stringent assessment of package compliance with basic
+principles of the Bioconductor ecosystem.
+
+The BiocManager package provides for installing and updating package
+and has functionality for verifying the coherence and version status
+of the currently installed package collection.
+This is important
+in the context of a language and package ecosystem
+that changes every six months, while analyses may
+take years to complete. Tools for recreating past
+package collections are available to assist in
+reproducing outputs of prior analyses.
+
+\subsection{Unifying assay and sample data: SummarizedExperiment and MultiAssayExperiment}\label{unifying-assay-and-sample-data-summarizedexperiment-and-multiassayexperiment}}
+
+Most of the data from genome-scale experiments to be discussed
+in this chapter are organized in special data containers
+rooted in the concepts of the SummarizedExperiment class.
+Briefly, assay data are thought of as occupying a \(G \times N\)
+array, and sample level data occupy an \(N \times K\) table. The array
+and the table are linked together in the SummarizedExperiment; see Figure \ref{fig:sesc}.
+
+\begin{figure}
+\includegraphics[width=0.8\linewidth,]{SEschema} \caption{SummarizedExperiment schematic.}\label{fig:sesc}
+\end{figure}
+
+Multiple representations of assay results may be managed in this
+structure, but all assay arrays must have dimensions \(G \times N\).
+
+For experiment collections in which the same samples are subjected
+to multiple genome-scale assays, MultiAssayExperiment containers are used. See Figure \ref{fig:masc} for the layout.
+
+\begin{figure}
+\includegraphics[width=0.8\linewidth,]{MAEschema} \caption{MultiAssayExperiment schematic.}\label{fig:masc}
+\end{figure}
+
+Further details on these data structures will be provided in section \ref{class}.
+
+\subsection{Downloading and caching cancer genomics data and annotations}\label{cache}}
+
+Downloading and managing data from various online resources
+can be excessively time consuming. Bioconductor encourages data caching for
+increased efficiency and reproducibility. The caching data methods
+employed in Bioconductor
+allow analysis code to
+concisely refer to data resources as needed, with minimal attention to how
+data are stored, retrieved or transformed.
+It allows for easy management and reuse of data that are on remote
+servers or in cloud, storing source
+location and providing information for data updates. The BiocFileCache
+Bioconductor package handles data management from within R.
+
+BiocFileCache is a general-use caching system but Bioconductor also provides
+``Hubs'', AnnotationHub and ExperimentHub, to help distributed annotation or
+experimental data hosted externally. Both AnnotationHub and ExperimentHub use
+BiocFileCache to handle download and caching of data.
+
+AnnotationHub provides a centralized repository of diverse genomic annotations,
+facilitating easy access and integration into analyses. Researchers can
+seamlessly retrieve information such as genomic features, functional
+annotations, and variant data, streamlining the annotation process for their
+analyses.
+
+ExperimentHub extends this concept to experimental data. It serves as a
+centralized hub for storing and sharing curated experiment-level datasets,
+allowing researchers to access a wide range of experimental designs and
+conditions. This cloud-based infrastructure enhances collaboration and promotes
+the reproducibility of analyses across different laboratories.
+
+The curatedTCGAData package provides some resources through
+ExperimentHub, as do many other self-identified ``CancerData'' resources. Once the
+ExperimentHub is loaded, it can be queried for terms of interest.
+
+\begin{verbatim}
+library(ExperimentHub)
+eh = ExperimentHub()
+query(eh, "CancerData")
+\end{verbatim}
+
+%\texttt{\{r useeh\} \textless{}!-\/- , fig.cap="ExperimentHub attachment, retrieval, query, and response when seeking cancer-related data.", message=FALSE\} -\/-\textgreater{} library(ExperimentHub) eh \textless{}- ExperimentHub() query(eh, "CancerData")}
+
+Multiple terms can be used to narrow results before choosing a download.
+
+\begin{verbatim}
+query(eh, c("CancerData", "esophageal"))
+# ExperimentHub with 2 records}
+# snapshotDate(): 2023-10-24}
+# $dataprovider: University of California San Francisco}
+# $species: Homo sapiens}
+# $rdataclass: RangedSummarizedExperiment, data.frame}
+# additional mcols(): taxonomyid, genome, description,}
+#   coordinate_1_based, maintainer, rdatadateadded, preparerclass, tags,}
+#   rdatapath, sourceurl, sourcetype }
+# retrieve records with, e.g., object[["EH8527"]]
+#            title                           
+#   EH8527 | cao_esophageal_wgbs_hg19        
+#   EH8530 | cao_esophageal_transcript_counts
+\end{verbatim}
+
+Similarly AnnotationHub files can be downloaded for annotating data. For example,
+the ensembl 110 release of gene and protein annotations are obtained with the
+following:
+
+\begin{verbatim}
+library(AnnotationHub)
+ah = AnnotationHub()
+query(ah, c("ensembl", "110"))
+\end{verbatim}
+
+%\begin{Shaded}
+%\begin{Highlighting}[]
+%\KeywordTok{library}\NormalTok{(AnnotationHub)}
+%\NormalTok{ah \textless{}{-}}\StringTok{ }\KeywordTok{AnnotationHub}\NormalTok{()}
+%\NormalTok{tag =}\StringTok{ }\KeywordTok{names}\NormalTok{(}\KeywordTok{query}\NormalTok{(ah, }\KeywordTok{c}\NormalTok{(}\StringTok{"Ensembl"}\NormalTok{,}\StringTok{"110"}\NormalTok{, }\StringTok{"Homo sapiens"}\NormalTok{)))}
+%\NormalTok{ens110 \textless{}{-}}\StringTok{ }\NormalTok{ah[[tag]]}
+%\end{Highlighting}
+%\end{Shaded}
+
+
+\section{Section Heading}
+\label{sec:1}
+Use the template \emph{chapter.tex} together with the document class SVMono (monograph-type books) or SVMult (edited books) to style the various elements of your chapter content.
+
+Instead of simply listing headings of different levels we recommend to let every heading be followed by at least a short passage of text.  Further on please use the \LaTeX\ automatism for all your cross-references and citations. And please note that the first line of text that follows a heading is not indented, whereas the first lines of all subsequent paragraphs are.
+
+\section{Section Heading}
+\label{sec:2}
+% Always give a unique label
+% and use \ref{<label>} for cross-references
+% and \cite{<label>} for bibliographic references
+% use \sectionmark{}
+% to alter or adjust the section heading in the running head
+Instead of simply listing headings of different levels we recommend to let every heading be followed by at least a short passage of text.  Further on please use the \LaTeX\ automatism for all your cross-references and citations.
+
+Please note that the first line of text that follows a heading is not indented, whereas the first lines of all subsequent paragraphs are.
+
+Use the standard \verb|equation| environment to typeset your equations, e.g.
+%
+\begin{equation}
+a \times b = c\;,
+\end{equation}
+%
+however, for multiline equations we recommend to use the \verb|eqnarray| environment\footnote{In physics texts please activate the class option \texttt{vecphys} to depict your vectors in \textbf{\itshape boldface-italic} type - as is customary for a wide range of physical subjects}.
+\begin{eqnarray}
+\left|\nabla U_{\alpha}^{\mu}(y)\right| &\le&\frac1{d-\alpha}\int
+\left|\nabla\frac1{|\xi-y|^{d-\alpha}}\right|\,d\mu(\xi) =
+\int \frac1{|\xi-y|^{d-\alpha+1}} \,d\mu(\xi)  \\
+&=&(d-\alpha+1) \int\limits_{d(y)}^\infty
+\frac{\mu(B(y,r))}{r^{d-\alpha+2}}\,dr \le (d-\alpha+1)
+\int\limits_{d(y)}^\infty \frac{r^{d-\alpha}}{r^{d-\alpha+2}}\,dr
+\label{eq:01}
+\end{eqnarray}
+
+\subsection{Subsection Heading}
+\label{subsec:2}
+Instead of simply listing headings of different levels we recommend to let every heading be followed by at least a short passage of text.  Further on please use the \LaTeX\ automatism for all your cross-references\index{cross-references} and citations\index{citations} as has already been described in Sect.~\ref{sec:2}.
+
+\begin{quotation}
+Please do not use quotation marks when quoting texts! Simply use the \verb|quotation| environment -- it will automatically be rendered in line with the preferred layout.
+\end{quotation}
+
+
+\subsubsection{Subsubsection Heading}
+Instead of simply listing headings of different levels we recommend to let every heading be followed by at least a short passage of text.  Further on please use the \LaTeX\ automatism for all your cross-references and citations as has already been described in Sect.~\ref{subsec:2}, see also Fig.~\ref{fig:1}\footnote{If you copy text passages, figures, or tables from other works, you must obtain \textit{permission} from the copyright holder (usually the original publisher). Please enclose the signed permission with the manuscript. The sources\index{permission to print} must be acknowledged either in the captions, as footnotes or in a separate section of the book.}
+
+Please note that the first line of text that follows a heading is not indented, whereas the first lines of all subsequent paragraphs are.
+
+% For figures use
+%
+\begin{figure}[b]
+\sidecaption
+% Use the relevant command for your figure-insertion program
+% to insert the figure file.
+% For example, with the graphicx style use
+\includegraphics[scale=.65]{figure}
+%
+% If no graphics program available, insert a blank space i.e. use
+%\picplace{5cm}{2cm} % Give the correct figure height and width in cm
+%
+\caption{If the width of the figure is less than 7.8 cm use the \texttt{sidecapion} command to flush the caption on the left side of the page. If the figure is positioned at the top of the page, align the sidecaption with the top of the figure -- to achieve this you simply need to use the optional argument \texttt{[t]} with the \texttt{sidecaption} command}
+\label{fig:1}       % Give a unique label
+\end{figure}
+
+
+\paragraph{Paragraph Heading} %
+Instead of simply listing headings of different levels we recommend to let every heading be followed by at least a short passage of text.  Further on please use the \LaTeX\ automatism for all your cross-references and citations as has already been described in Sect.~\ref{sec:2}.
+
+Please note that the first line of text that follows a heading is not indented, whereas the first lines of all subsequent paragraphs are.
+
+For typesetting numbered lists we recommend to use the \verb|enumerate| environment -- it will automatically rendered in line with the preferred layout.
+
+\begin{enumerate}
+\item{Livelihood and survival mobility are oftentimes coutcomes of uneven socioeconomic development.}
+\begin{enumerate}
+\item{Livelihood and survival mobility are oftentimes coutcomes of uneven socioeconomic development.}
+\item{Livelihood and survival mobility are oftentimes coutcomes of uneven socioeconomic development.}
+\end{enumerate}
+\item{Livelihood and survival mobility are oftentimes coutcomes of uneven socioeconomic development.}
+\end{enumerate}
+
+
+\subparagraph{Subparagraph Heading} In order to avoid simply listing headings of different levels we recommend to let every heading be followed by at least a short passage of text. Use the \LaTeX\ automatism for all your cross-references and citations as has already been described in Sect.~\ref{sec:2}, see also Fig.~\ref{fig:2}.
+
+For unnumbered list we recommend to use the \verb|itemize| environment -- it will automatically be rendered in line with the preferred layout.
+
+\begin{itemize}
+\item{Livelihood and survival mobility are oftentimes coutcomes of uneven socioeconomic development, cf. Table~\ref{tab:1}.}
+\begin{itemize}
+\item{Livelihood and survival mobility are oftentimes coutcomes of uneven socioeconomic development.}
+\item{Livelihood and survival mobility are oftentimes coutcomes of uneven socioeconomic development.}
+\end{itemize}
+\item{Livelihood and survival mobility are oftentimes coutcomes of uneven socioeconomic development.}
+\end{itemize}
+
+\begin{figure}[t]
+\sidecaption[t]
+% Use the relevant command for your figure-insertion program
+% to insert the figure file.
+% For example, with the option graphics use
+\includegraphics[scale=.65]{figure}
+%
+% If no graphics program available, insert a blank space i.e. use
+%\picplace{5cm}{2cm} % Give the correct figure height and width in cm
+%
+%\caption{Please write your figure caption here}
+\caption{If the width of the figure is less than 7.8 cm use the \texttt{sidecapion} command to flush the caption on the left side of the page. If the figure is positioned at the top of the page, align the sidecaption with the top of the figure -- to achieve this you simply need to use the optional argument \texttt{[t]} with the \texttt{sidecaption} command}
+\label{fig:2}       % Give a unique label
+\end{figure}
+
+\runinhead{Run-in Heading Boldface Version} Use the \LaTeX\ automatism for all your cross-references and citations as has already been described in Sect.~\ref{sec:2}.
+
+\subruninhead{Run-in Heading Boldface and Italic Version} Use the \LaTeX\ automatism for all your cross-refer\-ences and citations as has already been described in Sect.~\ref{sec:2}\index{paragraph}.
+
+\subsubruninhead{Run-in Heading Displayed Version} Use the \LaTeX\ automatism for all your cross-refer\-ences and citations as has already been described in Sect.~\ref{sec:2}\index{paragraph}.
+% Use the \index{} command to code your index words
+%
+% For tables use
+%
+\begin{table}[!t]
+\caption{Please write your table caption here}
+\label{tab:1}       % Give a unique label
+%
+% Follow this input for your own table layout
+%
+\begin{tabular}{p{2cm}p{2.4cm}p{2cm}p{4.9cm}}
+\hline\noalign{\smallskip}
+Classes & Subclass & Length & Action Mechanism  \\
+\noalign{\smallskip}\svhline\noalign{\smallskip}
+Translation & mRNA$^a$  & 22 (19--25) & Translation repression, mRNA cleavage\\
+Translation & mRNA cleavage & 21 & mRNA cleavage\\
+Translation & mRNA  & 21--22 & mRNA cleavage\\
+Translation & mRNA  & 24--26 & Histone and DNA Modification\\
+\noalign{\smallskip}\hline\noalign{\smallskip}
+\end{tabular}
+$^a$ Table foot note (with superscript)
+\end{table}
+%
+\section{Section Heading}
+\label{sec:3}
+% Always give a unique label
+% and use \ref{<label>} for cross-references
+% and \cite{<label>} for bibliographic references
+% use \sectionmark{}
+% to alter or adjust the section heading in the running head
+Instead of simply listing headings of different levels we recommend to let every heading be followed by at least a short passage of text.  Further on please use the \LaTeX\ automatism for all your cross-references and citations as has already been described in Sect.~\ref{sec:2}.
+
+Please note that the first line of text that follows a heading is not indented, whereas the first lines of all subsequent paragraphs are.
+
+If you want to list definitions or the like we recommend to use the enhanced \verb|description| environment -- it will automatically rendered in line with the preferred layout.
+
+\begin{description}[Type 1]
+\item[Type 1]{That addresses central themes pertainng to migration, health, and disease. In Sect.~\ref{sec:1}, Wilson discusses the role of human migration in infectious disease distributions and patterns.}
+\item[Type 2]{That addresses central themes pertainng to migration, health, and disease. In Sect.~\ref{subsec:2}, Wilson discusses the role of human migration in infectious disease distributions and patterns.}
+\end{description}
+
+\subsection{Subsection Heading} %
+In order to avoid simply listing headings of different levels we recommend to let every heading be followed by at least a short passage of text. Use the \LaTeX\ automatism for all your cross-references and citations citations as has already been described in Sect.~\ref{sec:2}.
+
+Please note that the first line of text that follows a heading is not indented, whereas the first lines of all subsequent paragraphs are.
+
+\begin{svgraybox}
+If you want to emphasize complete paragraphs of texts we recommend to use the newly defined class option \verb|graybox| and the newly defined environment \verb|svgraybox|. This will produce a 15 percent screened box 'behind' your text.
+
+If you want to emphasize complete paragraphs of texts we recommend to use the newly defined class option and environment \verb|svgraybox|. This will produce a 15 percent screened box 'behind' your text.
+\end{svgraybox}
+
+
+\subsubsection{Subsubsection Heading}
+Instead of simply listing headings of different levels we recommend to let every heading be followed by at least a short passage of text.  Further on please use the \LaTeX\ automatism for all your cross-references and citations as has already been described in Sect.~\ref{sec:2}.
+
+Please note that the first line of text that follows a heading is not indented, whereas the first lines of all subsequent paragraphs are.
+
+\begin{theorem}
+Theorem text goes here.
+\end{theorem}
+%
+% or
+%
+\begin{definition}
+Definition text goes here.
+\end{definition}
+
+\begin{proof}
+%\smartqed
+Proof text goes here.
+%\qed
+\end{proof}
+
+\paragraph{Paragraph Heading} %
+Instead of simply listing headings of different levels we recommend to let every heading be followed by at least a short passage of text.  Further on please use the \LaTeX\ automatism for all your cross-references and citations as has already been described in Sect.~\ref{sec:2}.
+
+Note that the first line of text that follows a heading is not indented, whereas the first lines of all subsequent paragraphs are.
+%
+% For built-in environments use
+%
+\begin{theorem}
+Theorem text goes here.
+\end{theorem}
+%
+\begin{definition}
+Definition text goes here.
+\end{definition}
+%
+\begin{proof}
+%\smartqed
+Proof text goes here.
+%\qed
+\end{proof}
+%
+\begin{trailer}{Trailer Head}
+If you want to emphasize complete paragraphs of texts in an \verb|Trailer Head| we recommend to
+use  \begin{verbatim}\begin{trailer}{Trailer Head}
+...
+\end{trailer}\end{verbatim}
+\end{trailer}
+%
+\begin{questype}{Questions}
+If you want to emphasize complete paragraphs of texts in an \verb|Questions| we recommend to
+use  \begin{verbatim}\begin{questype}{Questions}
+...
+\end{questype}\end{verbatim}
+\end{questype}
+\eject%
+\begin{important}{Important}
+If you want to emphasize complete paragraphs of texts in an \verb|Important| we recommend to
+use  \begin{verbatim}\begin{important}{Important}
+...
+\end{important}\end{verbatim}
+\end{important}
+%
+\begin{warning}{Attention}
+If you want to emphasize complete paragraphs of texts in an \verb|Attention| we recommend to
+use  \begin{verbatim}\begin{warning}{Attention}
+...
+\end{warning}\end{verbatim}
+\end{warning}
+
+\begin{programcode}{Program Code}
+If you want to emphasize complete paragraphs of texts in an \verb|Program Code| we recommend to
+use
+
+\verb|\begin{programcode}{Program Code}|
+
+\verb|\begin{verbatim}...\end{verbatim}|
+
+\verb|\end{programcode}|
+
+\end{programcode}
+%
+\begin{tips}{Tips}
+If you want to emphasize complete paragraphs of texts in an \verb|Tips| we recommend to
+use  \begin{verbatim}\begin{tips}{Tips}
+...
+\end{tips}\end{verbatim}
+\end{tips}
+\eject
+%
+\begin{overview}{Overview}
+If you want to emphasize complete paragraphs of texts in an \verb|Overview| we recommend to
+use  \begin{verbatim}\begin{overview}{Overview}
+...
+\end{overview}\end{verbatim}
+\end{overview}
+\begin{backgroundinformation}{Background Information}
+If you want to emphasize complete paragraphs of texts in an \verb|Background|
+\verb|Information| we recommend to
+use
+
+\verb|\begin{backgroundinformation}{Background Information}|
+
+\verb|...|
+
+\verb|\end{backgroundinformation}|
+\end{backgroundinformation}
+\begin{legaltext}{Legal Text}
+If you want to emphasize complete paragraphs of texts in an \verb|Legal Text| we recommend to
+use  \begin{verbatim}\begin{legaltext}{Legal Text}
+...
+\end{legaltext}\end{verbatim}
+\end{legaltext}
+%
+\begin{acknowledgement}
+If you want to include acknowledgments of assistance and the like at the end of an individual chapter please use the \verb|acknowledgement| environment -- it will automatically be rendered in line with the preferred layout.
+\end{acknowledgement}
+%
+\ethics{Competing Interests}{Please declare any competing interests
+in the context of your chapter. The following sentences can be regarded as examples.\newline
+This study was funded by [X] [grant number X].\newline
+ [Author A] has a received research grant from [Company W].\newline
+ [Author B] has received a speaker honorarium from [Company X] and owns stock in [Company~Y].\newline 
+ [Author C] is a member of [committee Z].\newline 
+The authors have no conflicts of interest to declare that are relevant to the content of this chapter.}
+
+\eject
+
+\ethics{Ethics Approval}{If your chapter includes primary studies with humans please declare the adherence of ethical standards. Example text: This study was performed in line with the principles of the Declaration of Helsinki. Approval was granted by the Ethics Committee of University B (Date.../No. ...).\newline 
+ In addition, for human participants, authors are required to include a statement that informed consent (to participate and/or to publish) was obtained from individual participants or parents/guardians if the participant is minor or incapable.\newline
+If animals are studied, authors should make sure that the legal requirements or guidelines in the country and/or state or province for the care and use of animals have been followed or specify that no ethics approval was required.}
+
+\section*{Appendix}
+\addcontentsline{toc}{section}{Appendix}
+%
+%
+When placed at the end of a chapter or contribution (as opposed to at the end of the book), the numbering of tables, figures, and equations in the appendix section continues on from that in the main text. Hence please \textit{do not} use the \verb|appendix| command when writing an appendix at the end of your chapter or contribution. If there is only one the appendix is designated ``Appendix'', or ``Appendix 1'', or ``Appendix 2'', etc. if there is more than one.
+
+\cite{ref-Aevermann2018} is our latest.
+
+\begin{equation}
+a \times b = c
+\end{equation}
+
+\input{newrefs}
+\end{document}
