@@ -597,57 +597,57 @@ using the msigdb package.
 Collect all gene sets for humans:
 
 \begin{shaded}
-\begin{Highlighting}[]
-\KeywordTok{library}\NormalTok{(msigdb)}
-\NormalTok{hssigs =}\StringTok{ }\KeywordTok{getMsigdb}\NormalTok{(}\DataTypeTok{org=}\StringTok{"hs"}\NormalTok{, }\DataTypeTok{id=}\StringTok{"SYM"}\NormalTok{, }\DataTypeTok{version=}\KeywordTok{getMsigdbVersions}\NormalTok{())}
-\end{Highlighting}
+\begin{verbatim}
+library(msigdb)
+hssigs = getMsigdb(org="hs", id="SYM", version=getMsigdbVersions())
+\end{verbatim}
 \end{shaded}
 
 Find those with CANCER in their name:
 
 \begin{shaded}
-\begin{Highlighting}[]
-\NormalTok{nms =}\StringTok{ }\KeywordTok{grep}\NormalTok{(}\StringTok{"ANCER"}\NormalTok{, }\KeywordTok{names}\NormalTok{(hssigs), }\DataTypeTok{value=}\OtherTok{TRUE}\NormalTok{)}
-\KeywordTok{head}\NormalTok{(nms)}
-\CommentTok{\#\# [1] "SOGA\_COLORECTAL\_CANCER\_MYC\_DN"                    }
-\CommentTok{\#\# [2] "SOGA\_COLORECTAL\_CANCER\_MYC\_UP"                    }
-\CommentTok{\#\# [3] "WATANABE\_RECTAL\_CANCER\_RADIOTHERAPY\_RESPONSIVE\_UP"}
-\CommentTok{\#\# [4] "LIU\_PROSTATE\_CANCER\_UP"                           }
-\CommentTok{\#\# [5] "BERTUCCI\_MEDULLARY\_VS\_DUCTAL\_BREAST\_CANCER\_UP"    }
-\CommentTok{\#\# [6] "WATANABE\_COLON\_CANCER\_MSI\_VS\_MSS\_UP"}
-\NormalTok{wangmet =}\StringTok{ }\NormalTok{hssigs[[}\StringTok{"WANG\_METASTASIS\_OF\_BREAST\_CANCER\_ESR1\_UP"}\NormalTok{]]}
-\NormalTok{wangmet}
-\CommentTok{\#\# setName: WANG\_METASTASIS\_OF\_BREAST\_CANCER\_ESR1\_UP }
-\CommentTok{\#\# geneIds: KPNA2, HDGFL3, ..., PSMC2 (total: 22)}
-\CommentTok{\#\# geneIdType: Symbol}
-\CommentTok{\#\# collectionType: Broad}
-\CommentTok{\#\#   bcCategory: c2 (Curated)}
-\CommentTok{\#\#   bcSubCategory: CGP}
-\CommentTok{\#\# details: use \textquotesingle{}details(object)\textquotesingle{}}
-\end{Highlighting}
+\begin{verbatim}
+nms = grep("CANCER", names(hssigs), value=TRUE)
+head(nms)
+## [1] "SOGA_COLORECTAL_CANCER_MYC_DN"
+## [2] "SOGA_COLORECTAL_CANCER_MYC_UP"
+## [3] "WATANABE_RECTAL_CANCER_RADIOTHERAPY_RESPONSIVE_UP"
+## [4] "LIU_PROSTATE_CANCER_UP"
+## [5] "BERTUCCI_MEDULLARY_VS_DUCTAL_BREAST_CANCER_UP"
+## [6] "WATANABE_COLON_CANCER_MSI_VS_MSS_UP"
+wangmet = hssigs[["WANG_METASTASIS_OF_BREAST_CANCER_ESR1_UP"]]
+wangmet
+## setName: WANG_METASTASIS_OF_BREAST_CANCER_ESR1_UP
+## geneIds: KPNA2, HDGFL3, ..., PSMC2 (total: 22)
+## geneIdType: Symbol
+## collectionType: Broad
+##bcCategory: c2 (Curated)
+##bcSubCategory: CGP
+## details: use 'details(object)'
+\end{verbatim}
 \end{shaded}
 
 Information on provenance is bound together with the gene list:
 
 \begin{shaded}
-\begin{Highlighting}[]
-\KeywordTok{details}\NormalTok{(wangmet)}
-\CommentTok{\#\# setName: WANG\_METASTASIS\_OF\_BREAST\_CANCER\_ESR1\_UP }
-\CommentTok{\#\# geneIds: KPNA2, HDGFL3, ..., PSMC2 (total: 22)}
-\CommentTok{\#\# geneIdType: Symbol}
-\CommentTok{\#\# collectionType: Broad}
-\CommentTok{\#\#   bcCategory: c2 (Curated)}
-\CommentTok{\#\#   bcSubCategory: CGP}
-\CommentTok{\#\# setIdentifier: LVY1HGGWMJ7:35020:Fri May 26 13:33:02 2023:1104005}
-\CommentTok{\#\# description: Genes whose expression in primary ER(+) [GeneID=2099] breast cancer tumors positively correlates with developing distant metastases.}
-\CommentTok{\#\#   (longDescription available)}
-\CommentTok{\#\# organism: Homo sapiens}
-\CommentTok{\#\# pubMedIds: 15721472}
-\CommentTok{\#\# urls: https://data.broadinstitute.org/gsea{-}msigdb/msigdb/release/2023.1.Hs/msigdb\_v2023.1.Hs.xml.zip}
-\CommentTok{\#\# contributor: Arthur Liberzon}
-\CommentTok{\#\# setVersion: 2023.1}
-\CommentTok{\#\# creationDate:}
-\end{Highlighting}
+\begin{verbatim}
+details(wangmet)
+## setName: WANG_METASTASIS_OF_BREAST_CANCER_ESR1_UP
+## geneIds: KPNA2, HDGFL3, ..., PSMC2 (total: 22)
+## geneIdType: Symbol
+## collectionType: Broad
+##bcCategory: c2 (Curated)
+##bcSubCategory: CGP
+## setIdentifier: LVY1HGGWMJ7:35020:Fri May 26 13:33:02 2023:1104005
+## description: Genes whose expression in primary ER(+) 
+##      [GeneID=2099] breast cancer tumors positively correla
+## (longDescription available)
+## organism: Homo sapiens
+## pubMedIds: 15721472
+## urls: https://data.broadinstitute.org/gsea-msigdb/msigdb/
+##    release/2023.1.Hs/msigdb_v2023.1.Hs.xml.zip
+## contributor: Arthur Liberzon
+\end{verbatim}
 \end{shaded}
 
 \subsection{Ontologies}\label{ontologies}
@@ -674,53 +674,53 @@ A phrase like `Golgi membrane' can be found in Gene Ontology
 using the select method with GO.db:
 
 \begin{shaded}
-\begin{Highlighting}[]
-\KeywordTok{library}\NormalTok{(GO.db)}
-\KeywordTok{select}\NormalTok{(GO.db, }\DataTypeTok{keytype=}\StringTok{"TERM"}\NormalTok{,}
-   \DataTypeTok{keys=}\StringTok{"Golgi membrane"}\NormalTok{, }\DataTypeTok{columns=}\KeywordTok{c}\NormalTok{(}\StringTok{"GOID"}\NormalTok{, }\StringTok{"DEFINITION"}\NormalTok{, }\StringTok{"ONTOLOGY"}\NormalTok{))}
-\CommentTok{\#\#             TERM       GOID}
-\CommentTok{\#\# 1 Golgi membrane GO:0000139}
-\CommentTok{\#\#                                                                      DEFINITION}
-\CommentTok{\#\# 1 The lipid bilayer surrounding any of the compartments of the Golgi apparatus.}
-\CommentTok{\#\#   ONTOLOGY}
-\CommentTok{\#\# 1       CC}
-\end{Highlighting}
+\begin{verbatim}
+library(GO.db)
+select(GO.db, keytype="TERM",
+keys="Golgi membrane", columns=c("GOID", "DEFINITION", "ONTOLOGY"))
+##             TERM       GOID
+## 1 Golgi membrane GO:0000139
+##                                 DEFINITION
+## 1 The lipid bilayer surrounding any of the 
+## compartments of the Golgi apparatus.
+## ONTOLOGY
+## 1     CC
+\end{verbatim}
 \end{shaded}
 
-Once the formal identifier is obtained, the org.Hs.eg.db package
-can be used to find mappings from the GO term to gene and protein
-identifiers. This generates a fairly large table:
+Once the formal identifier is obtained, the org.Hs.eg.db package can be used to find mappings
+from the GO term to gene and protein identifiers. This generates a fairly large table:
 
 \begin{shaded}
-\begin{Highlighting}[]
-\KeywordTok{library}\NormalTok{(org.Hs.eg.db)}
-\NormalTok{go139 =}\StringTok{ }\KeywordTok{select}\NormalTok{(org.Hs.eg.db, }\DataTypeTok{keys=}\StringTok{"GO:0000139"}\NormalTok{, }\DataTypeTok{keytype=}\StringTok{"GO"}\NormalTok{,}
-   \DataTypeTok{columns=}\KeywordTok{c}\NormalTok{(}\StringTok{"ENTREZID"}\NormalTok{, }\StringTok{"SYMBOL"}\NormalTok{, }\StringTok{"PFAM"}\NormalTok{))}
-\KeywordTok{dim}\NormalTok{(go139)}
-\CommentTok{\#\# [1] 1212    6}
-\KeywordTok{head}\NormalTok{(go139)}
-\CommentTok{\#\#           GO EVIDENCE ONTOLOGY ENTREZID SYMBOL    PFAM}
-\CommentTok{\#\# 1 GO:0000139      TAS       CC       28    ABO PF03414}
-\CommentTok{\#\# 2 GO:0000139      IEA       CC      102 ADAM10 PF00200}
-\CommentTok{\#\# 3 GO:0000139      IEA       CC      102 ADAM10 PF13574}
-\CommentTok{\#\# 4 GO:0000139      IEA       CC      102 ADAM10 PF01562}
-\CommentTok{\#\# 5 GO:0000139      TAS       CC      162  AP1B1 PF09066}
-\CommentTok{\#\# 6 GO:0000139      TAS       CC      162  AP1B1 PF01602}
-\end{Highlighting}
+\begin{verbatim}
+library(org.Hs.eg.db)
+go139 = select(org.Hs.eg.db, keys="GO:0000139", keytype="GO",
+columns=c("ENTREZID", "SYMBOL", "PFAM"))
+dim(go139)
+## [1] 1212 6
+head(go139)
+##           GO EVIDENCE ONTOLOGY ENTREZID SYMBOL    PFAM
+## 1 GO:0000139      TAS       CC       28    ABO PF03414
+## 2 GO:0000139      IEA       CC      102 ADAM10 PF00200
+## 3 GO:0000139      IEA       CC      102 ADAM10 PF13574
+## 4 GO:0000139      IEA       CC      102 ADAM10 PF01562
+## 5 GO:0000139      TAS       CC      162  AP1B1 PF09066
+## 6 GO:0000139      TAS       CC      162  AP1B1 PF01602
+\end{verbatim}
 \end{shaded}
 
-The evidence code TAS means that there is a ``traceable author statement''
-associating the term of interest with the gene identified. The
-number of genes in traceable Golgi membrane:gene associations
-is found with
+The evidence code TAS means that there is a ``traceable author statement'' associating the term
+of interest with the gene identified. The number of genes in traceable Golgi membrane:gene
+associations is found with
 
 \begin{shaded}
-\begin{Highlighting}[]
-\NormalTok{go139 }\OperatorTok{|}\ErrorTok{\textgreater{}}\StringTok{ }\NormalTok{dplyr}\OperatorTok{::}\KeywordTok{filter}\NormalTok{(EVIDENCE}\OperatorTok{==}\StringTok{"TAS"}\NormalTok{) }\OperatorTok{|}\ErrorTok{\textgreater{}}\StringTok{ }\KeywordTok{distinct}\NormalTok{(ENTREZID) }\OperatorTok{|}\ErrorTok{\textgreater{}}\StringTok{ }\KeywordTok{count}\NormalTok{()}
-\CommentTok{\#\#     n}
-\CommentTok{\#\# 1 327}
-\end{Highlighting}
+\begin{verbatim}
+go139 |> dplyr::filter(EVIDENCE=="TAS") |> distinct(ENTREZID) |> count()
+##       n
+## [1] 327
+\end{verbatim}
 \end{shaded}
+
 
 \subsubsection{Ontology usage with rols}\label{ontology-usage-with-rols}
 
@@ -731,34 +731,39 @@ consider the term ``golgi membrane dynamics'', which is not found in GO.
 Again a multistep process is used.
 
 \begin{shaded}
-\begin{Highlighting}[]
-\KeywordTok{library}\NormalTok{(rols)}
-\NormalTok{lk1 =}\StringTok{ }\KeywordTok{OlsSearch}\NormalTok{(}\DataTypeTok{q=}\StringTok{"golgi membrane dynamics"}\NormalTok{, }\DataTypeTok{exact=}\OtherTok{TRUE}\NormalTok{)}
-\NormalTok{lk1}
-\CommentTok{\#\# Object of class \textquotesingle{}OlsSearch\textquotesingle{}:}
-\CommentTok{\#\#   query: golgi membrane dynamics }
-\CommentTok{\#\#   requested: 20 (out of 3)}
-\CommentTok{\#\#   response(s): 0}
-\end{Highlighting}
+\begin{verbatim}
+library(rols)
+lk1 = OlsSearch(q="golgi membrane dynamics", exact=TRUE)
+lk1
+## Object of class 'OlsSearch':
+##query: golgi membrane dynamics
+##requested: 20 (out of 3)
+##response(s): 0
+\end{verbatim}
 \end{shaded}
+
 
 In this first step, we find how extensive is the response
 to the query. Certain searches yield tens of thousands of hits.
 With the exact parameter setting, the yield is modest.
 Now we extract a data.frame after requesting all
-records with \texttt{olsSearch}:
+records with \texttt{olsSearch}.  Results are
+excerpted in Table \ref{tab:tab-golg}.
 
 \begin{shaded}
-\begin{Highlighting}[]
-\NormalTok{lk2 =}\StringTok{ }\KeywordTok{olsSearch}\NormalTok{(lk1)}
-\NormalTok{lk3 =}\StringTok{ }\KeywordTok{as}\NormalTok{(lk2, }\StringTok{"data.frame"}\NormalTok{)}
-\NormalTok{lk3}\OperatorTok{$}\NormalTok{description =}\StringTok{ }\KeywordTok{unlist}\NormalTok{(lk3}\OperatorTok{$}\NormalTok{description)}
-\KeywordTok{kbl}\NormalTok{(lk3[,}\DecValTok{4}\OperatorTok{:}\DecValTok{6}\NormalTok{], }\DataTypeTok{booktabs=}\OtherTok{TRUE}\NormalTok{) }\OperatorTok{|}\ErrorTok{\textgreater{}}\StringTok{ }\KeywordTok{column\_spec}\NormalTok{(}\DecValTok{2}\NormalTok{, }\DataTypeTok{width=}\StringTok{"15em"}\NormalTok{) }\OperatorTok{|}\ErrorTok{\textgreater{}}\StringTok{ }\KeywordTok{column\_spec}\NormalTok{(}\DecValTok{3}\NormalTok{,}
-  \DataTypeTok{width=}\StringTok{"15em"}\NormalTok{)}
-\end{Highlighting}
+\begin{verbatim}
+lk2 = olsSearch(lk1)
+lk3 = as(lk2, "data.frame")
+lk3$description = unlist(lk3$description)
+\end{verbatim}
 \end{shaded}
 
-\begin{tabular}[t]{l>{\raggedright\arraybackslash}p{15em}>{\raggedright\arraybackslash}p{15em}}
+
+
+\begin{table}
+\caption{Using rols to obtain ontologic information related to
+golgi membrane dynamics. \label{tab:tab-golg}}
+\begin{tabular}{lp{5cm}p{8cm}}
 \toprule
 short\_form & description & label\\
 \midrule
@@ -767,6 +772,7 @@ NCIT\_C119639 & E3 ubiquitin-protein ligase HACE1 (909 aa, \textasciitilde{}102 
 NCIT\_C119638 & Human HACE1 wild-type allele is located in the vicinity of 6q16.3 and is approximately 132 kb in length. This allele, which encodes E3 ubiquitin-protein ligase HACE1 protein, plays a role in the modulation of both Golgi membrane dynamics and ubiquitination. Mutations of the gene, including translocations that either reduce expression of the gene (t(6;15)(q21;q21)) or truncate the gene (t(5;6)(q21;q21)), are associated with Wilms tumor. & HACE1 wt Allele\\
 \bottomrule
 \end{tabular}
+\end{table}
 
 The detailed descriptions of the NCI Thesaurus entries show
 the exact nature of the search outcome.
