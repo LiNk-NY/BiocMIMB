@@ -8,12 +8,12 @@ An overview of Bioconductor's resource for the Cancer
 Genome Atlas (TCGA) is easy to obtain, with the
 curatedTCGAData package.
 
-\begin{Shaded}
+\begin{shaded}
 \begin{verbatim}
 library(curatedTCGAData)
 tcgatab = curatedTCGAData(version="2.1.1")
 \end{verbatim}
-\end{Shaded}
+\end{shaded}
 %\begin{Shaded}
 %\begin{Highlighting}[]
 %\KeywordTok{library}\NormalTok{(curatedTCGAData)}
@@ -179,7 +179,7 @@ We obtain normalized RNA-seq data on primary tumor samples for GBM with
 %\end{Highlighting}
 %\end{Shaded}
 
-\begin{Shaded}
+\begin{shaded}
 \begin{verbatim}
 gbrna = TCGAprimaryTumors(curatedTCGAData("GBM",
 "RNASeq2GeneNorm", dry.run=FALSE, version="2.1.1"))
@@ -198,7 +198,7 @@ gbrna
 assays() - convert ExperimentList to a SimpleList of matrices
 ##exportClass() - save data to flat files
 \end{verbatim}
-\end{Shaded}
+\end{shaded}
 
 R functions defined in Bioconductor packages can operate on the variable \texttt{gbrna} to
 retrieve information of interest. Details on the underlying data structure
@@ -209,19 +209,20 @@ features such as genes, and table columns corresponding to samples.
 
 Information on GBM samples employs the \texttt{colData} function.
 
-%\begin{Shaded}
+%\begin{shaded}
 %\begin{Highlighting}[]
 %\KeywordTok{dim}\NormalTok{(}\KeywordTok{colData}\NormalTok{(gbrna))}
 %\CommentTok{\#\# [1]  153 4380}
 %\end{Highlighting}
-%\end{Shaded}
+%\end{shaded}
 
 
+\begin{shaded}
 \begin{verbatim}
 dim(colData(gbrna))
-## [1]
-153 4380
+## [1] 153 4380
 \end{verbatim}
+\end{shaded}
 
 For sample level information obtained \texttt{colData}, we think of rows
 as samples, and columns as sample attributes.
@@ -233,7 +234,14 @@ as samples, and columns as sample attributes.
 TCGA datasets are generally provided as combinations of
 results for tumor tissue and normal tissue. The determination
 of a record's sample type is encoded in the sample ``barcode''.
-Decoding of sample barcodes is described at the \href{https://docs.gdc.cancer.gov/Encyclopedia/pages/TCGA_Barcode/}{Genomic Data Commons Encyclopedia} with specific interpretation of sample types listed \href{https://gdc.cancer.gov/resources-tcga-users/tcga-code-tables/sample-type-codes}{separately}. The TCGAutils package provides utilities for extracting
+Decoding of sample barcodes is described at 
+
+\begin{verbatim}
+https://docs.gdc.cancer.gov/Encyclopedia/pages/TCGA_Barcode/
+\end{verbatim}
+
+\noindent
+with specific interpretation of sample types listed \href{https://gdc.cancer.gov/resources-tcga-users/tcga-code-tables/sample-type-codes}{separately}. The TCGAutils package provides utilities for extracting
 data on primary tumor samples, excluding samples that may have been taken on
 normal tissue or metastases.
 
@@ -243,17 +251,19 @@ samples, and 4380 fields for GBM samples. Many of these
 fields are meaningfully populated for only a very small minority of samples.
 To see this for GBM:
 
-%\begin{Shaded}
+%\begin{shaded}
 %\begin{Highlighting}[]
 %\KeywordTok{mean}\NormalTok{(}\KeywordTok{sapply}\NormalTok{(}\KeywordTok{colData}\NormalTok{(gbrna), }\ControlFlowTok{function}\NormalTok{(x) }\KeywordTok{mean}\NormalTok{(}\KeywordTok{is.na}\NormalTok{(x))}\OperatorTok{\textgreater{}}\NormalTok{.}\DecValTok{90}\NormalTok{))}
 %\CommentTok{\#\# [1] 0.8091324}
 %\end{Highlighting}
-%\end{Shaded}
+%\end{shaded}
 
+\begin{shaded}
 \begin{verbatim}
 mean(sapply(colData(gbrna), function(x) mean(is.na(x))>.90))
 ## [1] 0.8091324
 \end{verbatim}
+\end{shaded}
 
 In words, for 81\% of clinical data fields in TCGA GBM data,
 at least 90\% of entries are missing.
@@ -267,6 +277,8 @@ approach to comparing survival profiles for BRCA, GBM, and LUAD
 donors. The result is in Figure \ref{fig:dothesurv}.
 
 
+{\small
+\begin{shaded}
 \begin{verbatim}
 # obtain mutation data for BRCA, GBM, LUAD; could use any or all assay types
 brmut = curatedTCGAData("BRCA", "Mutation", version = "2.1.1", dry.run = FALSE)
@@ -287,6 +299,8 @@ allsurv = do.call(c, ss)
 library(GGally)
 ggsurv(survfit(allsurv~type))
 \end{verbatim}
+\end{shaded}
+}
 
 \begin{figure}
 \includegraphics[width=0.8\linewidth,]{bioccb_files/figure-latex/dothesurv-1} \caption{Survival profile extraction from three MultiAssayExperiments produced with curatedTCGAData calls.}\label{fig:dothesurv}
@@ -297,6 +311,7 @@ features of the mutation profiles of individual samples.
 The ``RaggedExperiment'' class is employed to test each BRCA sample for
 presence of any mutation in the gene TTN. See Figure \ref{fig:strat}.
 
+\begin{shaded}
 \begin{verbatim}
 bprim = TCGAprimaryTumors(brmut)
 ## harmonizing input:
@@ -319,6 +334,7 @@ removing 5 sampleMap rows with 'colname' not in colnames of experiments
 hasTTNmut = hasTTNmut[cn] # match mutation records to surv times
 ggsurv(survfit(bsurv~hasTTNmut))
 \end{verbatim}
+\end{shaded}
 
 
 \begin{figure}
@@ -343,16 +359,15 @@ diverse cancers in cBioPortal. The main unit of data access is the publication. 
 cBioPortal API. \texttt{getStudies} returns a tibble with metadata on
 all studies.
 
-\begin{Shaded}
+\begin{shaded}
 \begin{verbatim}
 library(cBioPortalData)
 cbio = cBioPortal()
 allst = getStudies(cbio)
 dim(allst)
-## [1] 397
-13
+## [1] 397 13
 \end{verbatim}
-\end{Shaded}
+\end{shaded}
 
 A pruned selection of records from the cBioPortal
 studies table is given in Table \ref{tab:tab-cball}.
@@ -395,13 +410,10 @@ To explore copy number alteration data from a study on angiosarcoma,
 we find the associated studyId field in \texttt{allst} and use the \texttt{cBioDataPack} function
 to retrieve a MultiAssayExperiment:
 
+\begin{shaded}
 \begin{verbatim}
 ann = "angs_project_painter_2018"
 ang = cBioDataPack(ann)
-## Warning in .find_with_xfix(df_colnames, get(paste0(fix, 1)), get(paste0(fix, :
-## Multiple prefixes found, using keyword 'region' or taking first one
-## Warning in .find_with_xfix(df_colnames, get(paste0(fix, 1)), get(paste0(fix, :
-## Multiple prefixes found, using keyword 'region' or taking first one
 ang
 ## A MultiAssayExperiment object of 3 listed
 ##experiments with user-defined names and respective classes.
@@ -418,11 +430,12 @@ ang
 assays() - convert ExperimentList to a SimpleList of matrices
 ##exportClass() - save data to flat files
 \end{verbatim}
+\end{shaded}
 
 The copy number alteration outcomes are in the
 \texttt{assay} component of the experiment.
 
-\begin{Shaded}
+\begin{shaded}
 \begin{verbatim}
 seg = experiments(ang)[[1]]
 colnames(seg) = sapply(strsplit(colnames(seg), "-"), "[", 5)
@@ -434,12 +447,12 @@ assay(seg)[1:4,1:4]
 ## 1:1140874-1471177   167    NA    NA    NA
 ## 1:1475170-1855370   113    NA    NA    NA
 \end{verbatim}
-\end{Shaded}
+\end{shaded}
 
 The rownames component of this matrix can be transformed to
 a GenomicRanges instance for concise manipulation.
 
-%\begin{Shaded}
+%\begin{shaded}
 %\begin{Highlighting}[]
 %\KeywordTok{library}\NormalTok{(GenomicRanges)}
 %\CommentTok{\#\# 0/0 packages newly attached/loaded, see sessionInfo() for details.}
@@ -464,23 +477,333 @@ a GenomicRanges instance for concise manipulation.
 %\CommentTok{\#\#   {-}{-}{-}{-}{-}{-}{-}}
 %\CommentTok{\#\#   seqinfo: 22 sequences from an unspecified genome; no seqlengths}
 %\end{Highlighting}
-%\end{Shaded}
+%\end{shaded}
 
 We'll focus on chromosome 17, where TP53 is found. Regions
 of genomic alteration are summarized to their midpoints.
+The display in Figure \ref{fig:mkden} shows a strong peak in the vicinity of 7.5 Mb on chromosome 17, near TP53.
 
-%\begin{Shaded}
-%\begin{Highlighting}[]
-%\NormalTok{g17 =}\StringTok{ }\NormalTok{allalt[}\KeywordTok{seqnames}\NormalTok{(allalt)}\OperatorTok{==}\StringTok{"17"}\NormalTok{]}
-%\NormalTok{df17 =}\StringTok{ }\KeywordTok{as}\NormalTok{(g17, }\StringTok{"data.frame"}\NormalTok{)        }\CommentTok{\# for ggplot2}
-%\NormalTok{df17}\OperatorTok{$}\NormalTok{mid =}\StringTok{ }\FloatTok{.5}\OperatorTok{*}\NormalTok{(df17}\OperatorTok{$}\NormalTok{start}\OperatorTok{+}\NormalTok{df17}\OperatorTok{$}\NormalTok{end) }\CommentTok{\# midpoint only}
-%\KeywordTok{ggplot}\NormalTok{(df17, }\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x=}\NormalTok{mid)) }\OperatorTok{+}\StringTok{ }\KeywordTok{geom\_density}\NormalTok{(}\DataTypeTok{bw=}\NormalTok{.}\DecValTok{2}\NormalTok{) }\OperatorTok{+}\StringTok{ }\KeywordTok{xlab}\NormalTok{(}\StringTok{"chr 17 bp"}\NormalTok{)}
-%\end{Highlighting}
-%\end{Shaded}
 
 \begin{figure}
 \includegraphics[width=1\linewidth,]{bioccb_files/figure-latex/mkden-1} \caption{Density of recurrent genomic alterations on chromosome 17 for 48 angiosarcoma patients.}\label{fig:mkden}
 \end{figure}
 
-This display shows a strong peak in the vicinity of 7.5 Mb on chromosome 17, near TP53.
+
+
+\section{Genomic annotation resources relevant to cancer}\label{hubs}
+
+
+\subsection{Resources from UCSC, NCBI, and EMBL}\label{resources-from-ucsc-ncbi-and-embl}
+
+Sequences for reference genome builds for human and
+other model organisms are supplied in BSgenome packages.
+BSgenome.Hsapiens.UCSC.hg19 provides all chromosomes and
+contigs for the 2009 build; the hg38 suffix may be used
+for the 2013 build. The recent ``telomere to telomere''
+build is available as BSgenome.Hsapiens.NCBI.T2T.CHMv13v2.0.
+
+NCBI's dbSNP catalog of genetic variants is provided
+in versioned packages.
+For example, SNPlocs.Hsapiens.dbSNP155.GRCh38 includes
+position and nucleotide content information for over
+1 billion SNP identifiers ("rs numbers").
+
+Tracks defined for the UCSC genome browser are also
+packaged. TxDb.Hsapiens.UCSC.knownGene.hg38 can be
+used to get gene, transcript, and exon location information
+for the hg38 build. The EnsDb packages provide similar
+information for annotations curated at EMBL.
+
+%\begin{shaded}
+%\KeywordTok{library}\NormalTok{(EnsDb.Hsapiens.v86)}
+%\NormalTok{EnsDb.Hsapiens.v86}
+%\CommentTok{\#\# EnsDb for Ensembl:}
+%\CommentTok{\#\# |Backend: SQLite}
+%\CommentTok{\#\# |Db type: EnsDb}
+%\CommentTok{\#\# |Type of Gene ID: Ensembl Gene ID}
+%\CommentTok{\#\# |Supporting package: ensembldb}
+%\CommentTok{\#\# |Db created by: ensembldb package from Bioconductor}
+%\CommentTok{\#\# |script\_version: 0.3.0}
+%\CommentTok{\#\# |Creation time: Thu May 18 16:32:27 2017}
+%\CommentTok{\#\# |ensembl\_version: 86}
+%\CommentTok{\#\# |ensembl\_host: localhost}
+%\CommentTok{\#\# |Organism: homo\_sapiens}
+%\CommentTok{\#\# |taxonomy\_id: 9606}
+%\CommentTok{\#\# |genome\_build: GRCh38}
+%\CommentTok{\#\# |DBSCHEMAVERSION: 2.0}
+%\CommentTok{\#\# | No. of genes: 63970.}
+%\CommentTok{\#\# | No. of transcripts: 216741.}
+%\CommentTok{\#\# |Protein data available.}
+%\end{Highlighting}
+%\end{shaded}
+
+\begin{shaded}
+\begin{verbatim}
+library(EnsDb.Hsapiens.v86)
+EnsDb.Hsapiens.v86
+# EnsDb for Ensembl:}
+# |Backend: SQLite}
+# |Db type: EnsDb}
+# |Type of Gene ID: Ensembl Gene ID}
+# |Supporting package: ensembldb}
+# |Db created by: ensembldb package from Bioconductor}
+# |script\_version: 0.3.0}
+# |Creation time: Thu May 18 16:32:27 2017}
+# |ensembl\_version: 86}
+# |ensembl\_host: localhost}
+# |Organism: homo\_sapiens}
+# |taxonomy\_id: 9606}
+# |genome\_build: GRCh38}
+# |DBSCHEMAVERSION: 2.0}
+# | No. of genes: 63970.}
+# | No. of transcripts: 216741.}
+# |Protein data available.}
+\end{verbatim}
+\end{shaded}
+
+
+The ``genes'' method provides addresses and additional
+annotations.
+
+\begin{shaded}
+\begin{Highlighting}[]
+\KeywordTok{names}\NormalTok{(}\KeywordTok{mcols}\NormalTok{(}\KeywordTok{genes}\NormalTok{(EnsDb.Hsapiens.v86)))}
+\CommentTok{\#\# [1] "gene\_id"          "gene\_name"        "gene\_biotype"     "seq\_coord\_system"}
+\CommentTok{\#\# [5] "symbol"           "entrezid"}
+\KeywordTok{head}\NormalTok{(}\KeywordTok{table}\NormalTok{(}\KeywordTok{genes}\NormalTok{(EnsDb.Hsapiens.v86)}\OperatorTok{$}\NormalTok{gene\_biotype))}
+\CommentTok{\#\# }
+\CommentTok{\#\#      3prime\_overlapping\_ncRNA                     antisense }
+\CommentTok{\#\#                            30                          5703 }
+\CommentTok{\#\# bidirectional\_promoter\_lncRNA                     IG\_C\_gene }
+\CommentTok{\#\#                             4                            23 }
+\CommentTok{\#\#               IG\_C\_pseudogene                     IG\_D\_gene }
+\CommentTok{\#\#                            11                            64}
+\end{Highlighting}
+\end{shaded}
+
+More recent versions of Ensembl gene annotation are available
+from AnnotationHub, as illustrated above in section \ref{cache} with
+the creation of \texttt{ens110}.
+
+\subsection{Gene sets}\label{gene-sets}
+
+Many methods have been developed to employ collections
+of genes for inference on hypotheses about cancer
+initiation or progression. The Molecular Signatures Database (MSigDB)
+is curated at Broad Institute, and can be harvested
+using the msigdb package.
+
+Collect all gene sets for humans:
+
+\begin{shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(msigdb)}
+\NormalTok{hssigs =}\StringTok{ }\KeywordTok{getMsigdb}\NormalTok{(}\DataTypeTok{org=}\StringTok{"hs"}\NormalTok{, }\DataTypeTok{id=}\StringTok{"SYM"}\NormalTok{, }\DataTypeTok{version=}\KeywordTok{getMsigdbVersions}\NormalTok{())}
+\end{Highlighting}
+\end{shaded}
+
+Find those with CANCER in their name:
+
+\begin{shaded}
+\begin{Highlighting}[]
+\NormalTok{nms =}\StringTok{ }\KeywordTok{grep}\NormalTok{(}\StringTok{"ANCER"}\NormalTok{, }\KeywordTok{names}\NormalTok{(hssigs), }\DataTypeTok{value=}\OtherTok{TRUE}\NormalTok{)}
+\KeywordTok{head}\NormalTok{(nms)}
+\CommentTok{\#\# [1] "SOGA\_COLORECTAL\_CANCER\_MYC\_DN"                    }
+\CommentTok{\#\# [2] "SOGA\_COLORECTAL\_CANCER\_MYC\_UP"                    }
+\CommentTok{\#\# [3] "WATANABE\_RECTAL\_CANCER\_RADIOTHERAPY\_RESPONSIVE\_UP"}
+\CommentTok{\#\# [4] "LIU\_PROSTATE\_CANCER\_UP"                           }
+\CommentTok{\#\# [5] "BERTUCCI\_MEDULLARY\_VS\_DUCTAL\_BREAST\_CANCER\_UP"    }
+\CommentTok{\#\# [6] "WATANABE\_COLON\_CANCER\_MSI\_VS\_MSS\_UP"}
+\NormalTok{wangmet =}\StringTok{ }\NormalTok{hssigs[[}\StringTok{"WANG\_METASTASIS\_OF\_BREAST\_CANCER\_ESR1\_UP"}\NormalTok{]]}
+\NormalTok{wangmet}
+\CommentTok{\#\# setName: WANG\_METASTASIS\_OF\_BREAST\_CANCER\_ESR1\_UP }
+\CommentTok{\#\# geneIds: KPNA2, HDGFL3, ..., PSMC2 (total: 22)}
+\CommentTok{\#\# geneIdType: Symbol}
+\CommentTok{\#\# collectionType: Broad}
+\CommentTok{\#\#   bcCategory: c2 (Curated)}
+\CommentTok{\#\#   bcSubCategory: CGP}
+\CommentTok{\#\# details: use \textquotesingle{}details(object)\textquotesingle{}}
+\end{Highlighting}
+\end{shaded}
+
+Information on provenance is bound together with the gene list:
+
+\begin{shaded}
+\begin{Highlighting}[]
+\KeywordTok{details}\NormalTok{(wangmet)}
+\CommentTok{\#\# setName: WANG\_METASTASIS\_OF\_BREAST\_CANCER\_ESR1\_UP }
+\CommentTok{\#\# geneIds: KPNA2, HDGFL3, ..., PSMC2 (total: 22)}
+\CommentTok{\#\# geneIdType: Symbol}
+\CommentTok{\#\# collectionType: Broad}
+\CommentTok{\#\#   bcCategory: c2 (Curated)}
+\CommentTok{\#\#   bcSubCategory: CGP}
+\CommentTok{\#\# setIdentifier: LVY1HGGWMJ7:35020:Fri May 26 13:33:02 2023:1104005}
+\CommentTok{\#\# description: Genes whose expression in primary ER(+) [GeneID=2099] breast cancer tumors positively correlates with developing distant metastases.}
+\CommentTok{\#\#   (longDescription available)}
+\CommentTok{\#\# organism: Homo sapiens}
+\CommentTok{\#\# pubMedIds: 15721472}
+\CommentTok{\#\# urls: https://data.broadinstitute.org/gsea{-}msigdb/msigdb/release/2023.1.Hs/msigdb\_v2023.1.Hs.xml.zip}
+\CommentTok{\#\# contributor: Arthur Liberzon}
+\CommentTok{\#\# setVersion: 2023.1}
+\CommentTok{\#\# creationDate:}
+\end{Highlighting}
+\end{shaded}
+
+\subsection{Ontologies}\label{ontologies}
+
+Informal reasoning about cancer genomics employs conventional
+but frequently ambiguous terminology. In modern
+information science, ontologies are structured vocabularies
+(sets of ``terms'', which may be single words or natural language
+phrases) accompanied by
+explicit statements of semantic relationships among terms.
+
+Bioconductor provides several approaches for using ontologies
+in cancer data science. The most familiar ontology
+in this domain is Gene Ontology (GO), which organizes vocabulary
+about genes and gene products in
+the areas of molecular function, cellular components, and
+biological processes.
+
+\subsubsection{Ontology usage with AnnotationDbi}\label{ontology-usage-with-annotationdbi}
+
+A common use case is to find genes or proteins associated
+with some biological process, component, or function.
+A phrase like `Golgi membrane' can be found in Gene Ontology
+using the select method with GO.db:
+
+\begin{shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(GO.db)}
+\KeywordTok{select}\NormalTok{(GO.db, }\DataTypeTok{keytype=}\StringTok{"TERM"}\NormalTok{,}
+   \DataTypeTok{keys=}\StringTok{"Golgi membrane"}\NormalTok{, }\DataTypeTok{columns=}\KeywordTok{c}\NormalTok{(}\StringTok{"GOID"}\NormalTok{, }\StringTok{"DEFINITION"}\NormalTok{, }\StringTok{"ONTOLOGY"}\NormalTok{))}
+\CommentTok{\#\#             TERM       GOID}
+\CommentTok{\#\# 1 Golgi membrane GO:0000139}
+\CommentTok{\#\#                                                                      DEFINITION}
+\CommentTok{\#\# 1 The lipid bilayer surrounding any of the compartments of the Golgi apparatus.}
+\CommentTok{\#\#   ONTOLOGY}
+\CommentTok{\#\# 1       CC}
+\end{Highlighting}
+\end{shaded}
+
+Once the formal identifier is obtained, the org.Hs.eg.db package
+can be used to find mappings from the GO term to gene and protein
+identifiers. This generates a fairly large table:
+
+\begin{shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(org.Hs.eg.db)}
+\NormalTok{go139 =}\StringTok{ }\KeywordTok{select}\NormalTok{(org.Hs.eg.db, }\DataTypeTok{keys=}\StringTok{"GO:0000139"}\NormalTok{, }\DataTypeTok{keytype=}\StringTok{"GO"}\NormalTok{,}
+   \DataTypeTok{columns=}\KeywordTok{c}\NormalTok{(}\StringTok{"ENTREZID"}\NormalTok{, }\StringTok{"SYMBOL"}\NormalTok{, }\StringTok{"PFAM"}\NormalTok{))}
+\KeywordTok{dim}\NormalTok{(go139)}
+\CommentTok{\#\# [1] 1212    6}
+\KeywordTok{head}\NormalTok{(go139)}
+\CommentTok{\#\#           GO EVIDENCE ONTOLOGY ENTREZID SYMBOL    PFAM}
+\CommentTok{\#\# 1 GO:0000139      TAS       CC       28    ABO PF03414}
+\CommentTok{\#\# 2 GO:0000139      IEA       CC      102 ADAM10 PF00200}
+\CommentTok{\#\# 3 GO:0000139      IEA       CC      102 ADAM10 PF13574}
+\CommentTok{\#\# 4 GO:0000139      IEA       CC      102 ADAM10 PF01562}
+\CommentTok{\#\# 5 GO:0000139      TAS       CC      162  AP1B1 PF09066}
+\CommentTok{\#\# 6 GO:0000139      TAS       CC      162  AP1B1 PF01602}
+\end{Highlighting}
+\end{shaded}
+
+The evidence code TAS means that there is a ``traceable author statement''
+associating the term of interest with the gene identified. The
+number of genes in traceable Golgi membrane:gene associations
+is found with
+
+\begin{shaded}
+\begin{Highlighting}[]
+\NormalTok{go139 }\OperatorTok{|}\ErrorTok{\textgreater{}}\StringTok{ }\NormalTok{dplyr}\OperatorTok{::}\KeywordTok{filter}\NormalTok{(EVIDENCE}\OperatorTok{==}\StringTok{"TAS"}\NormalTok{) }\OperatorTok{|}\ErrorTok{\textgreater{}}\StringTok{ }\KeywordTok{distinct}\NormalTok{(ENTREZID) }\OperatorTok{|}\ErrorTok{\textgreater{}}\StringTok{ }\KeywordTok{count}\NormalTok{()}
+\CommentTok{\#\#     n}
+\CommentTok{\#\# 1 327}
+\end{Highlighting}
+\end{shaded}
+
+\subsubsection{Ontology usage with rols}\label{ontology-usage-with-rols}
+
+Access to a vast collection of ontologies is afforded by the EBI's
+Ontology Lookup Service (OLS). The rols package uses the OLS API
+to discover ontologic mapping of terms of interest. Here we'll
+consider the term ``golgi membrane dynamics'', which is not found in GO.
+Again a multistep process is used.
+
+\begin{shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(rols)}
+\NormalTok{lk1 =}\StringTok{ }\KeywordTok{OlsSearch}\NormalTok{(}\DataTypeTok{q=}\StringTok{"golgi membrane dynamics"}\NormalTok{, }\DataTypeTok{exact=}\OtherTok{TRUE}\NormalTok{)}
+\NormalTok{lk1}
+\CommentTok{\#\# Object of class \textquotesingle{}OlsSearch\textquotesingle{}:}
+\CommentTok{\#\#   query: golgi membrane dynamics }
+\CommentTok{\#\#   requested: 20 (out of 3)}
+\CommentTok{\#\#   response(s): 0}
+\end{Highlighting}
+\end{shaded}
+
+In this first step, we find how extensive is the response
+to the query. Certain searches yield tens of thousands of hits.
+With the exact parameter setting, the yield is modest.
+Now we extract a data.frame after requesting all
+records with \texttt{olsSearch}:
+
+\begin{shaded}
+\begin{Highlighting}[]
+\NormalTok{lk2 =}\StringTok{ }\KeywordTok{olsSearch}\NormalTok{(lk1)}
+\NormalTok{lk3 =}\StringTok{ }\KeywordTok{as}\NormalTok{(lk2, }\StringTok{"data.frame"}\NormalTok{)}
+\NormalTok{lk3}\OperatorTok{$}\NormalTok{description =}\StringTok{ }\KeywordTok{unlist}\NormalTok{(lk3}\OperatorTok{$}\NormalTok{description)}
+\KeywordTok{kbl}\NormalTok{(lk3[,}\DecValTok{4}\OperatorTok{:}\DecValTok{6}\NormalTok{], }\DataTypeTok{booktabs=}\OtherTok{TRUE}\NormalTok{) }\OperatorTok{|}\ErrorTok{\textgreater{}}\StringTok{ }\KeywordTok{column\_spec}\NormalTok{(}\DecValTok{2}\NormalTok{, }\DataTypeTok{width=}\StringTok{"15em"}\NormalTok{) }\OperatorTok{|}\ErrorTok{\textgreater{}}\StringTok{ }\KeywordTok{column\_spec}\NormalTok{(}\DecValTok{3}\NormalTok{,}
+  \DataTypeTok{width=}\StringTok{"15em"}\NormalTok{)}
+\end{Highlighting}
+\end{shaded}
+
+\begin{tabular}[t]{l>{\raggedright\arraybackslash}p{15em}>{\raggedright\arraybackslash}p{15em}}
+\toprule
+short\_form & description & label\\
+\midrule
+NCIT\_C119637 & This gene is involved in both protein ubiquitination and Golgi membrane dynamics. & HACE1 Gene\\
+NCIT\_C119639 & E3 ubiquitin-protein ligase HACE1 (909 aa, \textasciitilde{}102 kDa) is encoded by the human HACE1 gene. This protein is involved in the regulation of both the ubiquitination and subsequent degradation of small GTPases, which modulates Golgi membrane dynamics. & E3 Ubiquitin-Protein Ligase HACE1\\
+NCIT\_C119638 & Human HACE1 wild-type allele is located in the vicinity of 6q16.3 and is approximately 132 kb in length. This allele, which encodes E3 ubiquitin-protein ligase HACE1 protein, plays a role in the modulation of both Golgi membrane dynamics and ubiquitination. Mutations of the gene, including translocations that either reduce expression of the gene (t(6;15)(q21;q21)) or truncate the gene (t(5;6)(q21;q21)), are associated with Wilms tumor. & HACE1 wt Allele\\
+\bottomrule
+\end{tabular}
+
+The detailed descriptions of the NCI Thesaurus entries show
+the exact nature of the search outcome.
+
+\subsubsection{Cross-ontology relationships}\label{cross-ontology-relationships}
+
+Philosophically, ontology is the study of what there is. For
+applications in information
+science,
+boundaries need to be established so that ontological
+resources can be managed with well-defined scopes. In Gene
+Ontology, three sub-ontologies are explicitly identified for
+cellular components, biological processes, and molecular functions.
+
+As knowledge of cell biology increases, the typology of
+cells becomes more and more intricate. Differentiation
+and definition
+of ``cell types'' involves concepts from immunology,
+protein science, anatomy, and other conceptual domains
+for which ontologies have been developed. Figure \ref{fig:ontopair}
+presents, on the left, the hierarchy of cell type concepts starting at ``lymphocyte'',
+leading to ``Type II Natural Killer T cell secreting interferon gamma''.
+On the right, some of the GO and Protein Ontology (PR) cross-references
+in the Cell Ontology (CL) entry for the Type II NK cell are shown.
+The ``cond'' column of the table contains abbreviated tokens
+representing formal relationships linking the cell type
+to the protein or cellular component elements of PR and GO.
+The token ``hasPMP'' refers to the element of the Relation Ontology
+(RO) ``has plasma membrane part'' (RO:0002104).
+
+\begin{figure}
+\includegraphics[width=1\linewidth,]{ontoPair} \caption{Ontology visualization and tabulation with ontoProc::ctmarks.}\label{fig:ontopair}
+\end{figure}
+
+Prospects for use of ontological discipline in the
+definition of new cell types are reviewed in a 2018
+paper from the Venter Institute (Aevermann et al. (\protect\hyperlink{ref-Aevermann2018}{2018})).
+The field of biological ontology is rapidly advancing,
+and the integration of ontology search and inference
+with data analytic frameworks requires more effort at this time.
 

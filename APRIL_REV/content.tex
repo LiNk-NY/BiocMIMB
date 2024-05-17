@@ -14,6 +14,7 @@
                              % when including figure files
 \usepackage{multicol}        % used for the two-column index
 \usepackage[bottom]{footmisc}% places footnotes at page bottom
+\usepackage{framed} % vince may 17
 
 
 \usepackage{newtxtext}       % 
@@ -238,16 +239,19 @@ The curatedTCGAData package provides some resources through
 ExperimentHub, as do many other self-identified ``CancerData'' resources. Once the
 ExperimentHub is loaded, it can be queried for terms of interest.
 
+\begin{shaded}
 \begin{verbatim}
 library(ExperimentHub)
 eh = ExperimentHub()
 query(eh, "CancerData")
 \end{verbatim}
+\end{shaded}
 
 %\texttt{\{r useeh\} \textless{}!-\/- , fig.cap="ExperimentHub attachment, retrieval, query, and response when seeking cancer-related data.", message=FALSE\} -\/-\textgreater{} library(ExperimentHub) eh \textless{}- ExperimentHub() query(eh, "CancerData")}
 
 Multiple terms can be used to narrow results before choosing a download.
 
+\begin{shaded}
 \begin{verbatim}
 query(eh, c("CancerData", "esophageal"))
 # ExperimentHub with 2 records}
@@ -263,16 +267,19 @@ query(eh, c("CancerData", "esophageal"))
 #   EH8527 | cao_esophageal_wgbs_hg19        
 #   EH8530 | cao_esophageal_transcript_counts
 \end{verbatim}
+\end{shaded}
 
 Similarly AnnotationHub files can be downloaded for annotating data. For example,
 the ensembl 110 release of gene and protein annotations are obtained with the
 following:
 
+\begin{shaded}
 \begin{verbatim}
 library(AnnotationHub)
 ah = AnnotationHub()
 query(ah, c("ensembl", "110"))
 \end{verbatim}
+\end{shaded}
 
 \input{inst}
 
