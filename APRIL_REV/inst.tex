@@ -287,10 +287,9 @@ lumut = curatedTCGAData("LUAD", "Mutation", version = "2.1.1", dry.run = FALSE)
 # extract survival times
 library(survival)
 getSurv = function(mae) {
-days_on = with(colData(mae), ifelse(is.na(days_to_last_followup),
-days_to_death, days_to_last_followup))
-8Bioconductor’s Computational Ecosystem for Genomic Data Science in Cancer
-Surv(days_on, colData(mae)$vital_status)
+ days_on = with(colData(mae), ifelse(is.na(days_to_last_followup),
+ days_to_death, days_to_last_followup))
+ Surv(days_on, colData(mae)$vital_status)
 }
 ss = lapply(list(brmut, gbmut, lumut), getSurv)
 codes = c("BRCA", "GBM", "LUAD")
@@ -315,8 +314,7 @@ presence of any mutation in the gene TTN. See Figure \ref{fig:strat}.
 \begin{verbatim}
 bprim = TCGAprimaryTumors(brmut)
 ## harmonizing input:
-##
-removing 5 sampleMap rows with 'colname' not in colnames of experiments
+## removing 5 sampleMap rows with 'colname' not in colnames of experiments
 mutsyms = assay(experiments(bprim)[[1]], "Hugo_Symbol")
 cn = rownames(colData(bprim)) # short
 cna = colnames(mutsyms) # long
@@ -418,7 +416,7 @@ ang
 ## A MultiAssayExperiment object of 3 listed
 ##experiments with user-defined names and respective classes.
 ####Containing an ExperimentList class object of length 3:
-[1] cna_hg19.seg: RaggedExperiment with 27835 rows and 48 columns
+##[1] cna_hg19.seg: RaggedExperiment with 27835 rows and 48 columns
 ##[2] cna: SummarizedExperiment with 23109 rows and 48 columns
 ##[3] mutations: RaggedExperiment with 24058 rows and 48 columns
 ## Functionality:
@@ -509,7 +507,11 @@ position and nucleotide content information for over
 1 billion SNP identifiers ("rs numbers").
 
 Tracks defined for the UCSC genome browser are also
-packaged. TxDb.Hsapiens.UCSC.knownGene.hg38 can be
+packaged. The package 
+\begin{verbatim}
+TxDb.Hsapiens.UCSC.knownGene.hg38 
+\end{verbatim} 
+can be
 used to get gene, transcript, and exon location information
 for the hg38 build. The EnsDb packages provide similar
 information for annotations curated at EMBL.
@@ -541,23 +543,23 @@ information for annotations curated at EMBL.
 \begin{verbatim}
 library(EnsDb.Hsapiens.v86)
 EnsDb.Hsapiens.v86
-# EnsDb for Ensembl:}
-# |Backend: SQLite}
-# |Db type: EnsDb}
-# |Type of Gene ID: Ensembl Gene ID}
-# |Supporting package: ensembldb}
-# |Db created by: ensembldb package from Bioconductor}
-# |script\_version: 0.3.0}
-# |Creation time: Thu May 18 16:32:27 2017}
-# |ensembl\_version: 86}
-# |ensembl\_host: localhost}
-# |Organism: homo\_sapiens}
-# |taxonomy\_id: 9606}
-# |genome\_build: GRCh38}
-# |DBSCHEMAVERSION: 2.0}
-# | No. of genes: 63970.}
-# | No. of transcripts: 216741.}
-# |Protein data available.}
+## EnsDb for Ensembl:}
+## |Backend: SQLite}
+## |Db type: EnsDb}
+## |Type of Gene ID: Ensembl Gene ID}
+## |Supporting package: ensembldb}
+## |Db created by: ensembldb package from Bioconductor}
+## |script\_version: 0.3.0}
+## |Creation time: Thu May 18 16:32:27 2017}
+## |ensembl\_version: 86}
+## |ensembl\_host: localhost}
+## |Organism: homo\_sapiens}
+## |taxonomy\_id: 9606}
+## |genome\_build: GRCh38}
+## |DBSCHEMAVERSION: 2.0}
+## | No. of genes: 63970.}
+## | No. of transcripts: 216741.}
+## |Protein data available.}
 \end{verbatim}
 \end{shaded}
 
@@ -566,19 +568,18 @@ The ``genes'' method provides addresses and additional
 annotations.
 
 \begin{shaded}
-\begin{Highlighting}[]
-\KeywordTok{names}\NormalTok{(}\KeywordTok{mcols}\NormalTok{(}\KeywordTok{genes}\NormalTok{(EnsDb.Hsapiens.v86)))}
-\CommentTok{\#\# [1] "gene\_id"          "gene\_name"        "gene\_biotype"     "seq\_coord\_system"}
-\CommentTok{\#\# [5] "symbol"           "entrezid"}
-\KeywordTok{head}\NormalTok{(}\KeywordTok{table}\NormalTok{(}\KeywordTok{genes}\NormalTok{(EnsDb.Hsapiens.v86)}\OperatorTok{$}\NormalTok{gene\_biotype))}
-\CommentTok{\#\# }
-\CommentTok{\#\#      3prime\_overlapping\_ncRNA                     antisense }
-\CommentTok{\#\#                            30                          5703 }
-\CommentTok{\#\# bidirectional\_promoter\_lncRNA                     IG\_C\_gene }
-\CommentTok{\#\#                             4                            23 }
-\CommentTok{\#\#               IG\_C\_pseudogene                     IG\_D\_gene }
-\CommentTok{\#\#                            11                            64}
-\end{Highlighting}
+\begin{verbatim}
+names(mcols(genes(EnsDb.Hsapiens.v86)))
+## [1] "gene_id"          "gene_name"        "gene_biotype"     "seq_coord_system"
+## [5] "symbol"           "entrezid"}
+head(table(genes(EnsDb.Hsapiens.v86)$gene_biotype))
+##      3prime_overlapping_ncRNA                     antisense 
+##                            30                          5703 
+## bidirectional_promoter_lncRNA                     IG_C_gene 
+##                             4                            23 
+##               IG_C_pseudogene                     IG_D_gene 
+##                            11                            64
+\end{verbatim}
 \end{shaded}
 
 More recent versions of Ensembl gene annotation are available
