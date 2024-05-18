@@ -187,7 +187,8 @@ gbrna
 ## A MultiAssayExperiment object of 1 listed
 ##experiment with a user-defined name and respective class.
 ##Containing an ExperimentList class object of length 1:
-[1] GBM_RNASeq2GeneNorm-20160128: SummarizedExperiment with 18199 rows and 153 columns
+[1] GBM_RNASeq2GeneNorm-20160128: SummarizedExperiment with 
+##        18199 rows and 153 columns
 ##
 ## Functionality:
 ##experiments() - obtain the ExperimentList instance
@@ -314,21 +315,22 @@ presence of any mutation in the gene TTN. See Figure \ref{fig:strat}.
 \begin{verbatim}
 bprim = TCGAprimaryTumors(brmut)
 ## harmonizing input:
-## removing 5 sampleMap rows with 'colname' not in colnames of experiments
+## removing 5 sampleMap rows with 'colname' not in 
+##      colnames of experiments
 mutsyms = assay(experiments(bprim)[[1]], "Hugo_Symbol")
 cn = rownames(colData(bprim)) # short
 cna = colnames(mutsyms) # long
 cnas = substr(cna, 1, 12)
-hasTTNmut = apply(assay(experiments(TCGAprimaryTumors(brmut))[[1]], "Hugo_Symbol"),
-2, function(x) length(which(x=="TTN"))>0)
+hasTTNmut = apply(assay(experiments(TCGAprimaryTumors(brmut))[[1]], 
+     "Hugo_Symbol"), 2, function(x) length(which(x=="TTN"))>0)
 ## harmonizing input:
-##
-removing 5 sampleMap rows with 'colname' not in colnames of experiments
+## removing 5 sampleMap rows with 'colname' not in
+##      colnames of experiments
 names(hasTTNmut) = cnas
 bsurv = getSurv(TCGAprimaryTumors(brmut))
 ## harmonizing input:
-##
-removing 5 sampleMap rows with 'colname' not in colnames of experiments
+## removing 5 sampleMap rows with 'colname' not in 
+##      colnames of experiments
 hasTTNmut = hasTTNmut[cn] # match mutation records to surv times
 ggsurv(survfit(bsurv~hasTTNmut))
 \end{verbatim}
@@ -570,8 +572,8 @@ annotations.
 \begin{shaded}
 \begin{verbatim}
 names(mcols(genes(EnsDb.Hsapiens.v86)))
-## [1] "gene_id"          "gene_name"        "gene_biotype"     "seq_coord_system"
-## [5] "symbol"           "entrezid"}
+## [1] "gene_id"          "gene_name"        "gene_biotype"     
+## [4] "seq_coord_system" "symbol"           "entrezid"
 head(table(genes(EnsDb.Hsapiens.v86)$gene_biotype))
 ##      3prime_overlapping_ncRNA                     antisense 
 ##                            30                          5703 
