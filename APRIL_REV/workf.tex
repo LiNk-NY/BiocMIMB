@@ -167,69 +167,25 @@ list_easierData()
 \end{shaded}
 
 The structure of the stored model weights resource can be sketched by probing list elements.
+
+\begin{shaded}
+\begin{verbatim}
 mw = eh[["EH6678"]]
 ## see ?easierData and browseVignettes('easierData') for documentation
 ## loading from cache
-names(mw)
-##
-# TCGA tumor types
-[1] "LUAD""LUSC""BLCA""BRCA""CESC""CRC""GBM""HNSC""KIRC"
-## [10] "KIRP""LIHC""OV""PAAD""PRAD""SKCM""STAD""THCA""UCEC"
+names(mw)   # TCGA tumor types
+##  [1] "LUAD" "LUSC" "BLCA" "BRCA" "CESC" "CRC"  "GBM"  "HNSC" "KIRC"
+## [10] "KIRP" "LIHC"   "OV" "PAAD" "PRAD" "SKCM" "STAD" "THCA" "UCEC"
 ## [19] "NSCLC"
-names(mw[["LUAD"]])
-## [1] "pathways"
-# TME descriptors
-"immunecells" "tfs"
-"lrpairs"
-"ccpairs"
+names(mw[["LUAD"]]) # TME descriptors
+## [1] "pathways" "immunecells" "tfs" "lrpairs" "ccpairs"
 rownames(mw[["LUAD"]]$pathways$CYT) # predict cytolytic activity
-##[1] "(Intercept)" "Androgen""EGFR""Estrogen"##[6] "JAK-STAT""MAPK""NFkB""p53""PI3K"
-"TNFa""Trail""VEGF""WNT"
-## [11] "TGFb"
-"Hypoxia"
-# using pathway activity
-The vignette of the easier package steps through phases, using these tumor-typ
+##  [1] "(Intercept)" "Androgen" "EGFR" "Estrogen" "Hypoxia"
+##  [6]    "JAK-STAT"     "MAPK" "NFkB" "p53"      "PI3K"
+## [11]        "TNFa"    "Trail" "VEGF" "WNT"
+\end{verbatim}
+\end{shaded}
 
-\begin{Shaded}
-\begin{Highlighting}[]
-\KeywordTok{library}\NormalTok{(easierData)}
-\KeywordTok{list\_easierData}\NormalTok{()}
-\CommentTok{\#\#     eh\_id                          title}
-\CommentTok{\#\# 1  EH6677 Mariathasan2018\_PDL1\_treatment}
-\CommentTok{\#\# 2  EH6678                     opt\_models}
-\CommentTok{\#\# 3  EH6679               opt\_xtrain\_stats}
-\CommentTok{\#\# 4  EH6680            TCGA\_mean\_pancancer}
-\CommentTok{\#\# 5  EH6681              TCGA\_sd\_pancancer}
-\CommentTok{\#\# 6  EH6682               cor\_scores\_genes}
-\CommentTok{\#\# 7  EH6683             intercell\_networks}
-\CommentTok{\#\# 8  EH6684              lr\_frequency\_TCGA}
-\CommentTok{\#\# 9  EH6685                  group\_lrpairs}
-\CommentTok{\#\# 10 EH6686                HGNC\_annotation}
-\CommentTok{\#\# 11 EH6687         scores\_signature\_genes}
-\end{Highlighting}
-\end{Shaded}
-
-The structure of the stored model weights resource can
-be sketched by probing list elements.
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\NormalTok{mw =}\StringTok{ }\NormalTok{eh[[}\StringTok{"EH6678"}\NormalTok{]]}
-\CommentTok{\#\# see ?easierData and browseVignettes(\textquotesingle{}easierData\textquotesingle{}) for documentation}
-\CommentTok{\#\# loading from cache}
-\KeywordTok{names}\NormalTok{(mw)                          }\CommentTok{\# TCGA tumor types}
-\CommentTok{\#\#  [1] "LUAD"  "LUSC"  "BLCA"  "BRCA"  "CESC"  "CRC"   "GBM"   "HNSC"  "KIRC" }
-\CommentTok{\#\# [10] "KIRP"  "LIHC"  "OV"    "PAAD"  "PRAD"  "SKCM"  "STAD"  "THCA"  "UCEC" }
-\CommentTok{\#\# [19] "NSCLC"}
-\KeywordTok{names}\NormalTok{(mw[[}\StringTok{"LUAD"}\NormalTok{]])                }\CommentTok{\# TME descriptors}
-\CommentTok{\#\# [1] "pathways"    "immunecells" "tfs"         "lrpairs"     "ccpairs"}
-\KeywordTok{rownames}\NormalTok{(mw[[}\StringTok{"LUAD"}\NormalTok{]]}\OperatorTok{$}\NormalTok{pathways}\OperatorTok{$}\NormalTok{CYT) }\CommentTok{\# predict cytolytic activity}
-\CommentTok{\#\#  [1] "(Intercept)" "Androgen"    "EGFR"        "Estrogen"    "Hypoxia"    }
-\CommentTok{\#\#  [6] "JAK{-}STAT"    "MAPK"        "NFkB"        "p53"         "PI3K"       }
-\CommentTok{\#\# [11] "TGFb"        "TNFa"        "Trail"       "VEGF"        "WNT"}
-                                    \CommentTok{\# using pathway activity}
-\end{Highlighting}
-\end{Shaded}
 
 The vignette of the easier package steps through phases,
 using these tumor-type-specific weights to compute patient-specific measures
@@ -241,62 +197,4 @@ establishing predictions of response to ICB.
 
 Appendix \ref{app3} provides the names and versions of all packages
 used to produce this analysis.
-
-\subsection{Representing and visualizing a spatial transcriptomics experiment}\label{representing-and-visualizing-a-spatial-transcriptomics-experiment}
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\KeywordTok{library}\NormalTok{(SpatialFeatureExperiment)}
-\KeywordTok{library}\NormalTok{(SFEData)}
-\NormalTok{jbr =}\StringTok{ }\KeywordTok{JanesickBreastData}\NormalTok{(}\StringTok{"rep1"}\NormalTok{)}
-\NormalTok{jbr}
-\CommentTok{\#\# class: SpatialFeatureExperiment }
-\CommentTok{\#\# dim: 541 167782 }
-\CommentTok{\#\# metadata(1): Samples}
-\CommentTok{\#\# assays(1): counts}
-\CommentTok{\#\# rownames(541): ABCC11 ACTA2 ... BLANK\_0497 BLANK\_0499}
-\CommentTok{\#\# rowData names(6): ID Symbol ... vars cv2}
-\CommentTok{\#\# colnames: NULL}
-\CommentTok{\#\# colData names(10): Sample Barcode ... nCounts nGenes}
-\CommentTok{\#\# reducedDimNames(0):}
-\CommentTok{\#\# mainExpName: NULL}
-\CommentTok{\#\# altExpNames(0):}
-\CommentTok{\#\# spatialCoords names(2) : x\_centroid y\_centroid}
-\CommentTok{\#\# imgData names(1): sample\_id}
-\CommentTok{\#\# }
-\CommentTok{\#\# unit:}
-\CommentTok{\#\# Geometries:}
-\CommentTok{\#\# colGeometries: centroids (POINT), cellSeg (POLYGON), nucSeg (GEOMETRY) }
-\CommentTok{\#\# }
-\CommentTok{\#\# Graphs:}
-\CommentTok{\#\# sample01:}
-\end{Highlighting}
-\end{Shaded}
-
-The expression values have strongly skewed distributions.
-For exploratory visualization we log-transform.
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\NormalTok{lfasn=}\KeywordTok{log}\NormalTok{(}\KeywordTok{as.numeric}\NormalTok{(}\KeywordTok{assay}\NormalTok{(jbr[}\StringTok{"FASN"}\NormalTok{,]))}\OperatorTok{+}\DecValTok{1}\NormalTok{)}
-\NormalTok{lpostn=}\KeywordTok{log}\NormalTok{(}\KeywordTok{as.numeric}\NormalTok{(}\KeywordTok{assay}\NormalTok{(jbr[}\StringTok{"POSTN"}\NormalTok{,]))}\OperatorTok{+}\DecValTok{1}\NormalTok{)}
-\end{Highlighting}
-\end{Shaded}
-
-Figure \ref{fig:dospat}
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\NormalTok{strom =}\StringTok{ }\KeywordTok{ggplot}\NormalTok{(}\KeywordTok{colGeometries}\NormalTok{(jbr)}\OperatorTok{$}\NormalTok{centroids, }\KeywordTok{aes}\NormalTok{(}\DataTypeTok{colour=}\NormalTok{lpostn)) }\OperatorTok{+}
-\StringTok{  }\KeywordTok{geom\_sf}\NormalTok{(}\DataTypeTok{size=}\NormalTok{.}\DecValTok{01}\NormalTok{) }\OperatorTok{+}\StringTok{ }\KeywordTok{scale\_color\_viridis\_c}\NormalTok{() }\OperatorTok{+}\StringTok{ }\KeywordTok{ggtitle}\NormalTok{(}\StringTok{"POSTN, stromal"}\NormalTok{)}
-\NormalTok{fasn =}\StringTok{ }\KeywordTok{ggplot}\NormalTok{(}\KeywordTok{colGeometries}\NormalTok{(jbr)}\OperatorTok{$}\NormalTok{centroids, }\KeywordTok{aes}\NormalTok{(}\DataTypeTok{colour=}\NormalTok{lfasn)) }\OperatorTok{+}
-\StringTok{  }\KeywordTok{geom\_sf}\NormalTok{(}\DataTypeTok{size=}\NormalTok{.}\DecValTok{01}\NormalTok{) }\OperatorTok{+}\StringTok{ }\KeywordTok{scale\_color\_viridis\_c}\NormalTok{() }\OperatorTok{+}\StringTok{ }\KeywordTok{ggtitle}\NormalTok{(}\StringTok{"FASN, invasive"}\NormalTok{)}
-\KeywordTok{library}\NormalTok{(gridExtra)}
-\KeywordTok{grid.arrange}\NormalTok{(strom, fasn, }\DataTypeTok{ncol=}\DecValTok{2}\NormalTok{)}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{figure}
-\includegraphics[width=1\linewidth,]{bioccb_files/figure-latex/dospat-1} \caption{Informal rendering of data from Visium studies of breast cancer described in Janesick et al. 2023.}\label{fig:dospat}
-\end{figure}
 
