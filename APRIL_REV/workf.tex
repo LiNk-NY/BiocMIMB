@@ -11,7 +11,7 @@ metadata.
 
 \begin{table}
 \caption{\label{tab:tab-wflow}Topical organization of packages with cancer applications.}
-\begin{tabular}{lp{6cm}}
+\begin{tabular}{l{4cm}p{6cm}}
 \toprule
 topic & packages\\
 \midrule
@@ -23,7 +23,9 @@ CNV & oncoscanR, SCOPE, ZygosityPredictor\\
 \addlinespace
 DrugSensitivity & DepInfeR, octad, PharmacoGx, rcellminer\\
 Epigenetics & MethylMix, AMARETTO, COCOA, methylclock, missMethyl\\
-HotSpots/Drivers/signatures & compSPOT, MoonlightR, Moonlight2R, DriverNet, genefu, mastR, pathifier, RESOLVE, macat, SigCheck, signeR, signifinder, supersigs, decompTumor2Sig, YAPSA\\
+HotSpots/Drivers/signatures & compSPOT, MoonlightR, Moonlight2R, \\
+ & DriverNet, genefu, mastR, pathifier, RESOLVE, macat, \\
+ & SigCheck, signeR, signifinder, supersigs, decompTumor2Sig, YAPSA\\
 ImmuneModulation & easier\\
 IsoformSwitching & IsoformSwitchAnalyzeR\\
 \addlinespace
@@ -57,62 +59,71 @@ bisulfite-seq. Among these are also tools that handle more general analysis, suc
 as genomic region set enrichment.
 
 First, for ATAC-seq data, bioconductor packages include general-purpose pipelines, including scPipe
-(Tian et al. \protect\hyperlink{ref-Tian2018}{2018})
-and esATAC (Wei et al. \protect\hyperlink{ref-Wei2018}{2018}), which start from fastq files and produce feature count
+\cite{Tian2018}. %(Tian et al. \protect\hyperlink{ref-Tian2018}{2018})
+and esATAC \cite{Wei2018} %(Wei et al. \protect\hyperlink{ref-Wei2018}{2018}), 
+which start from FASTQ files and produce feature count
 matrices. Alternatively, many practitioners elect to do general-purpose pipeline processing outside of
 R, and then bring the processed data into R for statistical analysis,
 visualization, and quality control. In this approach, ATACseqQC
 provides
-a variety of QC plots specific to ATAC-seq data (Ou et al. \protect\hyperlink{ref-Ou2018}{2018}).
+a variety of QC plots specific to ATAC-seq data \cite{Ou2018}.% (Ou et al. \protect\hyperlink{ref-Ou2018}{2018}).
 
 For DNA methylation, many popular packages have been developed to help with
-all stages of a DNA methylation analysis. These include minfi {[}\href{mailto:Aryee@2014}{\nolinkurl{Aryee@2014}}{]},
-
+all stages of a DNA methylation analysis. These include minfi 
 \cite{Aryee2014}
-
-which specializes in methylation array analysis, biseq and bsseq (Hansen, Irizarry, and Wu \protect\hyperlink{ref-Hansen2012}{2012})
+which specializes in methylation array analysis, biseq and bsseq \cite{Hansen2012}  %(Hansen, Irizarry, and Wu \protect\hyperlink{ref-Hansen2012}{2012})
 which provide fundamental infrastructure for sequencing-based assays, and RnBeads
-(Müller et al. \protect\hyperlink{ref-Mueller2019}{2019}), which provides a comprehensive general-purpose analysis of DNA
+\cite{Mueller2019},
+%(Müller et al. \protect\hyperlink{ref-Mueller2019}{2019}), 
+which provides a comprehensive general-purpose analysis of DNA
 methylation cohorts from arrays or sequencing-based assays. Other packages provide more specialized
-analysis approaches, such as MIRA (Lawson et al. \protect\hyperlink{ref-Lawson2018}{2018}), which infers regulatory
-activity of transcription factors using DNA methylation signals, (Sheffield et al.~2018),
+analysis approaches, such as MIRA \cite{Lawson2018}, %(Lawson et al. \protect\hyperlink{ref-Lawson2018}{2018}), 
+which infers regulatory
+activity of transcription factors using DNA methylation signals, %(Sheffield et al.~2018), FIXME not found
 or ELMER, which uses DNA methylation and gene expression in large cancer
-cohorts to infer transcription factor networks (Silva et al. \protect\hyperlink{ref-Silva2019}{2018}). EpiDISH infer
+cohorts to infer transcription factor networks \cite{Silva2019}. % (Silva et al. \protect\hyperlink{ref-Silva2019}{2018}). 
+EpiDISH infers
 the proportions of cell-types present in a bulk sample on the basis
-of DNA methylation data (Zheng et al. \protect\hyperlink{ref-Zheng2018a}{2018}).
+of DNA methylation data \cite{Zheng2018a}. %(Zheng et al. \protect\hyperlink{ref-Zheng2018a}{2018}).
 
-Another popular epigenome experiment is ChIP-seq, and Bioconductor delivers many packages in
-this area. DiffBind (Stark and Brown \protect\hyperlink{ref-Stark2011}{2011}) is a popular approach for
-differential binding analysis of ChIP-seq peak data.
+%Another popular epigenome experiment is ChIP-seq, and Bioconductor delivers many packages in
+%this area. 
+DiffBind \cite{Stark2011} %(Stark and Brown \protect\hyperlink{ref-Stark2011}{2011}) is a popular approach for
+facilitates differential binding analysis of ChIP-seq peak data.
 
-A variety of packages are also geared toward visualization of this type
-of data. GenomicDistributions (Kupkova et al. \protect\hyperlink{ref-Kupkova2022}{2022}) provides a variety of plots for visualization
+%A variety of packages are also geared toward visualization of this type
+%of data. 
+GenomicDistributions \cite{Kupkova2022} % (Kupkova et al. \protect\hyperlink{ref-Kupkova2022}{2022}) 
+provides a variety of plots for visualization
 distributions of any type of genomic range data. The chromPlot package specializes
-in plots across chromosomes. Then, there are several packages that deal with
-unsupervised exploration of variation in epigenomic data. PathwayPCA, MOFA2 (Argelaguet et al. \protect\hyperlink{ref-Argelaguet2020}{2020})
-and COCOA (Lawson et al. \protect\hyperlink{ref-Lawson2020}{2020}) can process any epigenomic signal data.
-A variety of alternative approaches for enrichment analysis, which include LOLA (Sheffield and Bock \protect\hyperlink{ref-Sheffield2016}{2016}),
-chipenrich, regionR (Gel et al. \protect\hyperlink{ref-Gel2015}{2015}), and FGNet (Aibar et al. \protect\hyperlink{ref-Aibar2015}{2015}).
-Annotation packages are popular as well. ChIPpeakAnno (Zhu et al. \protect\hyperlink{ref-Zhu2010}{2010})
-and annotatr (Cavalcante and Sartor \protect\hyperlink{ref-Cavalcante2017}{2017}) are popular packages for annotating genomic
-ranges.
+in plots across chromosomes.  Several packages deal with
+unsupervised exploration of variation in epigenomic data. PathwayPCA, MOFA2 \cite{Argelaguet2020} %(Argelaguet et al. \protect\hyperlink{ref-Argelaguet2020}{2020})
+and COCOA \cite{Lawson2020} %(Lawson et al. \protect\hyperlink{ref-Lawson2020}{2020}) 
+can process any epigenomic signal data.
+A variety of alternative approaches for enrichment analysis, which include LOLA \cite{Sheffield2016}, %(Sheffield and Bock \protect\hyperlink{ref-Sheffield2016}{2016}),
+chipenrich, regionR \cite{Gel2015}, %(Gel et al. \protect\hyperlink{ref-Gel2015}{2015}), 
+and FGNet \cite{Aibar2015}. %(Aibar et al. \protect\hyperlink{ref-Aibar2015}{2015}).
+Annotation packages include ChIPpeakAnno \cite{Zhu2010} % (Zhu et al. \protect\hyperlink{ref-Zhu2010}{2010})
+and annotatr \cite{Cavalcante2017}.%(Cavalcante and Sartor \protect\hyperlink{ref-Cavalcante2017}{2017}) are popular packages for annotating genomic
+%ranges.
 
 
 \subsection{Some details on prediction of responsiveness to immune checkpoint blockade}\label{some-details-on-prediction-of-responsiveness-to-immune-checkpoint-blockade}
 
 The National Cancer Institute website on checkpoint inhibitors
-in cancer immunotherapy (``Immune Checkpoint Inhibitors'' \protect\hyperlink{ref-ICBnci}{2022})
+in cancer immunotherapy (``Immune Checkpoint Inhibitors'' 
+\cite{ICBnci}) %\protect\hyperlink{ref-ICBnci}{2022})
 lists 12 different cancer types
 amenable to treatment via immune checkpoint inhibition.
 The ``easier'' package in Bioconductor
 assembles multiple systems biology resources
 to produce patient-specific
 prediction of responsiveness to
-immune checkpoint blockade (ICB), as described in Lapuente-Santana et al. (\protect\hyperlink{ref-easierPap}{2021}).
+immune checkpoint blockade (ICB) \cite{easierPap}. %, as described in Lapuente-Santana et al. (\protect\hyperlink{ref-easierPap}{2021}).
 
 Figure \ref{fig:easfin} presents on overview of results of
 immune response assessment in a cohort of patients with
-bladder cancer reported in Mariathasan et al. (\protect\hyperlink{ref-Mariathasan2018}{2018}).
+bladder cancer \cite{Mariathasan2018}. %reported in Mariathasan et al. (\protect\hyperlink{ref-Mariathasan2018}{2018}).
 Patient's bulk RNA-seq data are used to develop multiple
 quantitative descriptors of the tumor microenvironment,
 and scores for processes regarded as hallmarks of anti-cancer
@@ -135,6 +146,49 @@ to information hiding. Parameters estimated in machine
 learning of tissue-specific relations between quantitative
 descriptors of the tumor microenvironment and hallmarks
 of immune response are stored in ExperimentHub.
+
+\begin{shaded}
+\begin{verbatim}
+library(easierData)
+list_easierData()
+##   eh_id                            title
+##  EH6677   Mariathasan2018_PDL1_treatment
+##  EH6678                       opt_models
+##  EH6679                 opt_xtrain_stats
+##  EH6680              TCGA_mean_pancancer
+##  EH6681                TCGA_sd_pancancer
+##  EH6682                 cor_scores_genes
+##  EH6683               intercell networks
+##  EH6684                lr_frequency_TCGA
+##  EH6685                   group_lr_pairs
+##  EH6686                  HGNC_annotation
+##  EH6687           scores_signature_genes
+\end{verbatim}
+\end{shaded}
+
+The structure of the stored model weights resource can be sketched by probing list elements.
+mw = eh[["EH6678"]]
+## see ?easierData and browseVignettes('easierData') for documentation
+## loading from cache
+names(mw)
+##
+# TCGA tumor types
+[1] "LUAD""LUSC""BLCA""BRCA""CESC""CRC""GBM""HNSC""KIRC"
+## [10] "KIRP""LIHC""OV""PAAD""PRAD""SKCM""STAD""THCA""UCEC"
+## [19] "NSCLC"
+names(mw[["LUAD"]])
+## [1] "pathways"
+# TME descriptors
+"immunecells" "tfs"
+"lrpairs"
+"ccpairs"
+rownames(mw[["LUAD"]]$pathways$CYT) # predict cytolytic activity
+##[1] "(Intercept)" "Androgen""EGFR""Estrogen"##[6] "JAK-STAT""MAPK""NFkB""p53""PI3K"
+"TNFa""Trail""VEGF""WNT"
+## [11] "TGFb"
+"Hypoxia"
+# using pathway activity
+The vignette of the easier package steps through phases, using these tumor-typ
 
 \begin{Shaded}
 \begin{Highlighting}[]
