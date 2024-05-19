@@ -111,6 +111,9 @@ useful for cancer bioinformatics. Primary sections address
   pedagogics and workforce development.
 \end{itemize}
 
+Final sections provide enumerations of software and data packages
+tagged by their contributors as specifically relevant to cancer.
+
 \section{Bioconductor principles}
 
 
@@ -245,6 +248,28 @@ ExperimentHub is loaded, it can be queried for terms of interest.
 library(ExperimentHub)
 eh = ExperimentHub()
 query(eh, "CancerData")
+## ExperimentHub with 1742 records
+## # snapshotDate(): 2024-04-29
+## # $dataprovider: Eli and Edythe L. Broad Institute of Harvard and MIT, GEO, ...
+## # $species: Homo sapiens, Mus musculus, NA
+## # $rdataclass: SummarizedExperiment, RaggedExperiment, matrix, list, DFrame,...
+## # additional mcols(): taxonomyid, genome, description,
+## #   coordinate_1_based, maintainer, rdatadateadded, preparerclass, tags,
+## #   rdatapath, sourceurl, sourcetype 
+## # retrieve records with, e.g., 'object[["EH558"]]' 
+## 
+##            title                                
+##   EH558  | ACC_CNASNP-20160128                  
+##   EH559  | ACC_CNVSNP-20160128                  
+##   EH560  | ACC_colData-20160128                 
+##   EH561  | ACC_GISTIC_AllByGene-20160128        
+##   EH562  | ACC_GISTIC_ThresholdedByGene-20160128
+##   ...      ...                                  
+##   EH8533 | tcga_transcript_counts               
+##   EH8534 | target_rhabdoid_wgbs_hg19            
+##   EH8567 | xenium_hs_breast_addon               
+##   EH9482 | Capper_example_betas.rda             
+##   EH9483 | GIMiCC_Library.rda    
 \end{verbatim}
 \end{shaded}
 
@@ -255,18 +280,18 @@ Multiple terms can be used to narrow results before choosing a download.
 \begin{shaded}
 \begin{verbatim}
 query(eh, c("CancerData", "esophageal"))
-# ExperimentHub with 2 records}
-# snapshotDate(): 2023-10-24}
-# $dataprovider: University of California San Francisco}
-# $species: Homo sapiens}
-# $rdataclass: RangedSummarizedExperiment, data.frame}
-# additional mcols(): taxonomyid, genome, description,}
-#   coordinate_1_based, maintainer, rdatadateadded, preparerclass, tags,}
-#   rdatapath, sourceurl, sourcetype }
-# retrieve records with, e.g., object[["EH8527"]]
-#            title                           
-#   EH8527 | cao_esophageal_wgbs_hg19        
-#   EH8530 | cao_esophageal_transcript_counts
+## ExperimentHub with 2 records}
+## snapshotDate(): 2023-10-24}
+## $dataprovider: University of California San Francisco}
+## $species: Homo sapiens}
+## $rdataclass: RangedSummarizedExperiment, data.frame}
+## additional mcols(): taxonomyid, genome, description,}
+##   coordinate_1_based, maintainer, rdatadateadded, preparerclass, tags,}
+##   rdatapath, sourceurl, sourcetype }
+## retrieve records with, e.g., object[["EH8527"]]
+##            title                           
+##   EH8527 | cao_esophageal_wgbs_hg19        
+##   EH8530 | cao_esophageal_transcript_counts
 \end{verbatim}
 \end{shaded}
 
@@ -278,7 +303,26 @@ following:
 \begin{verbatim}
 library(AnnotationHub)
 ah = AnnotationHub()
-query(ah, c("ensembl", "110"))
+query(ah, c("ensembl", "110", "Homo sapiens"))
+#snapshotDate(): 2024-04-29
+#AnnotationHub with 1 record
+## snapshotDate(): 2024-04-29
+## names(): AH113665
+## $dataprovider: Ensembl
+## $species: Homo sapiens
+## $rdataclass: EnsDb
+## $rdatadateadded: 2023-04-25
+## $title: Ensembl 110 EnsDb for Homo sapiens
+## $description: Gene and protein annotations for Homo sapiens based on Ensem...
+## $taxonomyid: 9606
+## $genome: GRCh38
+## $sourcetype: ensembl
+## $sourceurl: http://www.ensembl.org
+## $sourcesize: NA
+## $tags: c("110", "Annotation", "AnnotationHubSoftware", "Coverage",
+##   "DataImport", "EnsDb", "Ensembl", "Gene", "Protein", "Sequencing",
+##   "Transcript") 
+## retrieve record with 'object[["AH113665"]]' 
 \end{verbatim}
 \end{shaded}
 

@@ -182,7 +182,7 @@ We obtain normalized RNA-seq data on primary tumor samples for GBM with
 \begin{shaded}
 \begin{verbatim}
 gbrna = TCGAprimaryTumors(curatedTCGAData("GBM",
-"RNASeq2GeneNorm", dry.run=FALSE, version="2.1.1"))
+     "RNASeq2GeneNorm", dry.run=FALSE, version="2.1.1"))
 gbrna
 ## A MultiAssayExperiment object of 1 listed
 ##experiment with a user-defined name and respective class.
@@ -242,7 +242,15 @@ https://docs.gdc.cancer.gov/Encyclopedia/pages/TCGA_Barcode/
 \end{verbatim}
 
 \noindent
-with specific interpretation of sample types listed \href{https://gdc.cancer.gov/resources-tcga-users/tcga-code-tables/sample-type-codes}{separately}. The TCGAutils package provides utilities for extracting
+with specific interpretation of sample types listed 
+at
+{\small
+\begin{verbatim}
+https://gdc.cancer.gov/resources-tcga-users/tcga-code-tables/sample-type-codes
+\end{verbatim}
+}
+\noindent
+separately. The TCGAutils package provides utilities for extracting
 data on primary tumor samples, excluding samples that may have been taken on
 normal tissue or metastases.
 
