@@ -249,6 +249,11 @@ The curatedTCGAData package provides some resources through
 ExperimentHub, as do many other self-identified ``CancerData'' resources. Once the
 ExperimentHub is loaded, it can be queried for terms of interest.
 
+Here and throughout, shading is used to indicate code
+operations in Bioconductor 3.19 with R 4.4.  Lines
+of output are preceded by \#\#.
+
+
 \begin{shaded}
 \begin{verbatim}
 library(ExperimentHub)
@@ -256,12 +261,15 @@ eh = ExperimentHub()
 query(eh, "CancerData")
 ## ExperimentHub with 1742 records
 ## # snapshotDate(): 2024-04-29
-## # $dataprovider: Eli and Edythe L. Broad Institute of Harvard and MIT, GEO, ...
+## # $dataprovider: Eli and Edythe L. Broad Institute 
+##               of Harvard and MIT, GEO, ...
 ## # $species: Homo sapiens, Mus musculus, NA
-## # $rdataclass: SummarizedExperiment, RaggedExperiment, matrix, list, DFrame,...
+## # $rdataclass: SummarizedExperiment, RaggedExperiment, 
+##               matrix, list, DFrame,...
 ## # additional mcols(): taxonomyid, genome, description,
-## #   coordinate_1_based, maintainer, rdatadateadded, preparerclass, tags,
-## #   rdatapath, sourceurl, sourcetype 
+## #   coordinate_1_based, maintainer, rdatadateadded, 
+##          preparerclass, tags,
+## #        rdatapath, sourceurl, sourcetype 
 ## # retrieve records with, e.g., 'object[["EH558"]]' 
 ## 
 ##            title                                
@@ -286,13 +294,14 @@ Multiple terms can be used to narrow results before choosing a download.
 \begin{shaded}
 \begin{verbatim}
 query(eh, c("CancerData", "esophageal"))
-## ExperimentHub with 2 records}
-## snapshotDate(): 2023-10-24}
-## $dataprovider: University of California San Francisco}
-## $species: Homo sapiens}
-## $rdataclass: RangedSummarizedExperiment, data.frame}
-## additional mcols(): taxonomyid, genome, description,}
-##   coordinate_1_based, maintainer, rdatadateadded, preparerclass, tags,}
+## ExperimentHub with 2 records
+## snapshotDate(): 2023-10-24
+## $dataprovider: University of California San Francisco
+## $species: Homo sapiens
+## $rdataclass: RangedSummarizedExperiment, data.frame
+## additional mcols(): taxonomyid, genome, description,
+##   coordinate_1_based, maintainer, rdatadateadded, 
+##   preparerclass, tags,}
 ##   rdatapath, sourceurl, sourcetype }
 ## retrieve records with, e.g., object[["EH8527"]]
 ##            title                           
@@ -319,15 +328,17 @@ query(ah, c("ensembl", "110", "Homo sapiens"))
 ## $rdataclass: EnsDb
 ## $rdatadateadded: 2023-04-25
 ## $title: Ensembl 110 EnsDb for Homo sapiens
-## $description: Gene and protein annotations for Homo sapiens based on Ensem...
+## $description: Gene and protein annotations for Homo 
+##       sapiens based on Ensem...
 ## $taxonomyid: 9606
 ## $genome: GRCh38
 ## $sourcetype: ensembl
 ## $sourceurl: http://www.ensembl.org
 ## $sourcesize: NA
-## $tags: c("110", "Annotation", "AnnotationHubSoftware", "Coverage",
-##   "DataImport", "EnsDb", "Ensembl", "Gene", "Protein", "Sequencing",
-##   "Transcript") 
+## $tags: c("110", "Annotation", "AnnotationHubSoftware", 
+##         "Coverage", "DataImport", "EnsDb", "Ensembl", 
+##         "Gene", "Protein", 
+##         "Sequencing", "Transcript") 
 ## retrieve record with 'object[["AH113665"]]' 
 \end{verbatim}
 \end{shaded}
@@ -494,25 +505,6 @@ Methylation\_methyl450 & 783 & 102 & 140 & 14 & 458 & 34\\
 
 We obtain normalized RNA-seq data on primary tumor samples for GBM with
 
-%\begin{Shaded}
-%\begin{Highlighting}[]
-%\NormalTok{gbrna =}\StringTok{ }\KeywordTok{TCGAprimaryTumors}\NormalTok{(}\KeywordTok{curatedTCGAData}\NormalTok{(}\StringTok{"GBM"}\NormalTok{, }
-%    \StringTok{"RNASeq2GeneNorm"}\NormalTok{, }\DataTypeTok{dry.run=}\OtherTok{FALSE}\NormalTok{, }\DataTypeTok{version=}\StringTok{"2.1.1"}\NormalTok{))}
-%\NormalTok{gbrna}
-%\CommentTok{\#\# A MultiAssayExperiment object of 1 listed}
-%\CommentTok{\#\#  experiment with a user{-}defined name and respective class.}
-%\CommentTok{\#\#  Containing an ExperimentList class object of length 1:}
-%\CommentTok{\#\#  [1] GBM\_RNASeq2GeneNorm{-}20160128: SummarizedExperiment with 18199 rows and 153 columns}
-%\CommentTok{\#\# Functionality:}
-%\CommentTok{\#\#  experiments() {-} obtain the ExperimentList instance}
-%\CommentTok{\#\#  colData() {-} the primary/phenotype DataFrame}
-%\CommentTok{\#\#  sampleMap() {-} the sample coordination DataFrame}
-%\CommentTok{\#\#  \textasciigrave{}$\textasciigrave{}, \textasciigrave{}[\textasciigrave{}, \textasciigrave{}[[\textasciigrave{} {-} extract colData columns, subset, or experiment}
-%\CommentTok{\#\#  *Format() {-} convert into a long or wide DataFrame}
-%\CommentTok{\#\#  assays() {-} convert ExperimentList to a SimpleList of matrices}
-%\CommentTok{\#\#  exportClass() {-} save data to flat files}
-%\end{Highlighting}
-%\end{Shaded}
 
 \begin{shaded}
 \begin{verbatim}
@@ -522,17 +514,19 @@ gbrna
 ## A MultiAssayExperiment object of 1 listed
 ##experiment with a user-defined name and respective class.
 ##Containing an ExperimentList class object of length 1:
-[1] GBM_RNASeq2GeneNorm-20160128: SummarizedExperiment with 
-##        18199 rows and 153 columns
+## [1] GBM_RNASeq2GeneNorm-20160128: SummarizedExperiment 
+##        with 18199 rows and 153 columns
 ##
 ## Functionality:
-##experiments() - obtain the ExperimentList instance
-##colData() - the primary/phenotype DataFrame
-##sampleMap() - the sample coordination DataFrame
-##`$`, `[`, `[[` - extract colData columns, subset, or experiment
-####*Format() - convert into a long or wide DataFrame
-assays() - convert ExperimentList to a SimpleList of matrices
-##exportClass() - save data to flat files
+##  experiments() - obtain the ExperimentList instance
+##  colData() - the primary/phenotype DataFrame
+##  sampleMap() - the sample coordination DataFrame
+##  `$`, `[`, `[[` - extract colData columns, subset, or 
+##       experiment
+## *Format() - convert into a long or wide DataFrame
+## assays() - convert ExperimentList to a SimpleList of 
+##       matrices
+## exportClass() - save data to flat files
 \end{verbatim}
 \end{shaded}
 
