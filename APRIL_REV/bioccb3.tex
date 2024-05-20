@@ -618,10 +618,14 @@ donors. The result is in Figure \ref{fig:dothesurv}.
 {\small
 \begin{shaded}
 \begin{verbatim}
-# obtain mutation data for BRCA, GBM, LUAD; could use any or all assay types
-brmut = curatedTCGAData("BRCA", "Mutation", version = "2.1.1", dry.run = FALSE)
-gbmut = curatedTCGAData("GBM", "Mutation", version = "2.1.1", dry.run = FALSE)
-lumut = curatedTCGAData("LUAD", "Mutation", version = "2.1.1", dry.run = FALSE)
+# obtain mutation data for BRCA, GBM, LUAD; could use any or 
+#    all assay types
+brmut = curatedTCGAData("BRCA", "Mutation", version = "2.1.1", 
+      dry.run = FALSE)
+gbmut = curatedTCGAData("GBM", "Mutation", version = "2.1.1", 
+      dry.run = FALSE)
+lumut = curatedTCGAData("LUAD", "Mutation", version = "2.1.1", 
+      dry.run = FALSE)
 # extract survival times
 library(survival)
 getSurv = function(mae) {
@@ -658,8 +662,10 @@ mutsyms = assay(experiments(bprim)[[1]], "Hugo_Symbol")
 cn = rownames(colData(bprim)) # short
 cna = colnames(mutsyms) # long
 cnas = substr(cna, 1, 12)
-hasTTNmut = apply(assay(experiments(TCGAprimaryTumors(brmut))[[1]], 
-     "Hugo_Symbol"), 2, function(x) length(which(x=="TTN"))>0)
+hasTTNmut = apply(assay(experiments(
+    TCGAprimaryTumors(brmut))[[1]], 
+     "Hugo_Symbol"), 2, 
+     function(x) length(which(x=="TTN"))>0)
 ## harmonizing input:
 ## removing 5 sampleMap rows with 'colname' not in
 ##      colnames of experiments
@@ -668,7 +674,7 @@ bsurv = getSurv(TCGAprimaryTumors(brmut))
 ## harmonizing input:
 ## removing 5 sampleMap rows with 'colname' not in 
 ##      colnames of experiments
-hasTTNmut = hasTTNmut[cn] # match mutation records to surv times
+hasTTNmut = hasTTNmut[cn] # match mut records to surv times
 ggsurv(survfit(bsurv~hasTTNmut))
 \end{verbatim}
 \end{shaded}
@@ -759,17 +765,22 @@ ang
 ## A MultiAssayExperiment object of 3 listed
 ##experiments with user-defined names and respective classes.
 ####Containing an ExperimentList class object of length 3:
-##[1] cna_hg19.seg: RaggedExperiment with 27835 rows and 48 columns
-##[2] cna: SummarizedExperiment with 23109 rows and 48 columns
-##[3] mutations: RaggedExperiment with 24058 rows and 48 columns
+##[1] cna_hg19.seg: RaggedExperiment with 27835 rows 
+##           and 48 columns
+##[2] cna: SummarizedExperiment with 23109 rows 
+##           and 48 columns
+##[3] mutations: RaggedExperiment with 24058 rows 
+##           and 48 columns
 ## Functionality:
-##experiments() - obtain the ExperimentList instance
-##colData() - the primary/phenotype DataFrame
-##sampleMap() - the sample coordination DataFrame
-##`$`, `[`, `[[` - extract colData columns, subset, or experiment
-####*Format() - convert into a long or wide DataFrame
-assays() - convert ExperimentList to a SimpleList of matrices
-##exportClass() - save data to flat files
+##  experiments() - obtain the ExperimentList instance
+##  colData() - the primary/phenotype DataFrame
+##  sampleMap() - the sample coordination DataFrame
+##  `$`, `[`, `[[` - extract colData columns, subset, or 
+##      experiment
+## *Format() - convert into a long or wide DataFrame
+## assays() - convert ExperimentList to a SimpleList of 
+##      matrices
+## exportClass() - save data to flat files
 \end{verbatim}
 \end{shaded}
 
@@ -812,7 +823,8 @@ allalt = GRanges(rownames(assay(seg)))
 ##   [27834]       21  9907492-48084286      *
 ##   [27835]       22 16157938-51237572      *
 ##   -------
-##   seqinfo: 22 sequences from an unspecified genome; no seqlengths
+##   seqinfo: 22 sequences from an unspecified genome; no 
+##        seqlengths
 \end{verbatim}
 \end{shaded}
 
@@ -826,7 +838,8 @@ The display in Figure \ref{fig:mkden} shows a strong peak in the vicinity of 7.5
 g17 = allalt[seqnames(allalt)=="17"]
 df17 = as(g17, "data.frame")
 df17$mid = .5*(df17$start+df17$end) # midpoint only
-ggplot(df17, aes(x=mid)) + geom_density(bw=.2) + xlab("chr 17 bp")
+ggplot(df17, aes(x=mid)) + geom_density(bw=.2) + 
+   xlab("chr 17 bp")
 \end{verbatim}
 \end{shaded}
 
@@ -948,7 +961,8 @@ Collect all gene sets for humans:
 \begin{shaded}
 \begin{verbatim}
 library(msigdb)
-hssigs = getMsigdb(org="hs", id="SYM", version=getMsigdbVersions())
+hssigs = getMsigdb(org="hs", id="SYM", 
+   version=getMsigdbVersions())
 \end{verbatim}
 \end{shaded}
 
@@ -987,7 +1001,8 @@ details(wangmet)
 ## collectionType: Broad
 ##bcCategory: c2 (Curated)
 ##bcSubCategory: CGP
-## setIdentifier: LVY1HGGWMJ7:35020:Fri May 26 13:33:02 2023:1104005
+## setIdentifier: LVY1HGGWMJ7:35020:Fri May 26 13:33:02 
+##          2023:1104005
 ## description: Genes whose expression in primary ER(+) 
 ##      [GeneID=2099] breast cancer tumors positively correla
 ## (longDescription available)
@@ -1026,7 +1041,8 @@ using the select method with GO.db:
 \begin{verbatim}
 library(GO.db)
 select(GO.db, keytype="TERM",
-keys="Golgi membrane", columns=c("GOID", "DEFINITION", "ONTOLOGY"))
+keys="Golgi membrane", columns=c("GOID", "DEFINITION", 
+        "ONTOLOGY"))
 ##             TERM       GOID
 ## 1 Golgi membrane GO:0000139
 ##                                 DEFINITION
@@ -1064,7 +1080,8 @@ associations is found with
 
 \begin{shaded}
 \begin{verbatim}
-go139 |> dplyr::filter(EVIDENCE=="TAS") |> distinct(ENTREZID) |> count()
+go139 |> dplyr::filter(EVIDENCE=="TAS") |> 
+    distinct(ENTREZID) |> count()
 ##       n
 ## [1] 327
 \end{verbatim}
@@ -1338,15 +1355,19 @@ The structure of the stored model weights resource can be sketched by probing li
 \begin{shaded}
 \begin{verbatim}
 mw = eh[["EH6678"]]
-## see ?easierData and browseVignettes('easierData') for documentation
+## see ?easierData and browseVignettes('easierData') for 
+##     documentation
 ## loading from cache
 names(mw)   # TCGA tumor types
-##  [1] "LUAD" "LUSC" "BLCA" "BRCA" "CESC" "CRC"  "GBM"  "HNSC" "KIRC"
-## [10] "KIRP" "LIHC"   "OV" "PAAD" "PRAD" "SKCM" "STAD" "THCA" "UCEC"
+##  [1] "LUAD" "LUSC" "BLCA" "BRCA" "CESC" "CRC"  "GBM"  
+##         "HNSC" "KIRC"
+## [10] "KIRP" "LIHC"   "OV" "PAAD" "PRAD" "SKCM" "STAD" 
+##         "THCA" "UCEC"
 ## [19] "NSCLC"
 names(mw[["LUAD"]]) # TME descriptors
 ## [1] "pathways" "immunecells" "tfs" "lrpairs" "ccpairs"
-rownames(mw[["LUAD"]]$pathways$CYT) # predict cytolytic activity
+rownames(mw[["LUAD"]]$pathways$CYT) # predict cytolytic 
+#                                   # activity
 ##  [1] "(Intercept)" "Androgen" "EGFR" "Estrogen" "Hypoxia"
 ##  [6]    "JAK-STAT"     "MAPK" "NFkB" "p53"      "PI3K"
 ## [11]        "TNFa"    "Trail" "VEGF" "WNT"
@@ -1432,7 +1453,8 @@ library(TENxVisiumData)
 library(SpatialExperiment)
 library(ggspavis)
 hbc <- HumanBreastCancerIDC()
-## see ?TENxVisiumData and browseVignettes('TENxVisiumData') for documentation
+## see ?TENxVisiumData and browseVignettes('TENxVisiumData') 
+##        for documentation
 ## loading from cache
 hbc <- hbc[,hbc$sample_id=="HumanBreastCancerIDC1"]
 hbc$in_tissue <- TRUE
