@@ -15,6 +15,7 @@
 \usepackage{multicol}        % used for the two-column index
 \usepackage[bottom]{footmisc}% places footnotes at page bottom
 \usepackage{framed} % vince may 17
+\usepackage{booktabs} % vince may 17
 
 
 \usepackage{newtxtext}       % 
@@ -29,6 +30,10 @@
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+
+
 \begin{document}
 
 \title*{Bioconductor's Computational Ecosystem for Genomic Data Science in Cancer}
@@ -42,8 +47,10 @@
 %\and Name of Second Author \at Name, Address of Institute \email{name@email.address}}
 %
 
+\authorrunning{Ramos, Shepherd, Sheffield et al.}
+
 \author{{Marcel Ramos}\orcidID{0000-0002-3242-0582} \and
-{Lori Shepherd}\orcidID{0000-0002-5910-4010} \and {{Nathan Sheffield}\orcidID{0000-0001-5643-4068}} \and {{Nathan Sheffield}\orcidID{0000-0001-5643-4068}} \and {{Alexandru Mahmoud}\orcidID{0000-0002-3779-492X}} \and {{Hervé Pagès}\orcidID{NA}} \and {{Jen Wokaty}\orcidID{NA}} \and {{Dario Righelli}\orcidID{0000-0002-2687-9928}} \and {{Davide Risso}\orcidID{0000-0001-8508-5012}} \and {{Sean Davis}\orcidID{0000-0002-8991-6458}} \and {{Sehyun Oh}\orcidID{0000-0002-9490-3061}} \and {{Levi Waldron}\orcidID{0000-0003-2725-0694}} \and {{Martin Morgan}\orcidID{0000-0002-5874-8148}} \and {{Vincent Carey}\orcidID{0000-0003-4046-0063}}  }
+{Lori Shepherd}\orcidID{0000-0002-5910-4010} \and {{Nathan Sheffield}\orcidID{0000-0001-5643-4068}} \and {{Alexandru Mahmoud}\orcidID{0000-0002-3779-492X}} \and {{Hervé Pagès}\orcidID{NA}} \and {{Jen Wokaty}\orcidID{NA}} \and {{Dario Righelli}\orcidID{0000-0002-2687-9928}} \and {{Davide Risso}\orcidID{0000-0001-8508-5012}} \and {{Sean Davis}\orcidID{0000-0002-8991-6458}} \and {{Sehyun Oh}\orcidID{0000-0002-9490-3061}} \and {{Levi Waldron}\orcidID{0000-0003-2725-0694}} \and {{Martin Morgan}\orcidID{0000-0002-5874-8148}} \and {{Vincent Carey}\orcidID{0000-0003-4046-0063}}  }
 
 \institute{{Marcel Ramos} \at {City University of New York School of Public Health, New York, NY} \and {Lori Shepherd} \at {Roswell Park Comprehensive Cancer Center, Buffalo, NY} \and {Nathan Sheffield} \at {University of Virginia, Charlottesville, VA} \and {Alexandru Mahmoud} \at {Channing Division of Network Medicine, Mass General Brigham, Harvard Medical School, Boston, MA} \and {Hervé Pagès} \at {Fred Hutchinson Cancer Center, Seattle, WA} \and {Jen Wokaty} \at {City University of New York School of Public Health, New York, NY} \and {Dario Righelli} \at {Department of Statistical Sciences, University of Padova, Padova, Italy} \and {Davide Risso} \at {Department of Statistical Sciences, University of Padova, Padova, Italy} \and {Sean Davis} \at {University of Colorado Anschutz School of Medicine, Aurora, CO} \and {Sehyun Oh} \at {City University of New York School of Public Health, New York, NY} \and {Levi Waldron} \at {City University of New York School of Public Health, New York, NY} \and {Martin Morgan} \at {Roswell Park Comprehensive Cancer Center, Buffalo, NY} \and {Vincent Carey} \at {Channing Division of Network Medicine, Mass General Brigham, Harvard Medical School, Boston, MA} }
 
@@ -117,13 +124,18 @@ useful for cancer bioinformatics. Primary sections address
   pedagogics and workforce development.
 \end{itemize}
 
+Two concluding offer discussion of possible paths forward,
+and a detailed description of software components
+underlying an exemplary integrative analysis of
+response to immune checkpoint blockade.
+
 %Final sections provide enumerations of software and data packages
 %tagged by their contributors as specifically relevant to cancer.
 
 \section{Bioconductor principles}
 
 
-\subsection{R packages and vignettes}\label{r-packages-and-vignettes}}
+\subsection{R packages and vignettes}\label{r-packages-and-vignettes}
 
 Software tools and data resources in Bioconductor are organized
 into ``R packages''. These are collections of folders with data,
@@ -151,7 +163,7 @@ of package components and provide motivation
 for both package design but also context
 for its use.
 
-\subsection{R package repositories; repository evolution}\label{r-package-repositories-repository-evolution}}
+\subsection{R package repositories; repository evolution}\label{r-package-repositories-repository-evolution}
 
 Bioconductor software forms a coherent ecosystem that
 can be checked for consistency of versions of all
@@ -173,7 +185,7 @@ to coincide with update to R, and once about six months
 later. The semianual updates reflect the need to track
 developments in the fast-moving field of genomic data science.
 
-\subsection{Package quality assessment; installation consistency}\label{package-quality-assessment-installation-consistency}}
+\subsection{Package quality assessment; installation consistency}\label{package-quality-assessment-installation-consistency}
 
 The BiocCheck function is used to provide more
 stringent assessment of package compliance with basic
@@ -189,7 +201,7 @@ take years to complete. Tools for recreating past
 package collections are available to assist in
 reproducing outputs of prior analyses.
 
-\subsection{Unifying assay and sample data: SummarizedExperiment and MultiAssayExperiment}\label{unifying-assay-and-sample-data-summarizedexperiment-and-multiassayexperiment}}
+\subsection{Unifying assay and sample data: SummarizedExperiment and MultiAssayExperiment}\label{unifying-assay-and-sample-data-summarizedexperiment-and-multiassayexperiment}
 
 Most of the data from genome-scale experiments to be discussed
 in this chapter are organized in special data containers
@@ -214,7 +226,7 @@ to multiple genome-scale assays, MultiAssayExperiment containers are used. See F
 
 Further details on these data structures will be provided in section \ref{class}.
 
-\subsection{Downloading and caching cancer genomics data and annotations}\label{cache}}
+\subsection{Downloading and caching cancer genomics data and annotations}\label{cache}
 
 Downloading and managing data from various online resources
 can be excessively time consuming. Bioconductor encourages data caching for
@@ -345,10 +357,10 @@ query(ah, c("ensembl", "110", "Homo sapiens"))
 
 
 
-\section{Exploring institutionally curated cancer genomics data}\label{exploring-institutionally-curated-cancer-genomics-data}}
+\section{Exploring institutionally curated cancer genomics data}\label{exploring-institutionally-curated-cancer-genomics-data}
 
 
-\subsection{The Cancer Genome Atlas}\label{the-cancer-genome-atlas}}
+\subsection{The Cancer Genome Atlas}\label{the-cancer-genome-atlas}
 
 An overview of Bioconductor's resource for the Cancer
 Genome Atlas (TCGA) is easy to obtain, with the
@@ -403,7 +415,7 @@ explained in section \ref{hubs}, and entries in column
 \texttt{rdataclass} will be discussed in section \ref{class} below.
 
 
-\subsubsection{Tumor code resolution}\label{tumor-code-resolution}}
+\subsubsection{Tumor code resolution}\label{tumor-code-resolution}
 
 There are 33 different tumor types available in TCGA. The
 decoding of tumor codes for the first ten in alphabetical order is
@@ -466,7 +478,7 @@ UVM & Uveal Melanoma\\
 \end{table}
 
 
-\subsubsection{Assay codes and counts}\label{assay-codes-and-counts}}
+\subsubsection{Assay codes and counts}\label{assay-codes-and-counts}
 
 Assays performed on tumors vary across tumor types. For assay
 types shared between
@@ -501,7 +513,7 @@ Methylation\_methyl450 & 783 & 102 & 140 & 14 & 458 & 34\\
 \end{table}
 
 
-\subsubsection{An example dataset for RNA-seq from glioblastoma multiforme}\label{an-example-dataset-for-rna-seq-from-glioblastoma-multiforme}}
+\subsubsection{An example dataset for RNA-seq from glioblastoma multiforme}\label{an-example-dataset-for-rna-seq-from-glioblastoma-multiforme}
 
 We obtain normalized RNA-seq data on primary tumor samples for GBM with
 
@@ -559,7 +571,7 @@ as samples, and columns as sample attributes.
 
 
 \subsubsection{Clinical and phenotypic data}
-\label{clinical-and-phenotypic-data}}
+\label{clinical-and-phenotypic-data}
 
 TCGA datasets are generally provided as combinations of
 results for tumor tissue and normal tissue. The determination
@@ -688,7 +700,7 @@ Similar manipulations permit exploration of relationships between
 any molecular assay outcomes and any clinical data collected in TCGA.
 
 
-\subsection{cBioPortal}\label{cbioportal}}
+\subsection{cBioPortal}\label{cbioportal}
 
 The cBioPortal user guide
 at 
@@ -720,7 +732,7 @@ A pruned selection of records from the cBioPortal
 studies table is given in Table \ref{tab:tab-cball}.
 
 \begin{table}
-\caption{\label{tab:tab-cball}Excerpts from four fields on selected records in the cBioPortal getStudies output.}\\
+\caption{\label{tab:tab-cball}Excerpts from four fields on selected records in the cBioPortal getStudies output.}
 \begin{tabular}{p{5cm}p{5cm}l}
 name & description & studyId \\ \hline
 Adenoid Cystic Carcinoma of the Breast & Whole exome sequencing of 12 breast AdCCs. & acbc\_mskcc\_2015 \\
@@ -1195,7 +1207,7 @@ metadata.
 
 \begin{table}
 \caption{\label{tab:tab-wflow}Topical organization of packages with cancer applications.}
-\begin{tabular}{l{4cm}p{6cm}}
+\begin{tabular}{p{4cm}p{6cm}}
 \toprule
 topic & packages\\
 \midrule
@@ -1221,9 +1233,9 @@ Spatial & SpatialDecon\\
 \addlinespace
 SpecificCancers & consensusOV, PDATK, STROMA4\\
 Splicing & OutSplice, psichomics\\
-Subtyping & SCFA\\
+Subtyping & SCFA
 \end{tabular}
-\bottomrule
+%\bottomrule
 \end{table}
 
 The vignettes of each of these packages provide background and
@@ -1387,7 +1399,7 @@ Section \ref{app3} provides the names and versions of all packages
 used to produce this analysis.
 
 
-\subsection{Representing and visualizing spatial transcriptomics experiments}\label{representing-and-visualizing-spatial-transcriptomics-experiments}}
+\subsection{Representing and visualizing spatial transcriptomics experiments}\label{representing-and-visualizing-spatial-transcriptomics-experiments}
 
 Spatial transcriptomics (ST) allows the quantification of RNA expression of large numbers of genes while preserving the spatial context of tissues and cells. This is important as cancer progression depends on a complex tumor microenvironment, and not just cell type composition, but also cell type spatial organization can be used to derive diagnostic or prognostic markers.
 
@@ -1522,13 +1534,15 @@ library(scran)
 #add quality metrics
 is_mito <- grepl("(ˆMT-)|(ˆmt-)", rowData(hbc)$symbol)
 hbc <- addPerCellQC(hbc, subsets = list(mito = is_mito))
-## needed because the column name is hard coded in the nnSVG::filter_genes
+## needed because the column name is hard coded in 
+##      the nnSVG::filter_genes
 rowData(hbc)$gene_name <- rowData(hbc)$symbol
 ## filter and normalize gene expression
 hbc <- filter_genes(hbc)
 ## Gene filtering: removing mitochondrial genes
 ## removed 13 mitochondrial genes
-## Gene filtering: retaining genes with at least 3 counts in at least 0.5% (n = 19) of spatial locations
+## Gene filtering: retaining genes with at least 3 counts 
+##       in at least 0.5% (n = 19) of spatial locations
 ## removed 26583 out of 36588 genes due to low expression
 hbc <- computeLibraryFactors(hbc)
 hbc <- logNormCounts(hbc)
@@ -1589,7 +1603,8 @@ jbr
 ##
 ## unit:
 ## Geometries:
-## colGeometries: centroids (POINT), cellSeg (POLYGON), nucSeg (GEOMETRY)
+## colGeometries: centroids (POINT), cellSeg (POLYGON), 
+##      nucSeg (GEOMETRY)
 ##
 ## Graphs:
 ## sample01:
@@ -1633,7 +1648,8 @@ zooming in on a small portion of the tissue.
 \begin{verbatim}
 library(Voyager)
 cellbins <- plotCellBin2D(jbr, hex = TRUE)
-cellgeo <- plotGeometry(jbr, "cellSeg", bbox=c("xmin"=0, "ymin"=4000, "xmax"=1000, "ymax"=5000))
+cellgeo <- plotGeometry(jbr, "cellSeg", 
+  bbox=c("xmin"=0, "ymin"=4000, "xmax"=1000, "ymax"=5000))
 library(gridExtra)
 grid.arrange(cellbins, cellgeo, ncol=2)
 \end{verbatim}
@@ -1651,10 +1667,12 @@ the data.
 jbr <- jbr[, jbr$nCounts >= 20]
 jbr <- logNormCounts(jbr)
 library(scattermore)
-## 1/0 packages newly attached/loaded, see sessionInfo() for details.
-strom <- plotSpatialFeature(jbr, "POSTN", colGeometryName = "centroids",
-scattermore = TRUE, ncol = 2, pointsize = 0.5) + ggtitle("POSTN, stromal")
-fasn <- plotSpatialFeature(jbr, "FASN", colGeometryName = "centroids",
+strom <- plotSpatialFeature(jbr, "POSTN", 
+                 colGeometryName = "centroids",
+scattermore = TRUE, ncol = 2, pointsize = 0.5) + 
+                 ggtitle("POSTN, stromal")
+fasn <- plotSpatialFeature(jbr, "FASN", 
+                 colGeometryName = "centroids",
 scattermore = TRUE, ncol = 2, pointsize = 0.5) +
 ggtitle("FASN, invasive")
 grid.arrange(strom, fasn, ncol=2)
@@ -1835,7 +1853,8 @@ demm = download_meth_dataset("mcrpc_wg ..." ... [TRUNCATED]
 demm
 ## class: RangedSummarizedExperiment 
 ## dim: 1333114 100 
-## metadata(5): genome is_h5 ref_CpG chrom_sizes descriptive_stats
+## metadata(5): genome is_h5 ref_CpG chrom_sizes 
+##      descriptive_stats
 ## assays(2): beta cov
 ## rownames: NULL
 ## rowData names(0):
@@ -1922,7 +1941,8 @@ and CRAN packages on which they depend are present and are updated
 on change to sources.
 
 \begin{figure}
-\includegraphics[width=1.21\linewidth,]{QApage} \caption{Build report for Bioc 3.18, 12-29-2023.}\label{fig:qapic}
+\includegraphics[width=1.21\linewidth]{QApage} 
+\caption{Build report for Bioc 3.18, 12-29-2023.}\label{fig:qapic}
 \end{figure}
 
 The project distributes source tarballs for Linux-like systems, and
@@ -2281,5 +2301,34 @@ This work was supported in part by NIH NCI 3U24CA180996-10S1, NHGRI 5U24HG004059
 %\input{newrefs}
 \bibliographystyle{vjcunsrt}
 \bibliography{biocmimb}
+
+\section{Figure captions}
+
+Figure \ref{fig:sesc} SummarizedExperiment schematic.
+
+Figure \ref{fig:masc} MultiAssayExperiment schematic.
+
+Figure \ref{fig:dothesurv} Survival profile extraction from three MultiAssayExperiments produced with curatedTCGAData calls.
+
+Figure \ref{fig:strat} Survival distributions for donors of breast tumors in TCGA, stratified by presence or absence of mutation in gene TTN.
+
+Figure \ref{fig:mkden} Density of recurrent genomic alterations on chromosome 17 for 48 angiosarcoma patients.
+
+
+Figure \ref{fig:ontopair} Ontology visualization and tabulation with ontoProc::ctmarks.
+
+Figure \ref{fig:easfin} Comparison of genomic features distinguishing patients non-responsive and responsive to immune checkpoint blockade.
+
+Figure \ref{fig:tenxvisium} Visualization of a Visium breast cancer sample.
+
+Figure \ref{fig:plotvisium} Spatial expression of a highly variable gene.
+
+Figure \ref{fig:plotvoyager} Cell density and cell boundaries of a Xenium breast cancer sample.
+
+Figure \ref{fig:sfemark} Spatial expression of marker genes.
+
+Figure \ref{fig:qapic} Build report for Bioc 3.18, 12-29-2023.
+
+Figure \ref{fig:wssc} Workshop.bioconductor.org schematic.
 
 \end{document}
