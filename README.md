@@ -2,6 +2,9 @@
 
 Methods in Molec Biol/Cancer Bioinfo article
 
+June 11: APRIL_REV/bioccb3.tex is the document of record.  Must use
+2024 tex installation to compile.
+
 Repo is currently public.  
 
 The Rmd should be converted to pdf using `rmarkdown::render("bioccb.Rmd")`
